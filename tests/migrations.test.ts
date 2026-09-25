@@ -58,6 +58,10 @@ describe('migration files', () => {
       '20260925000100_fix_choice_grading.sql',
       '20260925000200_sticker_awards.sql',
       '20260925000300_content_refresh.sql',
+      '20260925000400_trail_streaks.sql',
+      '20260925000500_pets.sql',
+      '20260925000600_outfits.sql',
+      '20260925000700_wallet_rpc.sql',
     ]);
   });
 });
@@ -142,6 +146,9 @@ describe('security definer RPCs', () => {
         'fetch_activity_card',
         'submit_attempt',
         'log_event',
+        'award_stars',
+        'spend_stars',
+        'bump_quest_progress',
       ].sort()
     );
   });

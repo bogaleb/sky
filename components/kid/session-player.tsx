@@ -3,15 +3,23 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { AttemptResult, PlannedStep, SessionChild } from '@/lib/kid/types';
 import { getSessionPlan, submitActivityAttempt, logLearningEvent } from '@/app/actions/learning';
-import { awardStickers, getChildStickers } from '@/app/actions/rewards';
+import { awardStickers, getChildStickers, awardStars } from '@/app/actions/rewards';
 import { getIslandProgress } from '@/app/actions/progress';
+import { getTrailState, getTrailPlan, completeTrailQuest, recordDailyActivity, bumpQuestProgress, type TrailState } from '@/app/actions/trail';
+import TrailBanner from './trail-banner';
+import QuestIntro from './quest-intro';
+import MemoryCove from './memory-cove';
+import DressUp from './dress-up';
+import PetCompanion from './pet-companion';
+import { PetWidget } from './pet-widget';
+import type { TrailStop } from '@/lib/kid/trail';
 import { toPlannedStep, type ServerPlanItem } from '@/lib/kid/types';
 import { playSfx, speak, speakAs, unlockAudio } from '@/lib/kid/audio';
 import { getCharacter, charLine } from '@/lib/kid/characters';
 import { getIsland, type Island } from '@/lib/kid/islands';
 import { STICKERS, stickersForIslandVisit, getSticker } from '@/lib/kid/stickers';
-import { SONGS, type Song } from '@/lib/kid/songs';
-import { STORIES, type Story } from '@/lib/kid/stories';
+import type { Song } from '@/lib/kid/songs';
+import type { Story } from '@/lib/kid/stories';
 import KidShell from './kid-shell';
 import ActivityStage from './activity-stage';
 import HostCharacter, { type CharacterMood } from './host-character';
@@ -20,6 +28,7 @@ import VideoSpot from './video-spot';
 import StickerBook from './sticker-book';
 import Songbook from './songbook';
 import Storybook from './storybook';
+import LibraryPicker from './library-picker';
 import { ConfettiBurst } from './celebration';
 import { AVATARS } from '@/components/avatars';
 
@@ -31,7 +40,7 @@ export interface SessionPlayerProps {
   onReplay: () => void;
 }
 
-type Phase = 'intro' | 'map' | 'islandIntro' | 'playing' | 'complete' | 'goodbye';
+type Phase = 'intro' | 'map' | 'islandIntro' | 'trailIntro' | 'playing' | 'complete' | 'goodbye';
 
 /** Welcome intro: Captain Curio's video fills the screen, UI floats on top. */
 function Intro({ child, onStart }: { child: SessionChild; onStart: () => void }) {
@@ -161,6 +170,7 @@ function Complete({
   stars,
   points,
   newStickers,
+  questOutro,
   onReplay,
   onExit,
 }: {
@@ -168,6 +178,7 @@ function Complete({
   stars: number;
   points: number;
   newStickers: string[];
+  questOutro: string | null;
   onReplay: () => void;
   onExit: () => void;
 }) {
@@ -224,8 +235,13 @@ function Complete({
           ))}
         </div>
         <h1 className="mt-1 text-4xl font-black text-white drop-shadow-[0_3px_12px_rgba(12,24,44,0.6)] md:text-5xl">
-          Amazing flying, {child.nickname}!
+          {questOutro ? 'Quest complete!' : `Amazing flying, ${child.nickname}!`}
         </h1>
+        {questOutro && (
+          <p className="mt-2 max-w-xl text-center text-xl font-bold text-white/95 drop-shadow-[0_2px_8px_rgba(12,24,44,0.6)]">
+            {questOutro}
+          </p>
+        )}
         {newStickers.length > 0 && (
           <div className="animate-kid-pop-in mt-3 flex items-center gap-2 rounded-full bg-white/90 px-5 py-2 shadow-xl" style={{ animationDelay: '1s' }}>
             <svg width="28" height="28" viewBox="0 0 64 64" aria-hidden="true">
@@ -301,9 +317,18 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
   const [newStickers, setNewStickers] = useState<string[]>([]);
   const [activeSong, setActiveSong] = useState<Song | null>(null);
   const [activeStory, setActiveStory] = useState<Story | null>(null);
+  const [pickingLibrary, setPickingLibrary] = useState<'story' | 'song' | null>(null);
+  const [trailState, setTrailState] = useState<TrailState | null>(null);
+  const [trailStop, setTrailStop] = useState<TrailStop | null>(null);
+  const [questMode, setQuestMode] = useState<'trail' | null>(null);
+  const [startingQuest, setStartingQuest] = useState(false);
+  const [questOutro, setQuestOutro] = useState<string | null>(null);
+  const [showMemory, setShowMemory] = useState(false);
+  const [showDressUp, setShowDressUp] = useState(false);
+  const [showPet, setShowPet] = useState(false);
   const resultsRef = useRef<AttemptResult[]>([]);
 
-  // Load island progress + sticker book whenever the map shows.
+  // Load island progress + sticker book + trail state whenever the map shows.
   useEffect(() => {
     if (phase !== 'map') return;
     void getIslandProgress(child.id)
@@ -315,6 +340,9 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
       .catch(() => {});
     void getChildStickers(child.id)
       .then(setStickerIds)
+      .catch(() => {});
+    void getTrailState(child.id)
+      .then(setTrailState)
       .catch(() => {});
   }, [phase, child.id]);
 
@@ -359,7 +387,8 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
         const totalPoints = resultsRef.current.reduce((s, r) => s + r.pointsEarned, 0);
         speak(`Amazing flying, ${child.nickname}! You earned ${earnedCount} stars!`);
         // Award stickers for the island visit + special achievements.
-        const stickerEarn: string[] = stickersForIslandVisit(island?.subjectCode ?? null);
+        const visitSubject = island?.subjectCode ?? trailStop?.subjectCode ?? null;
+        const stickerEarn: string[] = stickersForIslandVisit(visitSubject);
         if (earnedCount === activeSteps.length && activeSteps.length > 0) stickerEarn.push('perfect-flight');
         if (resultsRef.current.some((r) => !r.correct)) stickerEarn.push('brave-try');
         void awardStickers(child.id, stickerEarn)
@@ -382,9 +411,32 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
             points: totalPoints,
           },
         }).catch(() => {});
+        // Persist stars to the wallet, keep the streak, feed daily quests.
+        void awardStars(child.id, earnedCount).catch(() => {});
+        void recordDailyActivity(child.id).catch(() => {});
+        void bumpQuestProgress(child.id, 'activities_6', activeSteps.length).catch(() => {});
+        void bumpQuestProgress(child.id, 'stars_50', earnedCount).catch(() => {});
+        const visitedSubject = island?.subjectCode ?? trailStop?.subjectCode;
+        if (visitedSubject) {
+          void bumpQuestProgress(child.id, 'islands_2', 1).catch(() => {});
+        }
+        // Trail quest completion: advance the trail and celebrate.
+        // (Session-level quest bumps already happened above; completeTrailQuest
+        // only advances trail-specific progress to avoid double-counting.)
+        if (questMode === 'trail' && trailStop) {
+          const finishedStop = trailStop;
+          void completeTrailQuest(child.id)
+            .then((res) => {
+              setQuestOutro(finishedStop.outro);
+              speakAs('curio', `Quest complete! ${finishedStop.outro} Your next quest is ${res.nextStop.questTitle}!`);
+              return getTrailState(child.id);
+            })
+            .then(setTrailState)
+            .catch(() => {});
+        }
       }
     },
-    [child.id, child.nickname, index, activeSteps.length, sessionId, step?.hostCharacter]
+    [child.id, child.nickname, index, activeSteps.length, sessionId, step?.hostCharacter, questMode, trailStop]
   );
 
   const startIslandSession = useCallback(
@@ -422,6 +474,30 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
     [child.id]
   );
 
+  const startTrailQuest = useCallback(async () => {
+    setStartingQuest(true);
+    try {
+      const res = await getTrailPlan(child.id);
+      const next = (res.plan as unknown as ServerPlanItem[]).map(toPlannedStep);
+      if (next.length === 0) throw new Error('empty plan');
+      setTrailStop(res.stop);
+      setQuestMode('trail');
+      setIslandSteps(next);
+      setIsland(null);
+      setIndex(0);
+      setPoints(0);
+      setStars(0);
+      setQuestOutro(null);
+      resultsRef.current = [];
+      setPhase('trailIntro');
+    } catch {
+      // Fall back to the map if the quest plan fails.
+      setPhase('map');
+    } finally {
+      setStartingQuest(false);
+    }
+  }, [child.id]);
+
   const beginPlaying = () => {
     setPhase('playing');
     const first = activeSteps[0];
@@ -432,6 +508,8 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
           kind: 'session_start',
           planned: activeSteps.length,
           island: island?.subjectCode ?? 'surprise',
+          quest_mode: questMode ?? 'free',
+          trail_quest: trailStop?.questTitle ?? null,
         },
       }).catch(() => {});
     }
@@ -442,6 +520,9 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
     setIndex(0);
     setIsland(null);
     setIslandSteps(null);
+    setTrailStop(null);
+    setQuestMode(null);
+    setQuestOutro(null);
     setPoints(0);
     setStars(0);
     setNewStickers([]);
@@ -453,7 +534,7 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
       doneCount={stars}
       totalSteps={activeSteps.length}
       points={points}
-      onExit={phase === 'playing' || phase === 'map' ? onExit : undefined}
+      onExit={phase === 'playing' || phase === 'map' || phase === 'trailIntro' ? onExit : undefined}
     >
       {loadingIsland && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-kid-sky-300/60 backdrop-blur-sm">
@@ -464,15 +545,66 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
       )}
       {phase === 'intro' && <Intro child={child} onStart={() => setPhase('map')} />}
       {phase === 'map' && (
-        <SkyMap
-          nickname={child.nickname}
-          onSelectIsland={(isl) => void startIslandSession(isl)}
-          onSurprise={() => void startIslandSession(null)}
-          onOpenStickers={() => setShowStickers(true)}
-          progress={islandProgress}
-          stickerCount={stickerIds.length}
-          stickerTotal={STICKERS.length}
-        />
+        <div className="flex w-full flex-col items-center gap-5">
+          <TrailBanner trail={trailState} onStartQuest={() => void startTrailQuest()} starting={startingQuest} />
+          {/* Sky Park: games, pets, and dress-up between quests. */}
+          <div className="flex w-full max-w-3xl items-stretch justify-center gap-3 px-4">
+            <PetWidget child={child} onOpen={() => setShowPet(true)} />
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowMemory(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-grape-400 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <rect x="6" y="10" width="16" height="22" rx="4" fill="#fff" opacity="0.95" />
+                <rect x="26" y="10" width="16" height="22" rx="4" fill="#fff" opacity="0.6" />
+                <path d="M14 17l1.5 3.2 3.5.4-2.6 2.4.7 3.5-3.1-1.7-3.1 1.7.7-3.5-2.6-2.4 3.5-.4z" fill="#7C5CBF" />
+              </svg>
+              <span className="text-lg font-black">Memory Cove</span>
+              <span className="text-xs font-bold opacity-90">a matching game</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowDressUp(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-sun-400 px-4 py-4 text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <path d="M24 6l4 8h-8z" fill="#FF6B6B" />
+                <rect x="10" y="16" width="28" height="8" rx="4" fill="#FF6B6B" />
+                <circle cx="17" cy="30" r="6" fill="none" stroke="#17324F" strokeWidth="3" />
+                <circle cx="31" cy="30" r="6" fill="none" stroke="#17324F" strokeWidth="3" />
+                <line x1="23" y1="30" x2="25" y2="30" stroke="#17324F" strokeWidth="3" />
+              </svg>
+              <span className="text-lg font-black">Dress Up</span>
+              <span className="text-xs font-bold opacity-80">spend your stars</span>
+            </button>
+          </div>
+          <SkyMap
+            nickname={child.nickname}
+            onSelectIsland={(isl) => void startIslandSession(isl)}
+            onSurprise={() => void startIslandSession(null)}
+            onOpenStickers={() => setShowStickers(true)}
+            progress={islandProgress}
+            stickerCount={stickerIds.length}
+            stickerTotal={STICKERS.length}
+          />
+        </div>
+      )}
+      {showMemory && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <MemoryCove child={child} onExit={() => setShowMemory(false)} />
+        </div>
+      )}
+      {showDressUp && <DressUp child={child} onExit={() => setShowDressUp(false)} />}
+      {showPet && <PetCompanion child={child} onExit={() => setShowPet(false)} />}
+      {phase === 'trailIntro' && trailStop && (
+        <QuestIntro stop={trailStop} nickname={child.nickname} onStart={beginPlaying} />
       )}
       {showStickers && (
         <StickerBook earnedIds={stickerIds} onClose={() => setShowStickers(false)} />
@@ -482,8 +614,19 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
           island={island}
           child={child}
           onStart={beginPlaying}
-          onStoryTime={island.subjectCode === 'reading' ? () => setActiveStory(STORIES[0]) : undefined}
-          onSingAlong={island.subjectCode === 'music' ? () => setActiveSong(SONGS[0]) : undefined}
+          onStoryTime={island.subjectCode === 'reading' ? () => setPickingLibrary('story') : undefined}
+          onSingAlong={island.subjectCode === 'music' ? () => setPickingLibrary('song') : undefined}
+        />
+      )}
+      {pickingLibrary && (
+        <LibraryPicker
+          kind={pickingLibrary}
+          onClose={() => setPickingLibrary(null)}
+          onPick={(item) => {
+            setPickingLibrary(null);
+            if (pickingLibrary === 'story') setActiveStory(item as Story);
+            else setActiveSong(item as Song);
+          }}
         />
       )}
       {activeStory && (
@@ -492,7 +635,8 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
           onDone={() => setActiveStory(null)}
           onFinish={() => {
             setActiveStory(null);
-            // Finishing a story earns the Bookworm sticker!
+            // Finishing a story earns the Bookworm sticker + feeds the Bookworm daily quest!
+            void bumpQuestProgress(child.id, 'story_read', 1).catch(() => {});
             void awardStickers(child.id, ['bookworm', 'friend-luna', 'star-reading'])
               .then((fresh) => {
                 if (fresh.length > 0) {
@@ -514,7 +658,8 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
           onDone={() => setActiveSong(null)}
           onFinish={() => {
             setActiveSong(null);
-            // Singing earns the Songbird sticker!
+            // Singing earns the Songbird sticker + feeds the Songbird daily quest!
+            void bumpQuestProgress(child.id, 'song_sung', 1).catch(() => {});
             void awardStickers(child.id, ['songbird', 'friend-riff', 'star-music'])
               .then((fresh) => {
                 if (fresh.length > 0) {
@@ -596,6 +741,7 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
           stars={Math.min(3, Math.round((stars / Math.max(activeSteps.length, 1)) * 3))}
           points={points}
           newStickers={newStickers}
+          questOutro={questOutro}
           onReplay={backToMap}
           onExit={() => setPhase('goodbye')}
         />

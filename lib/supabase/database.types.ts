@@ -324,11 +324,139 @@ export interface Database {
         Update: Partial<Database['public']['Tables']['learning_events']['Insert']>;
         Relationships: [];
       };
+      trail_progress: {
+        Row: {
+          child_id: string;
+          position: number;
+          quests_completed: number;
+          updated_at: string;
+        };
+        Insert: {
+          child_id: string;
+          position?: number;
+          quests_completed?: number;
+          updated_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['trail_progress']['Insert']>;
+        Relationships: [];
+      };
+      streaks: {
+        Row: {
+          child_id: string;
+          current_streak: number;
+          longest_streak: number;
+          last_active_date: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          child_id: string;
+          current_streak?: number;
+          longest_streak?: number;
+          last_active_date?: string | null;
+          updated_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['streaks']['Insert']>;
+        Relationships: [];
+      };
+      quest_progress: {
+        Row: {
+          child_id: string;
+          quest_date: string;
+          quest_id: string;
+          progress: number;
+          goal: number;
+          completed: boolean;
+          completed_at: string | null;
+        };
+        Insert: {
+          child_id: string;
+          quest_date: string;
+          quest_id: string;
+          progress?: number;
+          goal: number;
+          completed?: boolean;
+          completed_at?: string | null;
+        };
+        Update: Partial<Database['public']['Tables']['quest_progress']['Insert']>;
+        Relationships: [];
+      };
+      star_balances: {
+        Row: {
+          child_id: string;
+          balance: number;
+          lifetime_earned: number;
+          updated_at: string;
+        };
+        Insert: {
+          child_id: string;
+          balance?: number;
+          lifetime_earned?: number;
+          updated_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['star_balances']['Insert']>;
+        Relationships: [];
+      };
+      pets: {
+        Row: {
+          child_id: string;
+          species: string;
+          name: string | null;
+          stage: string;
+          happiness: number;
+          feed_count: number;
+          updated_at: string;
+        };
+        Insert: {
+          child_id: string;
+          species: string;
+          name?: string | null;
+          stage?: string;
+          happiness?: number;
+          feed_count?: number;
+          updated_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['pets']['Insert']>;
+        Relationships: [];
+      };
+      child_outfits: {
+        Row: {
+          child_id: string;
+          outfit_id: string;
+          unlocked: boolean;
+          equipped: boolean;
+        };
+        Insert: {
+          child_id: string;
+          outfit_id: string;
+          unlocked?: boolean;
+          equipped?: boolean;
+        };
+        Update: Partial<Database['public']['Tables']['child_outfits']['Insert']>;
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
+      award_stars: {
+        Args: { p_child_id: string; p_amount: number };
+        Returns: number;
+      };
+      spend_stars: {
+        Args: { p_child_id: string; p_amount: number };
+        Returns: boolean;
+      };
+      bump_quest_progress: {
+        Args: {
+          p_child_id: string;
+          p_quest_date: string;
+          p_quest_id: string;
+          p_amount: number;
+          p_goal: number;
+        };
+        Returns: Array<{ progress: number; completed: boolean; newly_completed: boolean }>;
+      };
       ensure_parent_profile: {
         Args: Record<string, never>;
         Returns: Json;

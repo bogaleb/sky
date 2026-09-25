@@ -49,3 +49,38 @@ export async function getChildStickers(childId: string): Promise<string[]> {
   if (error) throw new Error('Could not load stickers.');
   return (data ?? []).map((r) => r.sticker_id);
 }
+
+/** Current spendable star balance for a child. */
+export async function getStarBalance(childId: string): Promise<{ balance: number; lifetimeEarned: number }> {
+  const supabase = await requireChild(childId);
+  const { data } = await supabase
+    .from('star_balances')
+    .select('balance, lifetime_earned')
+    .eq('child_id', childId)
+    .maybeSingle();
+  return { balance: data?.balance ?? 0, lifetimeEarned: data?.lifetime_earned ?? 0 };
+}
+
+/** Add stars to a child's wallet (session rewards, quest bonuses). Atomic. */
+export async function awardStars(childId: string, amount: number): Promise<number> {
+  if (amount <= 0) return (await getStarBalance(childId)).balance;
+  const supabase = await requireChild(childId);
+  const { data, error } = await supabase.rpc('award_stars', {
+    p_child_id: childId,
+    p_amount: Math.round(amount),
+  });
+  if (error) throw new Error('Could not award stars.');
+  return (data as number) ?? 0;
+}
+
+/** Spend stars from a child's wallet. Returns false if insufficient. Atomic. */
+export async function spendStars(childId: string, amount: number): Promise<boolean> {
+  if (amount <= 0) return true;
+  const supabase = await requireChild(childId);
+  const { data, error } = await supabase.rpc('spend_stars', {
+    p_child_id: childId,
+    p_amount: Math.round(amount),
+  });
+  if (error) throw new Error('Could not spend stars.');
+  return (data as boolean) ?? false;
+}

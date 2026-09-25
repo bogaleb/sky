@@ -201,6 +201,8 @@ export interface PlanOptions {
   sessionLength?: number;
   /** When set, plan only activities from this subject (island visit). */
   subjectCode?: string;
+  /** When set, plan only activities for this trail stop's skill + level. */
+  trailStop?: { skillCode: string; level: number };
 }
 
 export function planSession(input: PlannerInput, options: PlanOptions = {}): SessionPlan {
@@ -213,6 +215,11 @@ export function planSession(input: PlannerInput, options: PlanOptions = {}): Ses
   if (options.subjectCode) {
     skills = skills.filter((s) => s.subjectCode === options.subjectCode);
     notes.push(`Island visit: ${options.subjectCode}.`);
+  }
+  if (options.trailStop) {
+    const { skillCode, level } = options.trailStop;
+    skills = skills.filter((s) => s.code === skillCode);
+    notes.push(`Trail quest: ${skillCode} level ${level}.`);
   }
   if (skills.length === 0 || pool.length === 0) {
     return {
@@ -237,6 +244,21 @@ export function planSession(input: PlannerInput, options: PlanOptions = {}): Ses
     pickCounts.set(skill.id, (pickCounts.get(skill.id) ?? 0) + 1);
     usedSubjects.add(skill.subjectCode);
   };
+
+  // ---- trail quest: every activity comes from the stop's skill + level ----
+  if (options.trailStop) {
+    const stop = options.trailStop;
+    const skill = skills.find((s) => s.code === stop.skillCode);
+    if (skill) {
+      for (let i = 0; i < sessionLength; i++) {
+        const activity = pickActivity(pool, skill.id, stop.level, usedActivityIds, recentIds);
+        // Stop rather than repeat: a quest never plays the same activity twice.
+        if (!activity || usedActivityIds.has(activity.id)) break;
+        commit(skill, activity, 'new_learning', stop.level);
+      }
+    }
+    return { activities: planned, notes, frustrated };
+  }
 
   const warmupSkillIds = new Set<string>();
 
