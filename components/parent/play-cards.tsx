@@ -18,7 +18,7 @@ const SUBJECTS = ISLANDS.map((i) => ({
 function PlayCardItem({ card }: { card: PlayCard }) {
   const subject = SUBJECTS.find((s) => s.code === card.subjectCode);
   return (
-    <li className="rounded-2xl border border-parent-sky-100 bg-white p-5 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
+    <li className="card-kid rounded-2xl border border-parent-sky-100 bg-white p-5 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h3 className="text-lg font-extrabold text-parent-ink-900">{card.title}</h3>
         <p className="text-xs font-bold uppercase tracking-wider text-parent-sky-700">
@@ -88,7 +88,7 @@ export default function PlayCards() {
         }
       `}</style>
 
-      <div className="sky-playcards-root rounded-2xl border border-parent-sky-100 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
+      <div className="sky-playcards-root card-kid rounded-2xl border border-parent-sky-100 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs font-extrabold uppercase tracking-[0.25em] text-parent-sky-700">

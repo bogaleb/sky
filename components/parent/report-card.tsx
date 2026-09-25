@@ -117,7 +117,7 @@ export default function ReportCard({
         }
       `}</style>
 
-      <div className="sky-report-root rounded-2xl border border-parent-sky-100 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
+      <div className="sky-report-root card-kid rounded-2xl border border-parent-sky-100 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs font-extrabold uppercase tracking-[0.25em] text-parent-sky-700">

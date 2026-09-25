@@ -289,6 +289,15 @@ export async function checkTrophies(
     case 'avatar_done':
       await grant('avatar-first');
       break;
+    case 'sentence_done':
+      await grant('sentence-first');
+      break;
+    case 'measure_done':
+      await grant('measure-first');
+      break;
+    case 'opposites_done':
+      await grant('opposites-first');
+      break;
     default: {
       // Unknown events are ignored so new gameplay can fire freely.
       const _exhaustive: never = event;

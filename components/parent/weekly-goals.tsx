@@ -53,8 +53,8 @@ export default function WeeklyGoals({ childId }: { childId: string }) {
     : 0;
 
   return (
-    <div className="rounded-2xl border border-parent-sky-100 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
-      <h2 className="text-xl font-extrabold text-parent-sky-900">Weekly goal</h2>
+    <div className="card-kid rounded-2xl border border-parent-sky-100 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
+      <h2 className="font-display text-xl font-extrabold text-parent-sky-900">Weekly goal</h2>
       <p className="mt-1 text-sm text-parent-ink-600">
         Set a learning target for this week. When it&rsquo;s reached, the goal is
         celebrated with a sticker and a trophy.
@@ -112,7 +112,7 @@ export default function WeeklyGoals({ childId }: { childId: string }) {
           type="button"
           onClick={save}
           disabled={saving}
-          className="rounded-full bg-parent-sky-600 px-6 py-2.5 text-base font-extrabold text-white shadow-md transition-transform hover:scale-[1.03] active:scale-95 disabled:opacity-60"
+          className="btn-kid btn-kid-sky btn-kid-sm text-base disabled:opacity-60"
         >
           {saving ? 'Saving…' : 'Save goal'}
         </button>

@@ -39,8 +39,8 @@ export default function FamilyLeaderboard() {
   const leaderRow = leader ? byId.get(leader.id) : undefined;
 
   return (
-    <div className="rounded-2xl border border-parent-sky-100 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
-      <h2 className="text-xl font-extrabold text-parent-sky-900">Family leaderboard</h2>
+    <div className="card-kid rounded-2xl border border-parent-sky-100 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
+      <h2 className="font-display text-xl font-extrabold text-parent-sky-900">Family leaderboard</h2>
       <p className="mt-1 text-sm text-parent-ink-600">
         This week&rsquo;s Star Sprint — first to {STAR_SPRINT_TARGET} stars wins.
       </p>

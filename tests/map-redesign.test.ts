@@ -40,6 +40,9 @@ const PARK_LABELS = [
   'Pet Playground',
   'Fraction Fair',
   'My Look',
+  'Sentence Studio',
+  'Measure Meadow',
+  'Opposites Attic',
 ];
 
 const PARK_HANDLERS = [
@@ -70,6 +73,9 @@ const PARK_HANDLERS = [
   'setShowPlayground(true)',
   'setShowFractions(true)',
   'setShowAvatarStudio(true)',
+  'setShowSentences(true)',
+  'setShowMeasure(true)',
+  'setShowOpposites(true)',
 ];
 
 const EMOJI = /[🌀-🫿☀-➿⬀-⯿️]/u;
@@ -95,7 +101,7 @@ describe('map redesign contract', () => {
     expect(player).toMatch(/<h2 className="font-display[^"]*">Sky Park<\/h2>/);
   });
 
-  it('keeps all 27 Sky Park game buttons with contract button classes', () => {
+  it('keeps all 30 Sky Park game buttons with contract button classes', () => {
     for (const label of PARK_LABELS) {
       expect(player, label).toContain(`>${label}<`);
     }

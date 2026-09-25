@@ -1,7 +1,10 @@
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode } from 'react';
+import SkyBackdrop from '@/components/kid/sky-backdrop';
 
 // Parent-facing UI primitives. Calm, high-contrast, generous touch targets.
-// (Kid-facing components arrive with the kid shell in Phase 3.)
+// Wave 9 glow-up: primary actions use the Wave 8 design-system button,
+// cards get the elevated card-kid treatment, and PageShell floats over the
+// ambient SkyBackdrop — the premium companion to the kid app.
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
@@ -15,8 +18,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   const variants: Record<string, string> = {
-    primary:
-      'bg-parent-sky-600 text-white hover:bg-parent-sky-700 shadow-sm',
+    primary: 'btn-kid btn-kid-sky',
     secondary:
       'bg-white text-parent-sky-700 border border-parent-sky-200 hover:bg-parent-sky-50',
     ghost: 'bg-transparent text-parent-ink-600 hover:bg-parent-sky-100',
@@ -81,7 +83,7 @@ export function Card({
 }) {
   return (
     <div
-      className={`rounded-parent-card border border-parent-sky-100 bg-white p-6 shadow-[0_8px_30px_rgba(18,60,96,0.08)] sm:p-8 ${className}`}
+      className={`card-kid rounded-parent-card border border-parent-sky-100 bg-white p-6 shadow-[0_8px_30px_rgba(18,60,96,0.08)] sm:p-8 ${className}`}
     >
       {children}
     </div>
@@ -100,7 +102,8 @@ export function FormError({ message }: { message?: string }) {
   );
 }
 
-// Narrow centered shell for auth / onboarding steps.
+// Narrow centered shell for auth / onboarding steps — floats over the
+// ambient SkyBackdrop for a premium first impression.
 export function PageShell({
   children,
   wide = false,
@@ -109,8 +112,9 @@ export function PageShell({
   wide?: boolean;
 }) {
   return (
-    <main className="flex min-h-dvh items-center justify-center px-4 py-10">
-      <div className={`w-full ${wide ? 'max-w-3xl' : 'max-w-md'}`}>{children}</div>
+    <main className="relative flex min-h-dvh items-center justify-center overflow-hidden px-4 py-10">
+      <SkyBackdrop />
+      <div className={`relative z-10 w-full ${wide ? 'max-w-3xl' : 'max-w-md'}`}>{children}</div>
     </main>
   );
 }

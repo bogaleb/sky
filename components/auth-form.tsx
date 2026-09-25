@@ -15,7 +15,7 @@ export default function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
     return (
       <PageShell>
         <Card>
-          <h1 className="text-2xl font-extrabold text-parent-sky-900">
+          <h1 className="font-display text-2xl font-extrabold text-parent-sky-900">
             Check your inbox
           </h1>
           <p className="mt-3 text-parent-ink-600">
@@ -35,10 +35,10 @@ export default function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
   return (
     <PageShell>
       <Card>
-        <p className="text-center text-2xl font-extrabold text-parent-sky-900">
+        <p className="font-display text-center text-2xl font-extrabold text-parent-sky-900">
           Sky
         </p>
-        <h1 className="mt-2 text-center text-xl font-bold text-parent-ink-900">
+        <h1 className="font-display mt-2 text-center text-xl font-bold text-parent-ink-900">
           {mode === 'login' ? 'Welcome back' : 'Create your parent account'}
         </h1>
         <p className="mt-1 text-center text-sm text-parent-ink-600">

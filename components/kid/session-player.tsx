@@ -34,6 +34,9 @@ import RhymeTime from './rhyme-time';
 import PetPlayground from './pet-playground';
 import FractionFair from './fraction-fair';
 import AvatarStudio from './avatar-studio';
+import SentenceStudio from './sentence-studio';
+import MeasureMeadow from './measure-meadow';
+import OppositesAttic from './opposites-attic';
 import SplashIntro from './splash-intro';
 import StreakCalendar from './streak-calendar';
 // Wave 8 design fallback styles — dormant while Track A's design core is present.
@@ -394,6 +397,9 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
   const [showPlayground, setShowPlayground] = useState(false);
   const [showFractions, setShowFractions] = useState(false);
   const [showAvatarStudio, setShowAvatarStudio] = useState(false);
+  const [showSentences, setShowSentences] = useState(false);
+  const [showMeasure, setShowMeasure] = useState(false);
+  const [showOpposites, setShowOpposites] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
   const [showTrophies, setShowTrophies] = useState(false);
   const [talkWith, setTalkWith] = useState<string | null>(null);
@@ -1143,6 +1149,61 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
               <span className="font-display text-lg font-black leading-tight md:text-xl">My Look</span>
               <span className="text-xs font-bold opacity-90">design your avatar</span>
             </button>
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowSentences(true);
+              }}
+              className="btn-kid btn-kid-sky group"
+            >
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
+                <rect x="6" y="10" width="36" height="10" rx="5" fill="#fff" opacity="0.95" />
+                <rect x="6" y="24" width="28" height="10" rx="5" fill="#fff" opacity="0.7" />
+                <rect x="6" y="38" width="18" height="6" rx="3" fill="#fff" opacity="0.5" />
+                <text x="24" y="18" fontSize="8" fontWeight="900" fill="#1D4ED8" textAnchor="middle">The cat</text>
+                <text x="20" y="32" fontSize="8" fontWeight="900" fill="#1E40AF" textAnchor="middle">naps.</text>
+              </svg>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Sentence Studio</span>
+              <span className="text-xs font-bold opacity-90">build super sentences</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowMeasure(true);
+              }}
+              className="btn-kid btn-kid-mint group"
+            >
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
+                <rect x="22" y="6" width="4" height="36" fill="#B45309" />
+                <line x1="6" y1="14" x2="42" y2="14" stroke="#17324F" strokeWidth="3" strokeLinecap="round" />
+                <rect x="8" y="18" width="12" height="8" rx="2" fill="#FF6B6B" />
+                <rect x="28" y="22" width="12" height="8" rx="2" fill="#4ECDC4" />
+                <circle cx="24" cy="6" r="3" fill="#17324F" />
+              </svg>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Measure Meadow</span>
+              <span className="text-xs font-bold opacity-90">longer, taller, heavier</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowOpposites(true);
+              }}
+              className="btn-kid btn-kid-grape group"
+            >
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
+                <rect x="6" y="8" width="16" height="32" rx="4" fill="#fff" opacity="0.95" />
+                <rect x="26" y="8" width="16" height="32" rx="4" fill="#fff" opacity="0.6" />
+                <text x="14" y="22" fontSize="8" fontWeight="900" fill="#7C5CBF" textAnchor="middle">big</text>
+                <text x="14" y="34" fontSize="8" fontWeight="900" fill="#7C5CBF" textAnchor="middle">BIG</text>
+                <text x="34" y="22" fontSize="8" fontWeight="900" fill="#5B21B6" textAnchor="middle">tiny</text>
+                <text x="34" y="34" fontSize="7" fontWeight="900" fill="#5B21B6" textAnchor="middle">small</text>
+              </svg>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Opposites Attic</span>
+              <span className="text-xs font-bold opacity-90">words that are opposites</span>
+            </button>
             </div>
           </section>
           <UpNext
@@ -1291,6 +1352,21 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
       {showAvatarStudio && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
           <AvatarStudio childId={child.id} onExit={() => setShowAvatarStudio(false)} />
+        </div>
+      )}
+      {showSentences && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <SentenceStudio childId={child.id} nickname={child.nickname} onExit={() => setShowSentences(false)} />
+        </div>
+      )}
+      {showMeasure && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <MeasureMeadow childId={child.id} nickname={child.nickname} onExit={() => setShowMeasure(false)} />
+        </div>
+      )}
+      {showOpposites && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <OppositesAttic childId={child.id} nickname={child.nickname} onExit={() => setShowOpposites(false)} />
         </div>
       )}
       {showWelcome && (

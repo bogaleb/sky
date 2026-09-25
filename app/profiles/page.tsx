@@ -5,6 +5,7 @@ import { selectProfile } from '@/app/actions/profiles';
 import { signOut } from '@/app/actions/auth';
 import { AVATARS } from '@/components/avatars';
 import ProfileAvatar from '@/components/kid/profile-avatar';
+import SkyBackdrop from '@/components/kid/sky-backdrop';
 import { getEquippedOutfits } from '@/app/actions/outfits';
 import { Button } from '@/components/ui';
 
@@ -43,8 +44,10 @@ export default async function ProfilesPage() {
   );
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-4xl flex-col items-center justify-center px-6 py-12">
-      <h1 className="text-center text-3xl font-extrabold tracking-tight text-parent-sky-900 sm:text-4xl">
+    <main className="relative mx-auto flex min-h-dvh w-full max-w-4xl flex-col items-center justify-center overflow-hidden px-6 py-12">
+      <SkyBackdrop />
+      <div className="relative z-10 flex w-full flex-col items-center">
+      <h1 className="font-display text-center text-3xl font-extrabold tracking-tight text-parent-sky-900 sm:text-4xl">
         Who is playing?
       </h1>
       <p className="mt-2 text-center text-parent-ink-600">
@@ -59,7 +62,7 @@ export default async function ProfilesPage() {
               <button
                 type="submit"
                 aria-label={`Play as ${child.nickname}`}
-                className="group flex w-full flex-col items-center gap-3 rounded-parent-card border border-parent-sky-100 bg-white p-6 shadow-[0_8px_30px_rgba(18,60,96,0.08)] transition-transform hover:-translate-y-1 hover:shadow-[0_14px_36px_rgba(18,60,96,0.14)]"
+                className="card-kid group flex w-full flex-col items-center gap-3 rounded-parent-card border border-parent-sky-100 bg-white p-6 shadow-[0_8px_30px_rgba(18,60,96,0.08)] transition-transform hover:-translate-y-1 hover:shadow-[0_14px_36px_rgba(18,60,96,0.14)]"
               >
                 <ProfileAvatar
                   childId={child.id}
@@ -88,6 +91,7 @@ export default async function ProfilesPage() {
             Log out
           </Button>
         </form>
+      </div>
       </div>
     </main>
   );

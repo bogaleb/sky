@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { verifyParentZonePin } from '@/app/actions/dashboard';
+import SkyBackdrop from '@/components/kid/sky-backdrop';
 
 /**
  * Parent-zone PIN gate. The parent enters their 4-6 digit PIN to unlock
@@ -43,9 +44,10 @@ export default function PinGate({ onUnlocked }: { onUnlocked: () => void }) {
   };
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col items-center justify-center px-6 py-12">
-      <div className="w-full rounded-3xl border border-parent-sky-100 bg-white p-8 shadow-[0_8px_30px_rgba(18,60,96,0.08)]">
-        <h1 className="text-center text-2xl font-extrabold text-parent-sky-900">Parent zone</h1>
+    <div className="relative mx-auto flex min-h-dvh w-full max-w-md flex-col items-center justify-center overflow-hidden px-6 py-12">
+      <SkyBackdrop />
+      <div className="glass-kid relative z-10 w-full p-8">
+        <h1 className="font-display text-center text-2xl font-extrabold text-parent-sky-900">Parent zone</h1>
         <p className="mt-2 text-center text-parent-ink-600">
           Enter your PIN to see learning reports. Kids stay out!
         </p>
@@ -110,7 +112,7 @@ export default function PinGate({ onUnlocked }: { onUnlocked: () => void }) {
           type="button"
           onClick={submit}
           disabled={checking || pin.length < 4}
-          className="mt-6 w-full rounded-2xl bg-parent-sky-600 py-4 text-xl font-extrabold text-white shadow-lg transition-all hover:bg-parent-sky-700 active:scale-[0.98] disabled:opacity-40"
+          className="btn-kid btn-kid-sky mt-6 w-full text-xl disabled:opacity-40"
         >
           {checking ? 'Checking…' : 'Unlock reports'}
         </button>

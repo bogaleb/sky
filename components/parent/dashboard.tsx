@@ -10,6 +10,7 @@ import {
 } from '@/app/actions/dashboard';
 import { AVATARS } from '@/components/avatars';
 import PinGate from './pin-gate';
+import SkyBackdrop from '@/components/kid/sky-backdrop';
 import WeeklyGoals from './weekly-goals';
 import Certificate from './certificate';
 import FamilyLeaderboard from './family-leaderboard';
@@ -19,8 +20,8 @@ import { getTrophies } from '@/app/actions/trophies';
 
 function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
   return (
-    <div className="rounded-2xl border border-parent-sky-100 bg-white p-5 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
-      <p className="text-3xl font-extrabold text-parent-sky-900">{value}</p>
+    <div className="card-kid rounded-2xl border border-parent-sky-100 bg-white p-5 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
+      <p className="font-display text-3xl font-extrabold text-parent-sky-900">{value}</p>
       <p className="mt-1 font-bold text-parent-ink-900">{label}</p>
       {sub && <p className="text-sm text-parent-ink-600">{sub}</p>}
     </div>
@@ -157,8 +158,8 @@ function ChildReport({ child }: { child: ChildDashboard }) {
   return (
     <div className="mt-6">
       {/* Weekly digest */}
-      <div className="rounded-2xl border border-parent-sky-100 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
-        <h2 className="text-xl font-extrabold text-parent-sky-900">Weekly digest</h2>
+      <div className="card-kid rounded-2xl border border-parent-sky-100 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
+        <h2 className="font-display text-xl font-extrabold text-parent-sky-900">Weekly digest</h2>
         <p className="mt-1 text-sm text-parent-ink-600">
           {child.nickname}&rsquo;s last 7 days at a glance.
           {child.lastActiveAt && (
@@ -211,8 +212,8 @@ function ChildReport({ child }: { child: ChildDashboard }) {
       {/* Weekly goals + celebrate */}
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <WeeklyGoals childId={child.id} />
-        <div className="rounded-2xl border border-parent-sky-100 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
-          <h2 className="text-xl font-extrabold text-parent-sky-900">Celebrate</h2>
+        <div className="card-kid rounded-2xl border border-parent-sky-100 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
+          <h2 className="font-display text-xl font-extrabold text-parent-sky-900">Celebrate</h2>
           <p className="mt-1 text-sm text-parent-ink-600">
             Print a certificate for {child.nickname}&rsquo;s week of learning.
           </p>
@@ -229,8 +230,8 @@ function ChildReport({ child }: { child: ChildDashboard }) {
 
       {/* Suggested focus */}
       {child.focusSkills.length > 0 && (
-        <div className="mt-6 rounded-2xl border border-parent-sun-400/40 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
-          <h2 className="text-xl font-extrabold text-parent-sky-900">Suggested focus</h2>
+        <div className="card-kid mt-6 rounded-2xl border border-parent-sun-400/40 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
+          <h2 className="font-display text-xl font-extrabold text-parent-sky-900">Suggested focus</h2>
           <p className="mt-1 text-sm text-parent-ink-600">
             Skills {child.nickname} practiced recently that could use a little more time.
           </p>
@@ -248,8 +249,8 @@ function ChildReport({ child }: { child: ChildDashboard }) {
       )}
 
       {/* Per-skill mastery, grouped by island */}
-      <div className="mt-6 rounded-2xl border border-parent-sky-100 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
-        <h2 className="text-xl font-extrabold text-parent-sky-900">Skill mastery</h2>
+      <div className="mt-6 card-kid rounded-2xl border border-parent-sky-100 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
+        <h2 className="font-display text-xl font-extrabold text-parent-sky-900">Skill mastery</h2>
         <p className="mt-1 text-sm text-parent-ink-600">
           Every skill {child.nickname} has attempted, grouped by island. Levels run 1–5 per skill.
         </p>
@@ -275,8 +276,8 @@ function ChildReport({ child }: { child: ChildDashboard }) {
       </div>
 
       {/* Learning by subject (overview) */}
-      <div className="mt-6 rounded-2xl border border-parent-sky-100 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
-        <h2 className="text-xl font-extrabold text-parent-sky-900">Learning by subject</h2>
+      <div className="mt-6 card-kid rounded-2xl border border-parent-sky-100 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
+        <h2 className="font-display text-xl font-extrabold text-parent-sky-900">Learning by subject</h2>
         <p className="mt-1 text-sm text-parent-ink-600">
           Skills marked &ldquo;growing&rdquo; are proficient or mastered. Levels run 1–5 per skill.
         </p>
@@ -288,8 +289,8 @@ function ChildReport({ child }: { child: ChildDashboard }) {
       </div>
 
       {/* Recent activity */}
-      <div className="mt-6 rounded-2xl border border-parent-sky-100 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
-        <h2 className="text-xl font-extrabold text-parent-sky-900">Recent activity</h2>
+      <div className="mt-6 card-kid rounded-2xl border border-parent-sky-100 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
+        <h2 className="font-display text-xl font-extrabold text-parent-sky-900">Recent activity</h2>
         {child.recentMilestones.length === 0 ? (
           <p className="mt-2 text-parent-ink-600">No learning activity yet — fly to an island to begin!</p>
         ) : (
@@ -335,10 +336,12 @@ export default function Dashboard() {
   const active = children?.find((c) => c.id === activeId) ?? null;
 
   return (
-    <main className="mx-auto min-h-dvh w-full max-w-5xl px-6 py-10">
+    <main className="relative mx-auto min-h-dvh w-full max-w-5xl overflow-hidden px-6 py-10">
+      <SkyBackdrop />
+      <div className="relative z-10">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-parent-sky-900">Learning reports</h1>
+          <h1 className="font-display text-3xl font-extrabold tracking-tight text-parent-sky-900">Learning reports</h1>
           <p className="mt-1 text-parent-ink-600">Proof of learning, in plain language.</p>
         </div>
         <div className="flex gap-3">
@@ -373,11 +376,11 @@ export default function Dashboard() {
 
       {children && children.length === 0 && (
         <div className="mt-10 rounded-2xl border border-parent-sky-100 bg-white p-8 text-center">
-          <p className="text-xl font-extrabold text-parent-sky-900">No children yet</p>
+          <p className="font-display text-xl font-extrabold text-parent-sky-900">No children yet</p>
           <p className="mt-2 text-parent-ink-600">Add a child profile to start tracking learning.</p>
           <Link
             href="/onboarding/children"
-            className="mt-4 inline-block rounded-xl bg-parent-sky-600 px-6 py-3 font-bold text-white"
+            className="btn-kid btn-kid-sky mt-4"
           >
             Add a child
           </Link>
@@ -422,6 +425,7 @@ export default function Dashboard() {
           </div>
         </>
       )}
+      </div>
     </main>
   );
 }

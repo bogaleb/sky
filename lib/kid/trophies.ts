@@ -61,6 +61,9 @@ export const TROPHIES: Trophy[] = [
   { id: 'playground-first', name: 'Playground Pro', description: 'Played every pet playground game!', category: 'explorer', starBonus: 15, art: 'medal' },
   { id: 'fraction-first', name: 'Fraction Fan', description: 'Shared pizzas fairly at Fraction Fair!', category: 'explorer', starBonus: 10, art: 'star' },
   { id: 'avatar-first', name: 'Avatar Artist', description: 'Designed your very own avatar!', category: 'explorer', starBonus: 10, art: 'gem' },
+  { id: 'sentence-first', name: 'Sentence Scribe', description: 'Built super sentences in Sentence Studio!', category: 'explorer', starBonus: 10, art: 'star' },
+  { id: 'measure-first', name: 'Measure Master', description: 'Measured everything in Measure Meadow!', category: 'explorer', starBonus: 10, art: 'medal' },
+  { id: 'opposites-first', name: 'Opposites Ace', description: 'Mastered opposites in the Attic!', category: 'explorer', starBonus: 10, art: 'gem' },
   // Learner — practice and mastery
   { id: 'activities-10', name: 'Practice Pro', description: 'Finished 10 activities!', category: 'learner', starBonus: 10, art: 'medal' },
   { id: 'activities-50', name: 'Super Solver', description: 'Finished 50 activities!', category: 'learner', starBonus: 20, art: 'cup' },
@@ -125,4 +128,7 @@ export type TrophyEvent =
   | 'rhyme_done'
   | 'playground_done'
   | 'fraction_done'
-  | 'avatar_done';
+  | 'avatar_done'
+  | 'sentence_done'
+  | 'measure_done'
+  | 'opposites_done';

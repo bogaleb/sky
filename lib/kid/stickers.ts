@@ -88,6 +88,10 @@ export const STICKERS: Sticker[] = [
   { id: 'fraction-fan', name: 'Fraction Fan', description: 'Shared pizza fairly at Fraction Fair!', characterId: 'bea', colors: ['#FFD93D', '#E76F51'] },
   { id: 'cinema-critic', name: 'Cinema Critic', description: 'Watched the new Story Cinema episodes!', characterId: 'luna', colors: ['#9B7EDE', '#5BC8E8'] },
   { id: 'avatar-artist', name: 'Avatar Artist', description: 'Designed your own avatar!', characterId: 'curio', colors: ['#FF9A3D', '#9B7EDE'] },
+  // Wave 9 play & creativity
+  { id: 'sentence-scribe', name: 'Sentence Scribe', description: 'Built super sentences in Sentence Studio!', characterId: 'luna', colors: ['#9B7EDE', '#FFD93D'] },
+  { id: 'measure-master', name: 'Measure Master', description: 'Measured everything in Measure Meadow!', characterId: 'milo', colors: ['#5BC8E8', '#7ED6A5'] },
+  { id: 'opposites-ace', name: 'Opposites Ace', description: 'Mastered opposites in the Attic!', characterId: 'luna', colors: ['#6C4FD8', '#FF7BAC'] },
 ];
 
 export function getSticker(id: string): Sticker | undefined {

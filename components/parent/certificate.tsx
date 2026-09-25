@@ -82,11 +82,11 @@ export default function Certificate({
         <p className="text-sm font-extrabold uppercase tracking-[0.3em] text-parent-sky-700">
           Sky Learning
         </p>
-        <h2 className="mt-2 text-4xl font-black text-parent-ink-900 md:text-5xl">
+        <h2 className="font-display mt-2 text-4xl font-black text-parent-ink-900 md:text-5xl">
           Certificate of Achievement
         </h2>
         <p className="mt-4 text-parent-ink-600">This certificate is proudly presented to</p>
-        <p className="mt-2 text-3xl font-black text-parent-sky-900 md:text-4xl">{nickname}</p>
+        <p className="font-display mt-2 text-3xl font-black text-parent-sky-900 md:text-4xl">{nickname}</p>
         <p className="mx-auto mt-3 max-w-md text-parent-ink-600">
           for wonderful learning, curiosity, and persistence in the sky.
         </p>
@@ -119,7 +119,7 @@ export default function Certificate({
         <button
           type="button"
           onClick={print}
-          className="rounded-full bg-parent-sky-600 px-8 py-3 text-base font-extrabold text-white shadow-md transition-transform hover:scale-[1.03] active:scale-95"
+          className="btn-kid btn-kid-sky btn-kid-sm text-base"
         >
           Print certificate
         </button>
