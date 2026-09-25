@@ -84,6 +84,10 @@ export const STICKERS: Sticker[] = [
   { id: 'color-wizard', name: 'Color Wizard', description: 'Mixed magical colors!', characterId: 'bea', colors: ['#FF7BAC', '#9B7EDE'] },
   { id: 'rhyme-star', name: 'Rhyme Star', description: 'Rhymed words with Luna!', characterId: 'luna', colors: ['#9B7EDE', '#FFD93D'] },
   { id: 'playground-pro', name: 'Playground Pro', description: 'Played every pet playground game!', characterId: 'nova', colors: ['#FFB84D', '#7ED6A5'] },
+  // Wave 8 — fractions, cinema, avatars
+  { id: 'fraction-fan', name: 'Fraction Fan', description: 'Shared pizza fairly at Fraction Fair!', characterId: 'bea', colors: ['#FFD93D', '#E76F51'] },
+  { id: 'cinema-critic', name: 'Cinema Critic', description: 'Watched the new Story Cinema episodes!', characterId: 'luna', colors: ['#9B7EDE', '#5BC8E8'] },
+  { id: 'avatar-artist', name: 'Avatar Artist', description: 'Designed your own avatar!', characterId: 'curio', colors: ['#FF9A3D', '#9B7EDE'] },
 ];
 
 export function getSticker(id: string): Sticker | undefined {

@@ -20,13 +20,14 @@ function allScenes(): { episode: CinemaEpisode; sceneId: string; index: number }
 }
 
 describe('story cinema episodes', () => {
-  it('has exactly 4 episodes', () => {
-    expect(EPISODES.length).toBe(4);
+  it('has exactly 8 episodes', () => {
+    expect(EPISODES.length).toBe(8);
   });
 
-  it('gives every episode exactly 6 scenes', () => {
+  it('gives every episode 6 to 8 scenes', () => {
     for (const ep of EPISODES) {
-      expect(ep.scenes.length, `${ep.id} needs 6 scenes`).toBe(6);
+      expect(ep.scenes.length, `${ep.id} needs 6-8 scenes`).toBeGreaterThanOrEqual(6);
+      expect(ep.scenes.length, `${ep.id} needs 6-8 scenes`).toBeLessThanOrEqual(8);
     }
   });
 

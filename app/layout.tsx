@@ -1,5 +1,24 @@
 import type { Metadata, Viewport } from 'next';
+import { Fredoka, Nunito } from 'next/font/google';
 import './globals.css';
+
+/**
+ * Wave 8 design system: Fredoka (display) + Nunito (body).
+ * CSS variables --font-display / --font-body; .font-display utility in globals.css.
+ */
+const display = Fredoka({
+  subsets: ['latin'],
+  weight: ['600', '700'],
+  variable: '--font-display',
+  display: 'swap',
+});
+
+const bodyFont = Nunito({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-body',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'Sky — Learn through adventure',
@@ -14,7 +33,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${display.variable} ${bodyFont.variable}`}>
       <body>
         <link rel="manifest" href="/manifest.webmanifest" />
         <meta name="theme-color" content="#7CC4F2" />

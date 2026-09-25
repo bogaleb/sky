@@ -32,8 +32,12 @@ import FeelingsTheater from './feelings-theater';
 import ColorMixLab from './color-mix-lab';
 import RhymeTime from './rhyme-time';
 import PetPlayground from './pet-playground';
+import FractionFair from './fraction-fair';
+import AvatarStudio from './avatar-studio';
 import SplashIntro from './splash-intro';
 import StreakCalendar from './streak-calendar';
+// Wave 8 design fallback styles — dormant while Track A's design core is present.
+import { DesignFallbackStyles } from './design-fallback';
 import PhonicsFun from './phonics-fun';
 import Encyclopedia from './encyclopedia';
 import WelcomeQuest from './welcome-quest';
@@ -388,6 +392,8 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
   const [showColors, setShowColors] = useState(false);
   const [showRhymes, setShowRhymes] = useState(false);
   const [showPlayground, setShowPlayground] = useState(false);
+  const [showFractions, setShowFractions] = useState(false);
+  const [showAvatarStudio, setShowAvatarStudio] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
   const [showTrophies, setShowTrophies] = useState(false);
   const [talkWith, setTalkWith] = useState<string | null>(null);
@@ -649,27 +655,36 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
       <PhaseTransition transitionKey={phase} className="flex w-full flex-col items-center">
       {phase === 'intro' && <Intro child={child} onStart={() => setPhase('map')} />}
       {phase === 'map' && (
-        <div className="relative flex w-full flex-col items-center gap-5">
+        <>
+          <DesignFallbackStyles />
+          <div className="relative z-10 flex w-full flex-col items-center gap-5">
           <SeasonalDecor />
           <OfflineBanner />
           <TrailBanner trail={trailState} onStartQuest={() => void startTrailQuest()} starting={startingQuest} />
           {/* Sky Park: games, pets, trophies, and dress-up between quests. */}
-          <div className="flex w-full max-w-4xl flex-wrap items-stretch justify-center gap-3 px-4">
-            <PetWidget child={child} onOpen={() => setShowPet(true)} />
+          <section aria-label="Sky Park" className="glass-kid relative w-full max-w-5xl px-4 py-6 md:px-8 md:py-8">
+            <h2 className="font-display text-center text-2xl text-kid-ink-900 md:text-4xl">Sky Park</h2>
+            <p className="mt-1 text-center text-sm font-bold text-kid-ink-700 md:text-base">
+              Games, pets, trophies, and dress-up between quests
+            </p>
+            <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 md:gap-4">
+              <div className="col-span-2 sm:col-span-1">
+                <PetWidget child={child} onOpen={() => setShowPet(true)} />
+              </div>
             <button
               type="button"
               onClick={() => {
                 playSfx('pop');
                 setShowMemory(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-grape-400 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-grape group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <rect x="6" y="10" width="16" height="22" rx="4" fill="#fff" opacity="0.95" />
                 <rect x="26" y="10" width="16" height="22" rx="4" fill="#fff" opacity="0.6" />
                 <path d="M14 17l1.5 3.2 3.5.4-2.6 2.4.7 3.5-3.1-1.7-3.1 1.7.7-3.5-2.6-2.4 3.5-.4z" fill="#7C5CBF" />
               </svg>
-              <span className="text-lg font-black">Memory Cove</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Memory Cove</span>
               <span className="text-xs font-bold opacity-90">a matching game</span>
             </button>
             <button
@@ -678,16 +693,16 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
                 playSfx('pop');
                 setShowDressUp(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-sun-400 px-4 py-4 text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-coral group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <path d="M24 6l4 8h-8z" fill="#FF6B6B" />
                 <rect x="10" y="16" width="28" height="8" rx="4" fill="#FF6B6B" />
                 <circle cx="17" cy="30" r="6" fill="none" stroke="#17324F" strokeWidth="3" />
                 <circle cx="31" cy="30" r="6" fill="none" stroke="#17324F" strokeWidth="3" />
                 <line x1="23" y1="30" x2="25" y2="30" stroke="#17324F" strokeWidth="3" />
               </svg>
-              <span className="text-lg font-black">Dress Up</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Dress Up</span>
               <span className="text-xs font-bold opacity-80">spend your stars</span>
             </button>
             <button
@@ -696,15 +711,15 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
                 playSfx('pop');
                 setShowPattern(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-mint-400 px-4 py-4 text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-mint group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <circle cx="10" cy="24" r="6" fill="#fff" opacity="0.95" />
                 <path d="M22 18l6 12h-12z" fill="#fff" opacity="0.75" />
                 <rect x="32" y="18" width="11" height="11" rx="2" fill="#fff" opacity="0.95" />
                 <text x="30" y="44" fontSize="10" fontWeight="900" fill="#17324F">?</text>
               </svg>
-              <span className="text-lg font-black">Pattern Parade</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Pattern Parade</span>
               <span className="text-xs font-bold opacity-80">finish the pattern</span>
             </button>
             <button
@@ -713,13 +728,13 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
                 playSfx('pop');
                 setShowPuzzle(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-sky-400 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-sky group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <path d="M18 8h6v4a3 3 0 1 0 6 0V8h6v10h-4a3 3 0 1 0 0 6h4v10H18V8z" fill="#fff" opacity="0.95" transform="translate(-4 4)" />
                 <path d="M30 30h10v4h-4a3 3 0 1 0 0 6h4v2H30V30z" fill="#fff" opacity="0.6" />
               </svg>
-              <span className="text-lg font-black">Puzzle Reef</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Puzzle Reef</span>
               <span className="text-xs font-bold opacity-90">build the picture</span>
             </button>
             <button
@@ -728,29 +743,27 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
                 playSfx('fanfare');
                 setShowTrophies(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-sun-400 px-4 py-4 text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-grape group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <path d="M16 8h16v12a8 8 0 0 1-16 0V8z" fill="#fff" opacity="0.95" />
                 <path d="M16 12H9a7 7 0 0 0 9 9M32 12h7a7 7 0 0 1-9 9" fill="none" stroke="#fff" strokeWidth="3.5" opacity="0.9" />
                 <rect x="22" y="28" width="4" height="7" fill="#fff" opacity="0.95" />
                 <rect x="16" y="35" width="16" height="5" rx="2.5" fill="#fff" opacity="0.95" />
                 <path d="M24 12l1.4 2.9 3.2.4-2.3 2.2.6 3.1-2.9-1.5-2.9 1.5.6-3.1-2.3-2.2 3.2-.4z" fill="#FFD93C" />
               </svg>
-              <span className="text-lg font-black">Trophies</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Trophies</span>
               <span className="text-xs font-bold opacity-80">my trophy shelf</span>
             </button>
-          </div>
-          <div className="mt-3 flex flex-wrap gap-2 md:gap-3">
             <button
               type="button"
               onClick={() => {
                 playSfx('pop');
                 setShowWords(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-grape-300 px-4 py-4 text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-sky group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <rect x="6" y="26" width="10" height="10" rx="2.5" fill="#fff" opacity="0.95" />
                 <rect x="19" y="26" width="10" height="10" rx="2.5" fill="#fff" opacity="0.75" />
                 <rect x="32" y="26" width="10" height="10" rx="2.5" fill="#fff" opacity="0.95" />
@@ -759,7 +772,7 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
                 <text x="34" y="34.5" fontSize="9" fontWeight="900" fill="#7C5CBF">C</text>
                 <path d="M24 6l2.5 5 5.5.8-4 3.9 1 5.5-5-2.6-5 2.6 1-5.5-4-3.9 5.5-.8z" fill="#FFD93C" />
               </svg>
-              <span className="text-lg font-black">Word Builder</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Word Builder</span>
               <span className="text-xs font-bold opacity-80">spell magic words</span>
             </button>
             <button
@@ -768,16 +781,16 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
                 playSfx('pop');
                 setShowNumbers(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-mint-300 px-4 py-4 text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-mint group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <rect x="4" y="34" width="40" height="5" rx="2.5" fill="#fff" opacity="0.6" />
                 <text x="8" y="26" fontSize="12" fontWeight="900" fill="#fff">3</text>
                 <text x="21" y="26" fontSize="12" fontWeight="900" fill="#fff">+</text>
                 <text x="33" y="26" fontSize="12" fontWeight="900" fill="#fff">4</text>
                 <path d="M24 2l3 6.5L34 9l-5 4.7 1.2 6.8L24 17.4l-6.2 3.1L19 13.7 14 9l7-.5z" fill="#FFD93C" />
               </svg>
-              <span className="text-lg font-black">Number Run</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Number Run</span>
               <span className="text-xs font-bold opacity-80">race with math</span>
             </button>
             <button
@@ -786,16 +799,16 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
                 playSfx('pop');
                 setShowCinema(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-coral-300 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-coral group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <rect x="6" y="10" width="36" height="24" rx="4" fill="#17324F" opacity="0.9" />
                 <rect x="9" y="13" width="30" height="18" rx="2" fill="#FFD93C" opacity="0.95" />
                 <path d="M21 17l8 4.5-8 4.5z" fill="#17324F" />
                 <rect x="20" y="34" width="8" height="4" rx="2" fill="#fff" opacity="0.95" />
                 <rect x="14" y="38" width="20" height="3" rx="1.5" fill="#fff" opacity="0.75" />
               </svg>
-              <span className="text-lg font-black">Story Cinema</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Story Cinema</span>
               <span className="text-xs font-bold opacity-90">watch cartoons</span>
             </button>
             <button
@@ -804,16 +817,16 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
                 playSfx('pop');
                 setShowStudio(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-sun-300 px-4 py-4 text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-grape group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <path d="M10 38c8-1 24-9 28-26l-8-3c-9 12-16 20-24 22z" fill="#FF8C42" />
                 <path d="M38 9l3-3 3 3-3 3z" fill="#17324F" />
                 <path d="M8 40l4 2-2 4-4-2z" fill="#17324F" />
                 <circle cx="16" cy="36" r="2.5" fill="#3B82F6" />
                 <circle cx="22" cy="33" r="2.5" fill="#22C55E" />
               </svg>
-              <span className="text-lg font-black">Creative Studio</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Creative Studio</span>
               <span className="text-xs font-bold opacity-80">draw and color</span>
             </button>
             <button
@@ -822,33 +835,31 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
                 playSfx('whoosh');
                 setShowBedtime(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-night-600 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-sky group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <path d="M32 6a16 16 0 1 0 10 28A18 18 0 0 1 32 6z" fill="#FFE66D" />
                 <path d="M14 12l1.2 2.6 2.8.4-2 2 .5 2.8-2.5-1.3-2.5 1.3.5-2.8-2-2 2.8-.4z" fill="#fff" opacity="0.95" />
                 <path d="M40 30l.9 2 2.2.3-1.6 1.5.4 2.2-2-1-2 1 .4-2.2-1.6-1.5 2.2-.3z" fill="#fff" opacity="0.8" />
               </svg>
-              <span className="text-lg font-black">Bedtime</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Bedtime</span>
               <span className="text-xs font-bold opacity-90">wind down</span>
             </button>
-          </div>
-          <div className="mt-3 flex flex-wrap gap-2 md:gap-3">
             <button
               type="button"
               onClick={() => {
                 playSfx('pop');
                 setShowWriting(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-sky-300 px-4 py-4 text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-mint group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <path d="M10 36L34 12l4 4L14 40l-6 2z" fill="#17324F" />
                 <path d="M34 12l2-2 4 4-2 2z" fill="#FF8C42" />
                 <path d="M8 38l6-1-5-5z" fill="#17324F" />
                 <text x="30" y="42" fontSize="10" fontWeight="900" fill="#17324F">Aa</text>
               </svg>
-              <span className="text-lg font-black">Letter Lab</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Letter Lab</span>
               <span className="text-xs font-bold opacity-80">trace your ABCs</span>
             </button>
             <button
@@ -857,14 +868,14 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
                 playSfx('pop');
                 setShowGeography(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-mint-400 px-4 py-4 text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-coral group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <circle cx="24" cy="24" r="16" fill="#3B82F6" />
                 <path d="M14 20c4-5 10-7 14-5s8 1 8 5-4 6-8 6-6 4-10 2-6-4-4-8z" fill="#22C55E" />
                 <path d="M30 12l2 3-2 3-2-3z" fill="#FFE66D" />
               </svg>
-              <span className="text-lg font-black">World Tour</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">World Tour</span>
               <span className="text-xs font-bold opacity-80">explore with Atlas</span>
             </button>
             <button
@@ -873,15 +884,15 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
                 playSfx('pop');
                 setShowRhythm(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-grape-400 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-grape group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <circle cx="16" cy="34" r="9" fill="#fff" opacity="0.95" />
                 <circle cx="32" cy="30" r="9" fill="#fff" opacity="0.7" />
                 <rect x="23" y="8" width="4" height="14" rx="2" fill="#fff" opacity="0.95" transform="rotate(15 25 15)" />
                 <rect x="33" y="6" width="4" height="14" rx="2" fill="#fff" opacity="0.75" transform="rotate(-12 35 13)" />
               </svg>
-              <span className="text-lg font-black">Rhythm Studio</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Rhythm Studio</span>
               <span className="text-xs font-bold opacity-90">tap the beat</span>
             </button>
             <button
@@ -890,34 +901,32 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
                 playSfx('pop');
                 setShowScience(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-coral-400 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-sky group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <path d="M20 6h8v10l8 18a6 6 0 0 1-5.5 8h-13A6 6 0 0 1 12 34l8-18z" fill="#fff" opacity="0.95" />
                 <path d="M17 32h14l2.5 4.5a3 3 0 0 1-2.7 4.5H17.2a3 3 0 0 1-2.7-4.5z" fill="#22C55E" />
                 <circle cx="22" cy="28" r="2" fill="#fff" opacity="0.8" />
                 <circle cx="27" cy="30" r="1.6" fill="#fff" opacity="0.8" />
               </svg>
-              <span className="text-lg font-black">Science Lab</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Science Lab</span>
               <span className="text-xs font-bold opacity-90">try experiments</span>
             </button>
-          </div>
-          <div className="mt-3 flex flex-wrap gap-2 md:gap-3">
             <button
               type="button"
               onClick={() => {
                 playSfx('pop');
                 setShowCoding(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-night-500 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-mint group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <rect x="8" y="10" width="32" height="28" rx="6" fill="#fff" opacity="0.95" />
                 <path d="M17 20l-5 4 5 4" fill="none" stroke="#17324F" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
                 <path d="M31 20l5 4-5 4" fill="none" stroke="#17324F" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
                 <rect x="14" y="40" width="20" height="4" rx="2" fill="#fff" opacity="0.7" />
               </svg>
-              <span className="text-lg font-black">Coding Cove</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Coding Cove</span>
               <span className="text-xs font-bold opacity-90">guide Milo home</span>
             </button>
             <button
@@ -926,16 +935,16 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
                 playSfx('pop');
                 setShowPhonics(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-coral-400 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-coral group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <rect x="6" y="14" width="15" height="15" rx="3" fill="#fff" opacity="0.95" />
                 <rect x="27" y="14" width="15" height="15" rx="3" fill="#fff" opacity="0.7" />
                 <text x="9.5" y="26.5" fontSize="11" fontWeight="900" fill="#D64545">sh</text>
                 <text x="31" y="26.5" fontSize="11" fontWeight="900" fill="#17324F">op</text>
                 <path d="M14 34q4 4 8 0M26 34q4 4 8 0" stroke="#fff" strokeWidth="2.5" fill="none" strokeLinecap="round" opacity="0.9" />
               </svg>
-              <span className="text-lg font-black">Phonics Fun</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Phonics Fun</span>
               <span className="text-xs font-bold opacity-90">blend the sounds</span>
             </button>
             <button
@@ -944,35 +953,33 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
                 playSfx('pop');
                 setShowEncyclopedia(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-mint-500 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-sky group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <path d="M8 12q8-3 16 0v24q-8-3-16 0z" fill="#fff" opacity="0.95" />
                 <path d="M40 12q-8-3-16 0v24q8-3 16 0z" fill="#fff" opacity="0.7" />
                 <circle cx="24" cy="22" r="6" fill="#22C55E" />
                 <circle cx="22" cy="20" r="2" fill="#17324F" />
                 <path d="M20 26q4 3 8 0" stroke="#17324F" strokeWidth="2" fill="none" strokeLinecap="round" />
               </svg>
-              <span className="text-lg font-black">Animal Book</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Animal Book</span>
               <span className="text-xs font-bold opacity-90">collect critters</span>
             </button>
-          </div>
-          <div className="mt-3 flex flex-wrap gap-2 md:gap-3">
             <button
               type="button"
               onClick={() => {
                 playSfx('pop');
                 setShowTime(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-sky-500 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-grape group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <circle cx="24" cy="24" r="17" fill="#fff" opacity="0.95" />
                 <circle cx="24" cy="24" r="17" fill="none" stroke="#0B5E8A" strokeWidth="4" />
                 <path d="M24 24V13M24 24l7 5" stroke="#0B5E8A" strokeWidth="4" strokeLinecap="round" />
                 <circle cx="24" cy="24" r="3" fill="#0B5E8A" />
               </svg>
-              <span className="text-lg font-black">Clock Tower</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Clock Tower</span>
               <span className="text-xs font-bold opacity-90">tell the time</span>
             </button>
             <button
@@ -981,16 +988,16 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
                 playSfx('pop');
                 setShowMoney(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-sun-400 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-mint group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <ellipse cx="24" cy="34" rx="13" ry="5" fill="#fff" opacity="0.7" />
                 <ellipse cx="24" cy="27" rx="13" ry="5" fill="#fff" opacity="0.85" />
                 <ellipse cx="24" cy="20" rx="13" ry="5" fill="#fff" opacity="0.95" />
                 <ellipse cx="24" cy="20" rx="13" ry="5" fill="none" stroke="#B45309" strokeWidth="2.5" />
                 <text x="24" y="25" fontSize="11" fontWeight="900" fill="#B45309" textAnchor="middle">25</text>
               </svg>
-              <span className="text-lg font-black">Coin Cove</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Coin Cove</span>
               <span className="text-xs font-bold opacity-90">count coins</span>
             </button>
             <button
@@ -999,15 +1006,15 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
                 playSfx('pop');
                 setShowMovies(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-grape-500 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-coral group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <rect x="7" y="14" width="34" height="26" rx="5" fill="#fff" opacity="0.95" />
                 <rect x="7" y="8" width="34" height="8" rx="3" fill="#fff" opacity="0.7" />
                 <path d="M10 8l4 8M18 8l4 8M26 8l4 8M34 8l4 8" stroke="#6D28D9" strokeWidth="2.5" />
                 <path d="M20 21l10 6-10 6z" fill="#6D28D9" />
               </svg>
-              <span className="text-lg font-black">Movie Studio</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Movie Studio</span>
               <span className="text-xs font-bold opacity-90">direct cartoons</span>
             </button>
             <button
@@ -1016,34 +1023,32 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
                 playSfx('pop');
                 setShowHomes(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-coral-500 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-sky group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <path d="M6 24L24 8l18 16" fill="none" stroke="#fff" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
                 <rect x="12" y="22" width="24" height="17" rx="3" fill="#fff" opacity="0.95" />
                 <rect x="21" y="30" width="6" height="9" rx="2" fill="#C2410C" />
                 <circle cx="24" cy="18" r="4" fill="#FDE68A" />
               </svg>
-              <span className="text-lg font-black">Character Homes</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Character Homes</span>
               <span className="text-xs font-bold opacity-90">visit friends</span>
             </button>
-          </div>
-          <div className="mt-3 flex flex-wrap gap-2 md:gap-3">
             <button
               type="button"
               onClick={() => {
                 playSfx('pop');
                 setShowFeelings(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-mint-500 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-mint group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <circle cx="24" cy="24" r="16" fill="#fff" opacity="0.95" />
                 <circle cx="18" cy="21" r="2.5" fill="#0D7C5F" />
                 <circle cx="30" cy="21" r="2.5" fill="#0D7C5F" />
                 <path d="M16 30q8 8 16 0" stroke="#0D7C5F" strokeWidth="3.5" fill="none" strokeLinecap="round" />
               </svg>
-              <span className="text-lg font-black">Feelings Theater</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Feelings Theater</span>
               <span className="text-xs font-bold opacity-90">name big feelings</span>
             </button>
             <button
@@ -1052,15 +1057,15 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
                 playSfx('pop');
                 setShowColors(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-grape-400 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-grape group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <circle cx="18" cy="20" r="9" fill="#EF4444" opacity="0.95" />
                 <circle cx="30" cy="20" r="9" fill="#3B82F6" opacity="0.95" />
                 <circle cx="24" cy="33" r="10" fill="#8B5CF6" opacity="0.95" />
                 <path d="M18 29q6 4 12 0" stroke="#fff" strokeWidth="2.5" fill="none" strokeLinecap="round" />
               </svg>
-              <span className="text-lg font-black">Color Mix Lab</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Color Mix Lab</span>
               <span className="text-xs font-bold opacity-90">mix magic colors</span>
             </button>
             <button
@@ -1069,15 +1074,15 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
                 playSfx('pop');
                 setShowRhymes(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-coral-400 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-coral group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <rect x="8" y="12" width="32" height="10" rx="5" fill="#fff" opacity="0.95" />
                 <rect x="8" y="26" width="32" height="10" rx="5" fill="#fff" opacity="0.7" />
                 <text x="24" y="20.5" fontSize="9" fontWeight="900" fill="#C2410C" textAnchor="middle">cat</text>
                 <text x="24" y="34.5" fontSize="9" fontWeight="900" fill="#7C2D12" textAnchor="middle">hat</text>
               </svg>
-              <span className="text-lg font-black">Rhyme Time</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Rhyme Time</span>
               <span className="text-xs font-bold opacity-90">words that chime</span>
             </button>
             <button
@@ -1086,19 +1091,60 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
                 playSfx('pop');
                 setShowPlayground(true);
               }}
-              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-sun-500 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="btn-kid btn-kid-sky group"
             >
-              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
                 <rect x="6" y="28" width="36" height="6" rx="3" fill="#fff" opacity="0.9" />
                 <circle cx="14" cy="20" r="8" fill="#fff" opacity="0.95" />
                 <path d="M10 20a4 4 0 008 0 4 4 0 00-8 0" fill="#B45309" />
                 <rect x="28" y="10" width="14" height="14" rx="4" fill="#fff" opacity="0.7" />
                 <circle cx="35" cy="17" r="4" fill="#B45309" opacity="0.8" />
               </svg>
-              <span className="text-lg font-black">Pet Playground</span>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Pet Playground</span>
               <span className="text-xs font-bold opacity-90">play with your pet</span>
             </button>
-          </div>
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowFractions(true);
+              }}
+              className="btn-kid btn-kid-coral group"
+            >
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
+                <circle cx="24" cy="24" r="16" fill="#F5C66B" />
+                <path d="M24 8a16 16 0 010 32z" fill="#E2574C" opacity="0.85" />
+                <circle cx="24" cy="24" r="16" fill="none" stroke="#B45309" strokeWidth="2.5" />
+                <line x1="24" y1="8" x2="24" y2="40" stroke="#B45309" strokeWidth="2.5" />
+                <circle cx="15" cy="18" r="2.2" fill="#fff" opacity="0.9" />
+                <circle cx="14" cy="30" r="2.2" fill="#fff" opacity="0.9" />
+                <circle cx="32" cy="24" r="2.2" fill="#fff" opacity="0.9" />
+              </svg>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">Fraction Fair</span>
+              <span className="text-xs font-bold opacity-90">halves, thirds, quarters</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowAvatarStudio(true);
+              }}
+              className="btn-kid btn-kid-grape group"
+            >
+              <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_12px_rgba(23,50,79,0.3)] transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-3 md:h-14 md:w-14" aria-hidden>
+                <circle cx="24" cy="25" r="14" fill="#FFE3B3" />
+                <path d="M10 22a14 14 0 0128 0v-2a14 8 0 00-28 0z" fill="#7C5CBF" />
+                <circle cx="18.5" cy="25" r="2.6" fill="#17324F" />
+                <circle cx="29.5" cy="25" r="2.6" fill="#17324F" />
+                <path d="M18 32a6 6 0 0012 0" fill="none" stroke="#17324F" strokeWidth="2.5" strokeLinecap="round" />
+                <circle cx="13" cy="29" r="2.4" fill="#FF9AA2" opacity="0.8" />
+                <circle cx="35" cy="29" r="2.4" fill="#FF9AA2" opacity="0.8" />
+              </svg>
+              <span className="font-display text-lg font-black leading-tight md:text-xl">My Look</span>
+              <span className="text-xs font-bold opacity-90">design your avatar</span>
+            </button>
+            </div>
+          </section>
           <UpNext
             childId={child.id}
             onPracticeIsland={(islandId) => {
@@ -1107,7 +1153,7 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
             }}
             onStartTrail={() => void startTrailQuest()}
           />
-          <div className="flex w-full max-w-4xl flex-wrap items-stretch justify-center gap-3 px-4">
+          <div className="glass-kid flex w-full max-w-4xl flex-wrap items-stretch justify-center gap-3 px-4 py-4">
             <GoalMeter childId={child.id} />
             <DailyGift childId={child.id} nickname={child.nickname} />
             <ShowdownCard childId={child.id} />
@@ -1123,7 +1169,8 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
             stickerCount={stickerIds.length}
             stickerTotal={STICKERS.length}
           />
-        </div>
+          </div>
+        </>
       )}
       {showMemory && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
@@ -1234,6 +1281,16 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
       {showPlayground && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
           <PetPlayground childId={child.id} onExit={() => setShowPlayground(false)} />
+        </div>
+      )}
+      {showFractions && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <FractionFair childId={child.id} nickname={child.nickname} onExit={() => setShowFractions(false)} />
+        </div>
+      )}
+      {showAvatarStudio && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <AvatarStudio childId={child.id} onExit={() => setShowAvatarStudio(false)} />
         </div>
       )}
       {showWelcome && (

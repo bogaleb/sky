@@ -4,7 +4,7 @@ import { requireParent } from '@/lib/auth';
 import { selectProfile } from '@/app/actions/profiles';
 import { signOut } from '@/app/actions/auth';
 import { AVATARS } from '@/components/avatars';
-import { AvatarWithOutfit } from '@/components/kid/dress-up';
+import ProfileAvatar from '@/components/kid/profile-avatar';
 import { getEquippedOutfits } from '@/app/actions/outfits';
 import { Button } from '@/components/ui';
 
@@ -61,9 +61,10 @@ export default async function ProfilesPage() {
                 aria-label={`Play as ${child.nickname}`}
                 className="group flex w-full flex-col items-center gap-3 rounded-parent-card border border-parent-sky-100 bg-white p-6 shadow-[0_8px_30px_rgba(18,60,96,0.08)] transition-transform hover:-translate-y-1 hover:shadow-[0_14px_36px_rgba(18,60,96,0.14)]"
               >
-                <AvatarWithOutfit
+                <ProfileAvatar
+                  childId={child.id}
                   avatarId={child.avatar_id}
-                  outfitId={outfitsByChild.get(child.id) ?? []}
+                  outfitIds={outfitsByChild.get(child.id) ?? []}
                   className="h-24 w-24 transition-transform group-hover:scale-105 sm:h-28 sm:w-28"
                 />
                 <span className="text-xl font-extrabold text-parent-ink-900">

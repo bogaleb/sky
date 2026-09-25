@@ -139,21 +139,37 @@ function IslandCard({
         playSfx('whoosh');
         onSelect(island);
       }}
-      className="kid-island-card animate-kid-rise group relative w-full text-left"
+      className="kid-island-card card-kid group relative w-full animate-kid-rise p-3 text-left transition-all duration-300 motion-safe:hover:-translate-y-2 motion-safe:hover:shadow-[0_28px_55px_-14px_rgba(23,50,79,0.5)] motion-safe:hover:[transform:perspective(900px)_rotateY(6deg)_rotateX(-5deg)_translateY(-8px)]"
       style={{ animationDelay: `${index * 0.07}s` }}
       aria-label={`Visit ${island.islandName} for ${island.subjectName} with ${host.name}${progress ? `, ${progress.mastered} of ${progress.total} skills growing` : ''}`}
     >
-      <svg viewBox="0 0 120 110" className="w-full" role="img" aria-hidden="true">
+      {/* per-island glow aura */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -inset-2 rounded-[2rem] opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-70 motion-reduce:transition-none"
+        style={{ background: `radial-gradient(circle at 50% 40%, ${island.color}66, transparent 70%)` }}
+      />
+      <svg viewBox="0 0 120 110" className="relative w-full" role="img" aria-hidden="true">
         <defs>
           <linearGradient id={`isl-${island.subjectCode}`} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stopColor={island.sky[0]} />
             <stop offset="1" stopColor={island.sky[1]} />
           </linearGradient>
+          <radialGradient id={`isl-glow-${island.subjectCode}`} cx="0.5" cy="0.35" r="0.8">
+            <stop offset="0" stopColor="#ffffff" stopOpacity="0.85" />
+            <stop offset="1" stopColor="#ffffff" stopOpacity="0" />
+          </radialGradient>
+          <linearGradient id={`ring-${island.subjectCode}`} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor={island.color} />
+            <stop offset="1" stopColor="#FFD93C" />
+          </linearGradient>
         </defs>
         {/* island body */}
         <ellipse cx="60" cy="72" rx="52" ry="16" fill={`url(#isl-${island.subjectCode})`} />
         <path d="M14 74 Q60 108 106 74 Q60 84 14 74" fill={island.color} opacity="0.55" />
-        <ellipse cx="60" cy="70" rx="52" ry="14" fill="#ffffff" opacity="0.25" />
+        {/* gradient art header: sky dome highlight */}
+        <ellipse cx="60" cy="70" rx="52" ry="14" fill={`url(#isl-glow-${island.subjectCode})`} />
+        <ellipse cx="60" cy="70" rx="52" ry="14" fill="#ffffff" opacity="0.12" />
         {/* motif */}
         <IslandMotif motif={island.motif} color={island.color} />
         {/* waving flag — idle animation only */}
@@ -171,21 +187,31 @@ function IslandCard({
           <HostAvatar className="h-16 w-16 drop-shadow-[0_8px_14px_rgba(23,50,79,0.35)] md:h-20 md:w-20" />
         </div>
       </div>
-      <div className="mt-1 text-center">
-        <p className="text-base font-black text-kid-ink-900 md:text-lg">{island.islandName}</p>
+      <div className="relative mt-1 text-center">
+        <p className="font-display text-base text-kid-ink-900 md:text-lg">{island.islandName}</p>
         <p className="text-sm font-bold" style={{ color: island.color }}>
           {island.subjectName} · {host.name}
         </p>
         {progress && progress.total > 0 && (
-          <div className="mx-auto mt-1.5 w-full max-w-[140px]" aria-hidden="true">
-            <div className="h-2.5 overflow-hidden rounded-full bg-white/60 shadow-inner">
-              <div
-                className="h-full rounded-full transition-all duration-700"
-                style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${island.color}, #FFD93C)` }}
+          <div className="mx-auto mt-2 flex items-center justify-center gap-2" aria-hidden="true">
+            <svg width="46" height="46" viewBox="0 0 46 46" className="-rotate-90">
+              <circle cx="23" cy="23" r="18" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="6" />
+              <circle
+                cx="23"
+                cy="23"
+                r="18"
+                fill="none"
+                stroke={`url(#ring-${island.subjectCode})`}
+                strokeWidth="6"
+                strokeLinecap="round"
+                strokeDasharray={`${((pct / 100) * 2 * Math.PI * 18).toFixed(1)} ${(2 * Math.PI * 18).toFixed(1)}`}
+                className="transition-all duration-700"
               />
-            </div>
-            <p className="mt-0.5 text-[11px] font-extrabold text-kid-ink-700">
-              {progress.mastered}/{progress.total} growing
+            </svg>
+            <p className="text-left text-[11px] font-extrabold leading-tight text-kid-ink-700">
+              {progress.mastered}/{progress.total}
+              <br />
+              growing
             </p>
           </div>
         )}
@@ -223,7 +249,7 @@ export default function SkyMap({
       {/* near-field drifting clouds for parallax depth */}
       <MapCloud top="2%" scale={0.5} duration={74} delay={-18} opacity={0.75} />
       <MapCloud top="12%" scale={0.38} duration={98} delay={-52} opacity={0.6} />
-      <h1 className="animate-kid-rise text-center text-3xl font-black text-kid-ink-900 md:text-5xl">
+      <h1 className="font-display animate-kid-rise text-center text-3xl text-kid-ink-900 md:text-5xl">
         Where to, {nickname}?
       </h1>
       <p className="animate-kid-rise mt-2 text-center text-lg font-bold text-kid-ink-700 md:text-xl" style={{ animationDelay: '0.1s' }}>
@@ -238,16 +264,16 @@ export default function SkyMap({
             speakAs('curio', "Ooh, a mystery adventure! Let's see where the wind takes us!");
             onSurprise();
           }}
-          className="group flex items-center gap-3 rounded-full border-b-8 border-kid-sun-600 bg-kid-sun-400 px-10 py-4 text-2xl font-black text-kid-ink-900 shadow-[0_14px_30px_rgba(255,201,60,0.45)] transition-all hover:scale-105 active:scale-95"
+          className="btn-kid btn-kid-sky group px-10 py-5"
         >
-          <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="transition-transform duration-500 group-hover:rotate-180">
+          <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="transition-transform duration-500 group-hover:rotate-180">
             <rect x="3" y="3" width="18" height="18" rx="5" />
             <circle cx="8.5" cy="8.5" r="1.4" fill="currentColor" stroke="none" />
             <circle cx="15.5" cy="15.5" r="1.4" fill="currentColor" stroke="none" />
             <circle cx="15.5" cy="8.5" r="1.4" fill="currentColor" stroke="none" />
             <circle cx="8.5" cy="15.5" r="1.4" fill="currentColor" stroke="none" />
           </svg>
-          Surprise me!
+          <span className="font-display text-2xl">Surprise me!</span>
         </button>
         {onOpenStickers && (
           <button
@@ -256,15 +282,17 @@ export default function SkyMap({
               playSfx('pop');
               onOpenStickers();
             }}
-            className="flex items-center gap-2 rounded-full border-b-8 border-kid-grape-600 bg-kid-grape-400 px-8 py-4 text-xl font-black text-white shadow-[0_14px_30px_rgba(23,50,79,0.25)] transition-all hover:scale-105 active:scale-95"
+            className="btn-kid btn-kid-grape group px-8 py-5"
           >
-            <svg width="26" height="26" viewBox="0 0 64 64" aria-hidden="true">
+            <svg width="30" height="30" viewBox="0 0 64 64" aria-hidden="true">
               <rect x="10" y="14" width="44" height="38" rx="6" fill="#fff" opacity="0.95" />
               <rect x="16" y="8" width="32" height="10" rx="3" fill="#FFD93C" />
               <circle cx="32" cy="34" r="9" fill="#FFD93C" />
               <path d="M32 29l1.8 3.6 4 .6-2.9 2.8.7 4-3.6-1.9-3.6 1.9.7-4-2.9-2.8 4-.6z" fill="#fff" />
             </svg>
-            My stickers{stickerCount !== undefined && stickerTotal !== undefined ? ` (${stickerCount}/${stickerTotal})` : ''}
+            <span className="font-display text-xl">
+              My stickers{stickerCount !== undefined && stickerTotal !== undefined ? ` (${stickerCount}/${stickerTotal})` : ''}
+            </span>
           </button>
         )}
       </div>
@@ -283,7 +311,7 @@ export default function SkyMap({
 
       {onTalkToCharacter && (
         <div className="mt-8 flex w-full max-w-4xl flex-col items-center">
-          <p className="text-xl font-black text-kid-ink-900 md:text-2xl">Say hello to a friend!</p>
+          <p className="font-display text-xl text-kid-ink-900 md:text-2xl">Say hello to a friend!</p>
           <p className="mt-1 text-sm font-bold text-kid-ink-700">Tap a friend to hear a joke, a fun fact, or a cheer.</p>
           <div className="mt-3 flex w-full flex-wrap items-start justify-center gap-3">
             {Object.keys(CHATTER).map((characterId, i) => {
@@ -297,14 +325,14 @@ export default function SkyMap({
                     playSfx('pop');
                     onTalkToCharacter(characterId);
                   }}
-                  className="animate-kid-rise group flex w-20 flex-col items-center gap-1 rounded-kid-card bg-white/70 px-2 py-3 shadow-md transition-transform hover:scale-105 active:scale-95 md:w-24"
+                  className="glass-kid animate-kid-rise group flex w-20 flex-col items-center gap-1 px-2 py-3 transition-transform hover:scale-105 active:scale-95 md:w-24"
                   style={{ animationDelay: `${i * 0.05}s` }}
                   aria-label={`Talk to ${character.name}`}
                 >
                   <div className="animate-kid-bob" style={{ animationDelay: `${i * 0.35}s` }}>
-                    <Avatar className="h-12 w-12 drop-shadow-[0_6px_10px_rgba(23,50,79,0.3)] transition-transform duration-300 group-hover:scale-110 md:h-14 md:w-14" />
+                    <Avatar className="h-14 w-14 drop-shadow-[0_6px_10px_rgba(23,50,79,0.3)] transition-transform duration-300 group-hover:scale-110 md:h-16 md:w-16" />
                   </div>
-                  <span className="text-xs font-black text-kid-ink-900 md:text-sm">{character.name}</span>
+                  <span className="font-display text-xs text-kid-ink-900 md:text-sm">{character.name}</span>
                 </button>
               );
             })}

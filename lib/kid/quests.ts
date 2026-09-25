@@ -36,6 +36,7 @@ const QUEST_POOL: QuestDef[] = [
   { id: 'color_game', title: 'Color Scientist', detail: 'Mix colors in the Color Mix Lab', goal: 1, unit: 'session', stars: 12 },
   { id: 'rhyme_game', title: 'Rhyme Star', detail: 'Rhyme words with Luna', goal: 1, unit: 'session', stars: 12 },
   { id: 'pet_play', title: 'Pet Playdate', detail: 'Play all 3 playground games with your pet', goal: 1, unit: 'playdate', stars: 12 },
+  { id: 'fraction_game', title: 'Fraction Fan', detail: 'Share pizzas fairly at Fraction Fair', goal: 1, unit: 'session', stars: 12 },
   { id: 'perfect_3', title: 'Sharpshooter', detail: 'Get 3 answers right in a row', goal: 3, unit: 'in a row', stars: 12 },
   { id: 'pet_fed', title: 'Good Friend', detail: 'Feed your pet', goal: 1, unit: 'meal', stars: 8 },
   { id: 'story_read', title: 'Bookworm', detail: 'Read a storybook tale', goal: 1, unit: 'story', stars: 8 },

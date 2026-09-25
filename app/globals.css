@@ -409,3 +409,150 @@ body {
     animation: none;
   }
 }
+
+/* ---- Wave 8 design system core (append-only; existing classes untouched) ----
+   CONTRACT: .font-display, .glass-kid, .btn-kid (+ .btn-kid-coral/.btn-kid-sky/
+   .btn-kid-mint/.btn-kid-grape, .btn-kid-sm), .card-kid, <SkyBackdrop />,
+   keyframes kid-aurora + kid-float-slow (kid-twinkle / kid-shimmer already
+   exist). See lib/kid/design.ts for the full contract. */
+
+/* Body font becomes Nunito once next/font sets --font-body on <html>. */
+body {
+  font-family: var(--font-body, var(--font-sans));
+}
+
+@layer components {
+  /* Fredoka display headings. */
+  .font-display {
+    font-family: var(--font-display, var(--font-sans));
+    letter-spacing: 0.01em;
+  }
+
+  /* Glassmorphism card: frosted white, hairline highlight border, soft shadow. */
+  .glass-kid {
+    background: rgba(255, 255, 255, 0.45);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: var(--radius-kid-card);
+    box-shadow:
+      0 12px 32px rgba(23, 50, 79, 0.14),
+      inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  }
+
+  /* Modern chunky button: bright gradient, 3D bottom edge, glow, press dip. */
+  .btn-kid {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: var(--font-display, var(--font-sans));
+    font-weight: 700;
+    font-size: 1.125rem;
+    line-height: 1.2;
+    color: #fff;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.12);
+    padding: 0.9rem 1.75rem;
+    border-radius: var(--radius-kid-pill);
+    border-bottom-width: 8px;
+    border-bottom-style: solid;
+    border-bottom-color: #1d7aa8;
+    background: linear-gradient(180deg, var(--color-kid-sky-400) 0%, var(--color-kid-sky-600) 100%);
+    box-shadow:
+      0 10px 24px rgba(23, 50, 79, 0.28),
+      0 0 20px rgba(124, 196, 242, 0.45);
+    cursor: pointer;
+    transition: transform 0.1s ease, border-bottom-width 0.1s ease, box-shadow 0.15s ease, filter 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-kid:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+  }
+  .btn-kid:active {
+    transform: translateY(5px);
+    border-bottom-width: 2px;
+    box-shadow: 0 4px 10px rgba(23, 50, 79, 0.25);
+  }
+  .btn-kid:focus-visible {
+    outline: 4px solid var(--color-kid-sun-400);
+    outline-offset: 3px;
+  }
+  /* Compact header-size variant. */
+  .btn-kid-sm {
+    font-size: 0.95rem;
+    padding: 0.55rem 1.15rem;
+    border-bottom-width: 5px;
+  }
+  .btn-kid-sm:active {
+    transform: translateY(3px);
+    border-bottom-width: 2px;
+  }
+  /* Color modifiers — gradient + matching 3D edge. */
+  .btn-kid-coral {
+    background: linear-gradient(180deg, var(--color-kid-coral-400) 0%, var(--color-kid-coral-600) 100%);
+    border-bottom-color: #c24848;
+    box-shadow: 0 10px 24px rgba(23, 50, 79, 0.28), 0 0 20px rgba(255, 138, 122, 0.5);
+  }
+  .btn-kid-sky {
+    background: linear-gradient(180deg, var(--color-kid-sky-400) 0%, var(--color-kid-sky-600) 100%);
+    border-bottom-color: #1d7aa8;
+    box-shadow: 0 10px 24px rgba(23, 50, 79, 0.28), 0 0 20px rgba(124, 196, 242, 0.45);
+  }
+  .btn-kid-mint {
+    background: linear-gradient(180deg, var(--color-kid-mint-400) 0%, var(--color-kid-mint-600) 100%);
+    border-bottom-color: #14806f;
+    box-shadow: 0 10px 24px rgba(23, 50, 79, 0.28), 0 0 20px rgba(79, 216, 196, 0.5);
+  }
+  .btn-kid-grape {
+    background: linear-gradient(180deg, var(--color-kid-grape-400) 0%, var(--color-kid-grape-700) 100%);
+    border-bottom-color: #5a339f;
+    box-shadow: 0 10px 24px rgba(23, 50, 79, 0.28), 0 0 20px rgba(185, 131, 255, 0.5);
+  }
+
+  /* Modern elevated card: translucent white, layered soft shadows, top highlight. */
+  .card-kid {
+    position: relative;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: var(--radius-kid-card);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      0 4px 12px rgba(23, 50, 79, 0.1),
+      0 18px 40px rgba(23, 50, 79, 0.16);
+  }
+  .card-kid::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, transparent 34%);
+  }
+}
+
+/* New ambient keyframes for the redesign. */
+@theme {
+  --animate-kid-aurora: kid-aurora 26s ease-in-out infinite alternate;
+  --animate-kid-float-slow: kid-float-slow 9s ease-in-out infinite;
+
+  @keyframes kid-aurora {
+    0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+    50% { transform: translate(6vmax, -4vmax) scale(1.12) rotate(8deg); }
+    100% { transform: translate(-5vmax, 5vmax) scale(0.94) rotate(-6deg); }
+  }
+  @keyframes kid-float-slow {
+    0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+    50% { transform: translateY(-18px) rotate(1.5deg); }
+  }
+}
+
+/* Reduced motion: the ambient backdrop falls back to static gradients. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-kid-aurora,
+  .animate-kid-float-slow,
+  .animate-kid-drift,
+  .animate-kid-twinkle {
+    animation: none;
+  }
+}

@@ -59,6 +59,8 @@ export const TROPHIES: Trophy[] = [
   { id: 'color-first', name: 'Color Wizard', description: 'Mixed magical colors in the lab!', category: 'explorer', starBonus: 10, art: 'gem' },
   { id: 'rhyme-first', name: 'Rhyme Star', description: 'Rhymed words with Luna!', category: 'explorer', starBonus: 10, art: 'star' },
   { id: 'playground-first', name: 'Playground Pro', description: 'Played every pet playground game!', category: 'explorer', starBonus: 15, art: 'medal' },
+  { id: 'fraction-first', name: 'Fraction Fan', description: 'Shared pizzas fairly at Fraction Fair!', category: 'explorer', starBonus: 10, art: 'star' },
+  { id: 'avatar-first', name: 'Avatar Artist', description: 'Designed your very own avatar!', category: 'explorer', starBonus: 10, art: 'gem' },
   // Learner — practice and mastery
   { id: 'activities-10', name: 'Practice Pro', description: 'Finished 10 activities!', category: 'learner', starBonus: 10, art: 'medal' },
   { id: 'activities-50', name: 'Super Solver', description: 'Finished 50 activities!', category: 'learner', starBonus: 20, art: 'cup' },
@@ -121,4 +123,6 @@ export type TrophyEvent =
   | 'feelings_done'
   | 'color_done'
   | 'rhyme_done'
-  | 'playground_done';
+  | 'playground_done'
+  | 'fraction_done'
+  | 'avatar_done';
