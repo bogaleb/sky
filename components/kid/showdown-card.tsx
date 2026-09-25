@@ -3,9 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AVATARS } from '@/components/avatars';
 import { getFamilyWeeklyStars, type FamilyWeeklyRow } from '@/app/actions/showdown';
-import { awardStickers } from '@/app/actions/rewards';
-import { checkTrophies } from '@/app/actions/trophies';
-import { logLearningEvent } from '@/app/actions/learning';
+import { useGameSession } from './game-shell';
 import {
   STAR_SPRINT_TARGET,
   challengeProgress,
@@ -45,9 +43,14 @@ export default function ShowdownCard({ childId }: { childId: string }) {
     };
   }, [childId]);
 
-  // Star Sprint win: fired once per week, best-effort. awardStickers is a
-  // no-op for unknown ids until the 'friendly-rival' def lands; the trophy
-  // event is ignored until the union member lands in parent integration.
+  // Star Sprint win: fired once per week. Rewards run through the shared
+  // GameShell so a failing step never blocks the others.
+  const session = useGameSession({
+    childId,
+    stickerId: 'friendly-rival',
+    trophyEvent: 'showdown_done',
+    milestone: 'showdown_win',
+  });
   useEffect(() => {
     if (!rows || celebratedRef.current) return;
     const me = rows.find((r) => r.childId === childId);
@@ -62,22 +65,14 @@ export default function ShowdownCard({ childId }: { childId: string }) {
     }
     celebratedRef.current = true;
     void (async () => {
-      try {
-        await awardStickers(childId, ['friendly-rival']);
-        await checkTrophies(childId, 'showdown_done').catch(() => {});
-        await logLearningEvent(childId, 'milestone', {
-          metadata: { kind: 'showdown_win', stars: me.weeklyStars },
-        }).catch(() => {});
-      } catch {
-        /* celebration is best-effort */
-      }
+      await session.complete({ stars: 0, extraMetadata: { stars: me.weeklyStars } });
       try {
         window.localStorage.setItem(key, '1');
       } catch {
         /* ignore */
       }
     })();
-  }, [rows, childId]);
+  }, [rows, childId, session]);
 
   if (!rows || rows.length < 2) return null;
 

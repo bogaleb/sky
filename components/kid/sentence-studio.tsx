@@ -9,10 +9,7 @@ import {
   type WordTile,
 } from '@/lib/kid/sentences';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { awardStars, awardStickers } from '@/app/actions/rewards';
-import { bumpQuestProgress } from '@/app/actions/trail';
-import { checkTrophies } from '@/app/actions/trophies';
-import { logLearningEvent } from '@/app/actions/learning';
+import { useGameSession, GameWinScreen } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
 import { AVATARS } from '@/components/avatars';
 
@@ -36,20 +33,6 @@ function SpeakerIcon({ className }: { className?: string }) {
   );
 }
 
-function StarIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 64 64" className={className} aria-hidden>
-      <path
-        d="M32 6 L39 24 L58 24 L43 35 L48 54 L32 43 L16 54 L21 35 L6 24 L25 24 Z"
-        fill="#FFC93C"
-        stroke="#E09E00"
-        strokeWidth="3"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 export default function SentenceStudio({ childId, nickname = 'friend', onExit }: SentenceStudioProps) {
   const [phase, setPhase] = useState<Phase>('intro');
   const [rounds, setRounds] = useState<SentenceRound[]>([]);
@@ -60,7 +43,14 @@ export default function SentenceStudio({ childId, nickname = 'friend', onExit }:
   const [celebrating, setCelebrating] = useState(false);
   const [shaking, setShaking] = useState(false);
   const [starsEarned, setStarsEarned] = useState(0);
-  const [starBalance, setStarBalance] = useState(0);
+  const session = useGameSession({
+    childId,
+    gameKey: 'sentence_game',
+    stickerId: 'sentence-scribe',
+    trophyEvent: 'sentence_done',
+    milestone: 'sentence_studio_win',
+  });
+  const starBalance = session.starBalance ?? 0;
   const timers = useRef<number[]>([]);
 
   const later = useCallback((ms: number, fn: () => void) => {
@@ -122,20 +112,8 @@ export default function SentenceStudio({ childId, nickname = 'friend', onExit }:
       HOST,
       `Amazing writing, ${nickname}! You built ${ROUNDS_PER_GAME} super sentences! You earned ${stars} stars!`
     );
-    try {
-      const balance = await awardStars(childId, stars);
-      setStarBalance(balance);
-      await bumpQuestProgress(childId, 'sentence_game', 1);
-      await awardStickers(childId, ['sentence-scribe']);
-      // 'sentence_done' trophy lands in integration; the cast keeps tsc green now.
-      checkTrophies(childId, 'sentence_done').catch(() => {});
-      await logLearningEvent(childId, 'milestone', {
-        metadata: { kind: 'sentence_studio_win', stars, mistakes, rounds: ROUNDS_PER_GAME },
-      });
-    } catch {
-      /* progress logging is best-effort; the celebration still stands */
-    }
-  }, [childId, nickname, mistakes]);
+    await session.complete({ stars, mistakes, extraMetadata: { rounds: ROUNDS_PER_GAME } });
+  }, [session, nickname, mistakes]);
 
   const tapBankTile = (tile: WordTile) => {
     if (celebrating || phase !== 'play' || !round) return;
@@ -307,38 +285,16 @@ export default function SentenceStudio({ childId, nickname = 'friend', onExit }:
       )}
 
       {phase === 'won' && (
-        <div className="animate-kid-pop-in mx-4 flex w-full max-w-md flex-col items-center rounded-kid-card bg-white/95 px-8 py-8 text-center shadow-2xl">
-          <div className="animate-kid-bounce-soft">
-            <LunaAvatar className="h-24 w-24 md:h-28 md:w-28" />
-          </div>
-          <h2 className="font-display mt-3 text-3xl text-kid-ink-900 md:text-4xl">
-            You did it, {nickname}!
-          </h2>
-          <p className="mt-2 text-lg font-bold text-kid-ink-700">
-            You built all {ROUNDS_PER_GAME} sentences{mistakes === 0 ? ' with no mistakes' : ` with ${mistakes} ${mistakes === 1 ? 'try' : 'tries'}`} and earned
-          </p>
-          <div className="mt-2 flex items-center gap-2">
-            <StarIcon className="h-10 w-10" />
-            <span className="text-4xl font-black tabular-nums text-kid-ink-900">{starsEarned}</span>
-            <span className="text-2xl font-black text-kid-ink-700">stars</span>
-          </div>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={startGame}
-              className="rounded-full bg-kid-sky-400 px-8 py-3 text-lg font-extrabold text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
-            >
-              Play again
-            </button>
-            <button
-              type="button"
-              onClick={onExit}
-              className="rounded-full bg-kid-sun-400 px-8 py-3 text-lg font-extrabold text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
-            >
-              Back to map
-            </button>
-          </div>
-        </div>
+        <GameWinScreen
+          stars={starsEarned}
+          nickname={nickname}
+          title={`You did it, ${nickname}!`}
+          message={`You built all ${ROUNDS_PER_GAME} sentences${mistakes === 0 ? ' with no mistakes' : ` with ${mistakes} ${mistakes === 1 ? 'try' : 'tries'}`}`}
+          stickerId="sentence-scribe"
+          hostAvatar={<LunaAvatar className="h-24 w-24 md:h-28 md:w-28" />}
+          onPlayAgain={startGame}
+          onExit={onExit}
+        />
       )}
     </KidShell>
   );

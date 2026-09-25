@@ -2,9 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { playSfx, speakAs, stopSpeaking } from '@/lib/kid/audio';
-import { awardStickers } from '@/app/actions/rewards';
-import { checkTrophies } from '@/app/actions/trophies';
-import { logLearningEvent } from '@/app/actions/learning';
+import { useGameSession } from './game-shell';
 import {
   ACCESSORIES,
   DEFAULT_AVATAR,
@@ -60,6 +58,13 @@ export default function AvatarStudio({
     setSaved(false);
   }, []);
 
+  const session = useGameSession({
+    childId,
+    stickerId: 'avatar-artist',
+    trophyEvent: 'avatar_done',
+    milestone: 'avatar_studio_saved',
+  });
+
   const handleSave = useCallback(async () => {
     if (saving) return;
     setSaving(true);
@@ -67,12 +72,7 @@ export default function AvatarStudio({
       saveCustomAvatar(childId, design);
       playSfx('fanfare');
       speakAs('curio', 'Wow! That looks amazing! This is your new look!');
-      await awardStickers(childId, ['avatar-artist']);
-      // 'avatar_done' trophy def lands in integration; the cast keeps tsc green now.
-      checkTrophies(childId, 'avatar_done').catch(() => {});
-      await logLearningEvent(childId, 'milestone', { metadata: { kind: 'avatar_studio_saved' } }).catch(
-        () => {}
-      );
+      await session.complete({ stars: 0 });
       setSaved(true);
       onSaved?.();
     } catch {
@@ -80,7 +80,7 @@ export default function AvatarStudio({
     } finally {
       setSaving(false);
     }
-  }, [childId, design, onSaved, saving]);
+  }, [childId, design, onSaved, saving, session]);
 
   const tabs = [
     { id: 'skin', label: 'Skin' },

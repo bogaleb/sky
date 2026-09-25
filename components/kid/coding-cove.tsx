@@ -12,10 +12,7 @@ import {
   type RunStep,
 } from '@/lib/kid/coding';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { awardStars, awardStickers } from '@/app/actions/rewards';
-import { bumpQuestProgress } from '@/app/actions/trail';
-import { logLearningEvent } from '@/app/actions/learning';
-import { checkTrophies } from '@/app/actions/trophies';
+import { useGameSession, GameWinScreen } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
 
 export interface CodingCoveProps {
@@ -195,7 +192,17 @@ export default function CodingCove({ childId, nickname, onExit }: CodingCoveProp
   const [message, setMessage] = useState<string | null>(null);
   const [wonStars, setWonStars] = useState<0 | 1 | 2 | 3>(0);
   const [levelDone, setLevelDone] = useState(false);
-  const [starBalance, setStarBalance] = useState(0);
+  // Per-level wins log 'coding_cove_level' with no quest/sticker/trophy;
+  // the full-cove completion logs 'coding_cove_win' with the rewards.
+  const levelSession = useGameSession({ childId, milestone: 'coding_cove_level' });
+  const session = useGameSession({
+    childId,
+    gameKey: 'coding_game',
+    stickerId: 'code-captain',
+    trophyEvent: 'coding_done',
+    milestone: 'coding_cove_win',
+  });
+  const starBalance = session.starBalance ?? levelSession.starBalance ?? 0;
   const timers = useRef<number[]>([]);
 
   const level = LEVELS[levelIdx];
@@ -274,34 +281,22 @@ export default function CodingCove({ childId, nickname, onExit }: CodingCoveProp
           ? `You did it, ${name}! You finished every maze! You are a true Code Captain!`
           : `Star reached, ${name}! ${stars} star${stars === 1 ? '' : 's'} for you!`
       );
-      try {
-        const balance = await awardStars(childId, LEVEL_STARS);
-        setStarBalance(balance);
-        const next: CodeProgress = {
-          unlocked: Math.min(LEVELS.length, Math.max(progress.unlocked, lv.level + 1)),
-          stars: { ...progress.stars, [lv.id]: Math.max(progress.stars[lv.id] ?? 0, stars) },
-        };
-        setProgress(next);
-        saveProgress(childId, next);
-        await logLearningEvent(childId, 'milestone', {
-          metadata: { kind: 'coding_cove_level', level: lv.level, stars, commandsUsed },
-        });
-        if (isFinal) {
-          const finalBalance = await awardStars(childId, COMPLETION_STARS);
-          setStarBalance(finalBalance);
-          await bumpQuestProgress(childId, 'coding_game', 1);
-          await awardStickers(childId, ['code-captain']);
-          await checkTrophies(childId, 'coding_done').catch(() => {});
-          await logLearningEvent(childId, 'milestone', {
-            metadata: { kind: 'coding_cove_win' },
-          });
-          setPhase('complete');
-        }
-      } catch {
-        /* progress logging is best-effort; the celebration still stands */
+      const next: CodeProgress = {
+        unlocked: Math.min(LEVELS.length, Math.max(progress.unlocked, lv.level + 1)),
+        stars: { ...progress.stars, [lv.id]: Math.max(progress.stars[lv.id] ?? 0, stars) },
+      };
+      setProgress(next);
+      saveProgress(childId, next);
+      await levelSession.complete({
+        stars: LEVEL_STARS,
+        extraMetadata: { level: lv.level, commandsUsed },
+      });
+      if (isFinal) {
+        await session.complete({ stars: COMPLETION_STARS });
+        setPhase('complete');
       }
     },
-    [childId, name, progress]
+    [childId, name, progress, levelSession, session]
   );
 
   const runProgramCb = useCallback(() => {
@@ -550,33 +545,17 @@ export default function CodingCove({ childId, nickname, onExit }: CodingCoveProp
       )}
 
       {phase === 'complete' && (
-        <div className="animate-kid-pop-in mx-4 flex w-full max-w-md flex-col items-center rounded-kid-card bg-white/95 px-8 py-8 text-center shadow-2xl">
-          <div className="animate-kid-bounce-soft">
-            <StarIcon className="h-24 w-24 md:h-28 md:w-28" />
-          </div>
-          <h2 className="mt-3 text-3xl font-black text-kid-ink-900 md:text-4xl">
-            Code Captain, {name}!
-          </h2>
-          <p className="mt-2 text-lg font-bold text-kid-ink-700">
-            You guided Milo through all 12 mazes!
-          </p>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={() => setPhase('map')}
-              className="rounded-full bg-kid-sky-400 px-8 py-3 text-lg font-extrabold text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
-            >
-              Back to map
-            </button>
-            <button
-              type="button"
-              onClick={onExit}
-              className="rounded-full bg-kid-sun-400 px-8 py-3 text-lg font-extrabold text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
-            >
-              Keep exploring
-            </button>
-          </div>
-        </div>
+        <GameWinScreen
+          stars={COMPLETION_STARS}
+          nickname={name}
+          title={`Code Captain, ${name}!`}
+          message="You guided Milo through all 12 mazes!"
+          stickerId="code-captain"
+          hostAvatar={<MiloArrow dir="N" />}
+          onPlayAgain={() => setPhase('map')}
+          onExit={onExit}
+          playAgainLabel="Back to map"
+        />
       )}
     </KidShell>
   );

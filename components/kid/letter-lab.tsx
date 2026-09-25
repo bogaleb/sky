@@ -11,10 +11,7 @@ import {
   type Pt,
 } from '@/lib/kid/writing';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { awardStars, awardStickers } from '@/app/actions/rewards';
-import { bumpQuestProgress } from '@/app/actions/trail';
-import { checkTrophies } from '@/app/actions/trophies';
-import { logLearningEvent } from '@/app/actions/learning';
+import { useGameSession, GameWinScreen } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
 import { AVATARS } from '@/components/avatars';
 
@@ -48,20 +45,6 @@ function SpeakerIcon({ className }: { className?: string }) {
     <svg viewBox="0 0 48 48" className={className} aria-hidden>
       <path d="M10 20 h8 l10 -8 v24 l-10 -8 h-8 z" fill="#fff" stroke="#17324F" strokeWidth="2.5" strokeLinejoin="round" />
       <path d="M30 18 q6 6 0 12 M35 13 q10 11 0 22" fill="none" stroke="#17324F" strokeWidth="2.8" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function StarIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 64 64" className={className} aria-hidden>
-      <path
-        d="M32 6 L39 24 L58 24 L43 35 L48 54 L32 43 L16 54 L21 35 L6 24 L25 24 Z"
-        fill="#FFC93C"
-        stroke="#E09E00"
-        strokeWidth="3"
-        strokeLinejoin="round"
-      />
     </svg>
   );
 }
@@ -160,7 +143,14 @@ export default function LetterLab({ childId, nickname = 'friend', onExit }: Lett
   const [kidStrokes, setKidStrokes] = useState<Pt[][]>([]);
   const [retries, setRetries] = useState(0);
   const [starsEarned, setStarsEarned] = useState(0);
-  const [starBalance, setStarBalance] = useState(0);
+  const session = useGameSession({
+    childId,
+    gameKey: 'writing_game',
+    stickerId: 'pen-pal',
+    trophyEvent: 'writing_done',
+    milestone: 'letter_lab_win',
+  });
+  const starBalance = session.starBalance ?? 0;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawingRef = useRef(false);
   const currentStrokeRef = useRef<Pt[]>([]);
@@ -329,25 +319,12 @@ export default function LetterLab({ childId, nickname = 'friend', onExit }: Lett
         setPhase('won');
         playSfx('fanfare');
         speakAs(HOST, `Amazing writing, ${nickname}! You earned ${stars} stars!`);
-        void (async () => {
-          try {
-            const balance = await awardStars(childId, stars);
-            setStarBalance(balance);
-            await bumpQuestProgress(childId, 'writing_game', 1);
-            await awardStickers(childId, ['pen-pal']);
-            await checkTrophies(childId, 'writing_done').catch(() => {});
-            await logLearningEvent(childId, 'milestone', {
-              metadata: { kind: 'letter_lab_win', letters: next.length, retries },
-            });
-          } catch {
-            /* progress logging is best-effort */
-          }
-        })();
+        void session.complete({ stars, extraMetadata: { letters: next.length, retries } });
       } else {
         beginLetter(i + 1, next);
       }
     },
-    [retries, nickname, childId, beginLetter]
+    [retries, nickname, session, beginLetter]
   );
 
   const checkTracing = useCallback(() => {
@@ -526,34 +503,19 @@ export default function LetterLab({ childId, nickname = 'friend', onExit }: Lett
       )}
 
       {phase === 'won' && (
-        <div className="animate-kid-pop-in mx-4 flex w-full max-w-md flex-col items-center rounded-kid-card bg-white/95 px-8 py-8 text-center shadow-2xl">
-          <div className="animate-kid-bounce-soft">
-            <StarIcon className="h-24 w-24 md:h-28 md:w-28" />
-          </div>
-          <h2 className="mt-3 text-3xl font-black text-kid-ink-900 md:text-4xl">
-            Great writing, {nickname}!
-          </h2>
-          <p className="mt-2 text-lg font-bold text-kid-ink-700">
-            You traced all {SESSION_LENGTH} letters and earned
-          </p>
-          <div className="mt-2 flex items-center gap-2">
-            <StarIcon className="h-10 w-10" />
-            <span className="text-4xl font-black tabular-nums text-kid-ink-900">{starsEarned}</span>
-            <span className="text-2xl font-black text-kid-ink-700">stars</span>
-          </div>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={() => {
-                seedRef.current = (seedRef.current + 1) % 2147483647;
-                startGame();
-              }}
-              className="rounded-full bg-kid-grape-400 px-8 py-3 text-lg font-extrabold text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
-            >
-              Write again
-            </button>
-          </div>
-        </div>
+        <GameWinScreen
+          stars={starsEarned}
+          nickname={nickname}
+          title={`Great writing, ${nickname}!`}
+          message={`You traced all ${SESSION_LENGTH} letters`}
+          stickerId="pen-pal"
+          onPlayAgain={() => {
+            seedRef.current = (seedRef.current + 1) % 2147483647;
+            startGame();
+          }}
+          onExit={onExit}
+          playAgainLabel="Write again"
+        />
       )}
     </KidShell>
   );

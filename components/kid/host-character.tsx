@@ -61,9 +61,9 @@ export default function HostCharacter({
         }
       }}
     >
-      {/* soft glow pedestal */}
+      {/* soft glass pedestal */}
       <div
-        className="absolute -bottom-2 left-1/2 h-6 w-4/5 -translate-x-1/2 rounded-full bg-kid-ink-900/10 blur-md"
+        className="glass-kid absolute -bottom-3 left-1/2 h-8 w-4/5 -translate-x-1/2 rounded-full"
         aria-hidden
       />
       <div

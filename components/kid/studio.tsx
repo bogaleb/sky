@@ -17,9 +17,8 @@ import {
   type ColoringRegion,
 } from '@/lib/kid/studio';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { awardStars, awardStickers } from '@/app/actions/rewards';
-import { checkTrophies } from '@/app/actions/trophies';
-import { logLearningEvent } from '@/app/actions/learning';
+import { awardStars } from '@/app/actions/rewards';
+import { useGameSession, reportRewardError } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
 import HostCharacter from '@/components/kid/host-character';
 
@@ -968,6 +967,11 @@ export default function CreativeStudio({ childId, nickname, onExit }: CreativeSt
   const [gallery, setGallery] = useState<StudioArtwork[]>(() => loadGallery(childId));
   const [color, setColor] = useState(PALETTE[0].hex);
   const [savedFlash, setSavedFlash] = useState(false);
+  const session = useGameSession({
+    childId,
+    trophyEvent: 'art_done',
+    milestone: 'studio_art_saved',
+  });
 
   // Welcome voiceover on mount; silence on unmount.
   useEffect(() => {
@@ -999,24 +1003,21 @@ export default function CreativeStudio({ childId, nickname, onExit }: CreativeSt
         nickname ? `Wow, ${nickname}! A masterpiece! I hung it in your gallery.` : 'Wow! A masterpiece! I hung it in your gallery.'
       );
       try {
-        if (firstEver) {
-          await awardStickers(childId, ['little-artist']);
-          // Trophy def lands in integration; the check itself is best-effort.
-          void checkTrophies(childId, 'art_done').catch(() => {});
-        }
         if (shouldAwardDailyStars(childId)) {
           await awardStars(childId, STUDIO_DAILY_STAR_BONUS);
           markDailyStarsAwarded(childId);
         }
-        await logLearningEvent(childId, 'milestone', {
-          metadata: { kind: 'studio_art_saved', art_kind: kind },
-        });
-      } catch {
-        /* progress logging is best-effort; the celebration still stands */
+      } catch (err) {
+        reportRewardError(childId, 'awardStars', err);
       }
+      await session.complete({
+        stars: 0,
+        stickerIds: firstEver ? ['little-artist'] : [],
+        extraMetadata: { art_kind: kind },
+      });
       setTab('gallery');
     },
-    [childId, nickname]
+    [childId, nickname, session]
   );
 
   const handleDelete = useCallback(

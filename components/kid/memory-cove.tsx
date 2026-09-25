@@ -4,9 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { MEMORY_DECKS, getDeck, type MemoryDeck, type MemoryPair } from '@/lib/kid/memory-decks';
 import type { SessionChild } from '@/lib/kid/types';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { awardStars, awardStickers } from '@/app/actions/rewards';
-import { bumpQuestProgress } from '@/app/actions/trail';
-import { logLearningEvent } from '@/app/actions/learning';
+import { useGameSession, GameWinScreen } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
 
 export interface MemoryCoveProps {
@@ -148,20 +146,6 @@ function CardBackArt() {
   );
 }
 
-function StarIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 64 64" className={className} aria-hidden>
-      <path
-        d="M32 6 L39 24 L58 24 L43 35 L48 54 L32 43 L16 54 L21 35 L6 24 L25 24 Z"
-        fill="#FFC93C"
-        stroke="#E09E00"
-        strokeWidth="3"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 function buildCards(deck: MemoryDeck): PlayCard[] {
   const cards: PlayCard[] = [];
   deck.pairs.forEach((pair, pairIndex) => {
@@ -180,7 +164,13 @@ export default function MemoryCove({ child, onExit }: MemoryCoveProps) {
   const [moves, setMoves] = useState(0);
   const [lock, setLock] = useState(false);
   const [starsEarned, setStarsEarned] = useState(0);
-  const [starBalance, setStarBalance] = useState(0);
+  const session = useGameSession({
+    childId: child.id,
+    gameKey: 'memory_game',
+    stickerId: 'memory-master',
+    milestone: 'memory_cove_win',
+  });
+  const starBalance = session.starBalance ?? 0;
   const timers = useRef<number[]>([]);
 
   const later = useCallback((ms: number, fn: () => void) => {
@@ -224,19 +214,12 @@ export default function MemoryCove({ child, onExit }: MemoryCoveProps) {
       setPhase('won');
       playSfx('fanfare');
       speakAs(wonDeck.hostCharacter, `Amazing, ${child.nickname}! You found every pair! You earned ${stars} stars!`);
-      try {
-        const balance = await awardStars(child.id, stars);
-        setStarBalance(balance);
-        await bumpQuestProgress(child.id, 'memory_game', 1);
-        await awardStickers(child.id, ['memory-master']);
-        await logLearningEvent(child.id, 'milestone', {
-          metadata: { kind: 'memory_cove_win', deck: wonDeck.id, moves: finalMoves },
-        });
-      } catch {
-        /* progress logging is best-effort; the celebration still stands */
-      }
+      await session.complete({
+        stars,
+        extraMetadata: { deck: wonDeck.id, moves: finalMoves },
+      });
     },
-    [child.id, child.nickname]
+    [child.id, child.nickname, session]
   );
 
   const flipCard = useCallback(
@@ -403,38 +386,16 @@ export default function MemoryCove({ child, onExit }: MemoryCoveProps) {
       )}
 
       {phase === 'won' && (
-        <div className="animate-kid-pop-in mx-4 flex w-full max-w-md flex-col items-center rounded-kid-card bg-white/95 px-8 py-8 text-center shadow-2xl">
-          <div className="animate-kid-bounce-soft">
-            <StarIcon className="h-24 w-24 md:h-28 md:w-28" />
-          </div>
-          <h2 className="mt-3 text-3xl font-black text-kid-ink-900 md:text-4xl">
-            You did it, {child.nickname}!
-          </h2>
-          <p className="mt-2 text-lg font-bold text-kid-ink-700">
-            You found all {deck.pairs.length} pairs in {moves} moves and earned
-          </p>
-          <div className="mt-2 flex items-center gap-2">
-            <StarIcon className="h-10 w-10" />
-            <span className="text-4xl font-black tabular-nums text-kid-ink-900">{starsEarned}</span>
-            <span className="text-2xl font-black text-kid-ink-700">stars</span>
-          </div>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={replay}
-              className="rounded-full bg-kid-sky-400 px-8 py-3 text-lg font-extrabold text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
-            >
-              Play again
-            </button>
-            <button
-              type="button"
-              onClick={() => setPhase('pick')}
-              className="rounded-full bg-kid-sun-400 px-8 py-3 text-lg font-extrabold text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
-            >
-              Another deck
-            </button>
-          </div>
-        </div>
+        <GameWinScreen
+          stars={starsEarned}
+          nickname={child.nickname}
+          title={`You did it, ${child.nickname}!`}
+          message={`You found all ${deck.pairs.length} pairs in ${moves} moves!`}
+          stickerId="memory-master"
+          secondaryAction={{ label: 'Another deck', onClick: () => setPhase('pick') }}
+          onPlayAgain={replay}
+          onExit={onExit}
+        />
       )}
     </KidShell>
   );

@@ -25,10 +25,7 @@ import {
   type DrumSound,
 } from '@/lib/kid/rhythm';
 import { speakAs, playSfx, stopSpeaking, unlockAudio } from '@/lib/kid/audio';
-import { awardStars, awardStickers } from '@/app/actions/rewards';
-import { bumpQuestProgress } from '@/app/actions/trail';
-import { logLearningEvent } from '@/app/actions/learning';
-import { checkTrophies } from '@/app/actions/trophies';
+import { useGameSession, GameWinScreen } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
 
 export interface RhythmStudioProps {
@@ -125,7 +122,14 @@ export default function RhythmStudio({ childId, nickname, onExit }: RhythmStudio
   const [hint, setHint] = useState<string | null>(null);
   const [echoPtr, setEchoPtr] = useState(0);
   const [starsEarned, setStarsEarned] = useState(0);
-  const [starBalance, setStarBalance] = useState(0);
+  const session = useGameSession({
+    childId,
+    gameKey: 'rhythm_game',
+    stickerId: 'beat-master',
+    trophyEvent: 'rhythm_done',
+    milestone: 'rhythm_studio_win',
+  });
+  const starBalance = session.starBalance ?? 0;
   const [finalAccuracy, setFinalAccuracy] = useState(0);
   const [finalCombo, setFinalCombo] = useState(0);
 
@@ -222,27 +226,16 @@ export default function RhythmStudio({ childId, nickname, onExit }: RhythmStudio
       setStarsEarned(stars);
       setPhase('won');
       speakAs('riff', `Amazing, ${nickname ?? 'friend'}! You finished every tune with ${accuracy} percent! You earned ${stars} stars!`);
-      void (async () => {
-        try {
-          const balance = await awardStars(childId, stars);
-          setStarBalance(balance);
-          await bumpQuestProgress(childId, 'rhythm_game', 1);
-          await awardStickers(childId, ['beat-master']);
-          // 'rhythm_done' trophy lands in integration; the cast keeps tsc green now.
-          checkTrophies(childId, 'rhythm_done').catch(() => {});
-          await logLearningEvent(childId, 'milestone', {
-            metadata: { kind: 'rhythm_studio_win', stars, accuracy, maxCombo: newTotal.maxCombo },
-          });
-        } catch {
-          /* progress logging is best-effort; the celebration still stands */
-        }
-      })();
+      void session.complete({
+        stars,
+        extraMetadata: { accuracy, maxCombo: newTotal.maxCombo },
+      });
     } else {
       speakAs('riff', `Nice playing, ${nickname ?? 'friend'}! Pick another tune!`);
       setPhase('pick');
       setTune(null);
     }
-  }, [total, tunesDone, tune, nickname, childId, clearTimers]);
+  }, [total, tunesDone, tune, nickname, childId, clearTimers, session]);
 
   // ---- tap-along scheduling -------------------------------------------------
   const beginPlaying = useCallback(
@@ -599,43 +592,15 @@ export default function RhythmStudio({ childId, nickname, onExit }: RhythmStudio
       )}
 
       {phase === 'won' && (
-        <div className="animate-kid-pop-in mx-4 flex w-full max-w-md flex-col items-center rounded-kid-card bg-white/95 px-8 py-8 text-center shadow-2xl">
-          <div className="animate-kid-bounce-soft flex items-center justify-center gap-1" aria-hidden>
-            {[0, 1, 2].map((i) => (
-              <svg key={i} viewBox="0 0 64 64" className={`h-16 w-16 md:h-20 md:w-20 ${i < starsEarned ? '' : 'opacity-25 grayscale'}`}>
-                <path
-                  d="M32 6 L39 24 L58 24 L43 35 L48 54 L32 43 L16 54 L21 35 L6 24 L25 24 Z"
-                  fill="#FFC93C"
-                  stroke="#E09E00"
-                  strokeWidth="3"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            ))}
-          </div>
-          <h2 className="mt-3 text-3xl font-black text-kid-ink-900 md:text-4xl">
-            Rock star, {nickname ?? 'friend'}!
-          </h2>
-          <p className="mt-2 text-lg font-bold text-kid-ink-700">
-            You played all 4 tunes with {finalAccuracy}% accuracy and a best combo of x{finalCombo}!
-          </p>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={playAgain}
-              className="rounded-full bg-kid-grape-400 px-8 py-3 text-lg font-extrabold text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
-            >
-              Play again
-            </button>
-            <button
-              type="button"
-              onClick={onExit}
-              className="rounded-full bg-kid-sun-400 px-8 py-3 text-lg font-extrabold text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
-            >
-              Back to the map
-            </button>
-          </div>
-        </div>
+        <GameWinScreen
+          stars={starsEarned}
+          nickname={nickname ?? 'friend'}
+          title={`Rock star, ${nickname ?? 'friend'}!`}
+          message={`You played all 4 tunes with ${finalAccuracy}% accuracy and a best combo of x${finalCombo}!`}
+          stickerId="beat-master"
+          onPlayAgain={playAgain}
+          onExit={onExit}
+        />
       )}
     </KidShell>
   );

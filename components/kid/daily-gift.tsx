@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
 import { awardStars } from '@/app/actions/rewards';
+import { reportRewardError } from './game-shell';
 import {
   DAILY_GIFT_STARS,
   canClaimGift,
@@ -71,8 +72,8 @@ export default function DailyGift({
     );
     try {
       await awardStars(childId, DAILY_GIFT_STARS);
-    } catch {
-      /* stars are best-effort; the gift moment still counts */
+    } catch (err) {
+      reportRewardError(childId, 'awardStars', err);
     }
     markGiftClaimed(childId);
     setPhase('claimed');

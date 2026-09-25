@@ -12,9 +12,7 @@ import {
   type PuzzleSlot,
 } from '@/lib/kid/puzzles';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { awardStars, awardStickers } from '@/app/actions/rewards';
-import { bumpQuestProgress } from '@/app/actions/trail';
-import { logLearningEvent } from '@/app/actions/learning';
+import { useGameSession, GameWinScreen } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
 
 export interface PuzzleReefProps {
@@ -99,20 +97,6 @@ function PieceShape({
   }
 }
 
-function StarIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 64 64" className={className} aria-hidden>
-      <path
-        d="M32 6 L39 24 L58 24 L43 35 L48 54 L32 43 L16 54 L21 35 L6 24 L25 24 Z"
-        fill="#FFC93C"
-        stroke="#E09E00"
-        strokeWidth="3"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 export default function PuzzleReef({ childId, nickname = 'friend', onExit }: PuzzleReefProps) {
   const [phase, setPhase] = useState<Phase>('pick');
   const [session, setSession] = useState<Puzzle[]>([]);
@@ -126,7 +110,13 @@ export default function PuzzleReef({ childId, nickname = 'friend', onExit }: Puz
   const [popId, setPopId] = useState<string | null>(null);
   const [hintSpoken, setHintSpoken] = useState(false);
   const [sessionStars, setSessionStars] = useState(0);
-  const [starBalance, setStarBalance] = useState(0);
+  const gameSession = useGameSession({
+    childId,
+    gameKey: 'puzzle_game',
+    stickerId: 'puzzle-pro',
+    milestone: 'puzzle_reef_session',
+  });
+  const starBalance = gameSession.starBalance ?? 0;
   const starsRef = useRef(0);
   const timers = useRef<number[]>([]);
 
@@ -194,20 +184,11 @@ export default function PuzzleReef({ childId, nickname = 'friend', onExit }: Puz
         ? `Incredible, ${nickname}! A perfect puzzle adventure! You earned ${total} stars!`
         : `Wonderful building, ${nickname}! You earned ${total} stars!`
     );
-    try {
-      const balance = await awardStars(childId, total);
-      setStarBalance(balance);
-      await logLearningEvent(childId, 'milestone', {
-        metadata: {
-          kind: 'puzzle_reef_session',
-          puzzles: session.map((p) => p.id),
-          stars: total,
-        },
-      });
-    } catch {
-      /* progress logging is best-effort; the celebration still stands */
-    }
-  }, [childId, nickname, session]);
+    await gameSession.complete({
+      stars: total,
+      extraMetadata: { puzzles: session.map((p) => p.id) },
+    });
+  }, [nickname, session, gameSession]);
 
   const completePuzzle = useCallback(
     (finalMistakes: number) => {
@@ -219,8 +200,7 @@ export default function PuzzleReef({ childId, nickname = 'friend', onExit }: Puz
         puzzle.hostCharacter,
         `Amazing, ${nickname}! You built the ${puzzle.subject}! You earned ${stars} stars!`
       );
-      bumpQuestProgress(childId, 'puzzle_game', 1).catch(() => {});
-      awardStickers(childId, ['puzzle-pro']).catch(() => {});
+      // Quest progress + sticker are awarded once per finished session by gameSession.complete.
       later(ADVANCE_MS, () => {
         if (sessionIndex + 1 < session.length) {
           startPuzzle(session[sessionIndex + 1], session, sessionIndex + 1);
@@ -229,7 +209,7 @@ export default function PuzzleReef({ childId, nickname = 'friend', onExit }: Puz
         }
       });
     },
-    [childId, nickname, puzzle, session, sessionIndex, startPuzzle, finishSession, later]
+    [nickname, puzzle, session, sessionIndex, startPuzzle, finishSession, later]
   );
 
   const tapPiece = useCallback(
@@ -452,38 +432,15 @@ export default function PuzzleReef({ childId, nickname = 'friend', onExit }: Puz
       )}
 
       {phase === 'sessionDone' && (
-        <div className="animate-kid-pop-in mx-4 flex w-full max-w-md flex-col items-center rounded-kid-card bg-white/95 px-8 py-8 text-center shadow-2xl">
-          <div className="animate-kid-bounce-soft">
-            <StarIcon className="h-24 w-24 md:h-28 md:w-28" />
-          </div>
-          <h2 className="mt-3 text-3xl font-black text-kid-ink-900 md:text-4xl">
-            Reef built, {nickname}!
-          </h2>
-          <p className="mt-2 text-lg font-bold text-kid-ink-700">
-            You finished {session.length} {session.length === 1 ? 'puzzle' : 'puzzles'} and earned
-          </p>
-          <div className="mt-2 flex items-center gap-2">
-            <StarIcon className="h-10 w-10" />
-            <span className="text-4xl font-black tabular-nums text-kid-ink-900">{sessionStars}</span>
-            <span className="text-2xl font-black text-kid-ink-700">stars</span>
-          </div>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={startAdventure}
-              className="rounded-full bg-kid-sky-400 px-8 py-3 text-lg font-extrabold text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
-            >
-              Play again
-            </button>
-            <button
-              type="button"
-              onClick={() => setPhase('pick')}
-              className="rounded-full bg-kid-sun-400 px-8 py-3 text-lg font-extrabold text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
-            >
-              Pick a puzzle
-            </button>
-          </div>
-        </div>
+        <GameWinScreen
+          stars={sessionStars}
+          nickname={nickname}
+          title={`Reef built, ${nickname}!`}
+          message={`You finished ${session.length} ${session.length === 1 ? 'puzzle' : 'puzzles'}!`}
+          stickerId="puzzle-pro"
+          onPlayAgain={startAdventure}
+          onExit={onExit}
+        />
       )}
     </KidShell>
   );

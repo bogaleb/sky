@@ -5,9 +5,8 @@ import VideoSpot from './video-spot';
 import { AVATARS } from '@/components/avatars';
 import { getCharacter } from '@/lib/kid/characters';
 import { playSfx, speakAs, stopSpeaking } from '@/lib/kid/audio';
-import { awardStars, awardStickers } from '@/app/actions/rewards';
-import { checkTrophies } from '@/app/actions/trophies';
-import { logLearningEvent } from '@/app/actions/learning';
+import { awardStars } from '@/app/actions/rewards';
+import { useGameSession, reportRewardError } from './game-shell';
 import {
   HOMES,
   getHome,
@@ -174,6 +173,12 @@ export default function CharacterHomes({ childId, nickname = 'friend', onExit }:
   const [starClaimedToday, setStarClaimedToday] = useState(false);
   const [allVisited, setAllVisited] = useState(false);
   const timers = useRef<number[]>([]);
+  const session = useGameSession({
+    childId,
+    stickerId: 'home-sweet-home',
+    trophyEvent: 'homes_done',
+    milestone: 'homes_all_visited',
+  });
 
   useEffect(() => {
     speakAs('curio', `Welcome to Character Homes, ${nickname}! Tap a home to visit your friends. Can you visit all eight?`);
@@ -196,15 +201,7 @@ export default function CharacterHomes({ childId, nickname = 'friend', onExit }:
       if (updated.length >= 8 && hasVisitedAll(childId) && !loadHomesAwarded(childId)) {
         markHomesAwarded(childId);
         setAllVisited(true);
-        try {
-          await awardStickers(childId, ['home-sweet-home']);
-          await checkTrophies(childId, 'homes_done').catch(() => {});
-          await logLearningEvent(childId, 'milestone', {
-            metadata: { kind: 'homes_all_visited' },
-          });
-        } catch {
-          /* celebration is best-effort */
-        }
+        await session.complete({ stars: 0 });
         playSfx('fanfare');
         speakAs(
           'curio',
@@ -212,7 +209,7 @@ export default function CharacterHomes({ childId, nickname = 'friend', onExit }:
         );
       }
     },
-    [childId, nickname]
+    [childId, nickname, session]
   );
 
   const findStar = useCallback(
@@ -225,8 +222,8 @@ export default function CharacterHomes({ childId, nickname = 'friend', onExit }:
       if (fresh) {
         try {
           await awardStars(childId, 1);
-        } catch {
-          /* star award is best-effort */
+        } catch (err) {
+          reportRewardError(childId, 'awardStars', err);
         }
         playSfx('fanfare');
         speakAs(home.characterId, `You found my hidden star, ${nickname}! One shiny star for you!`);

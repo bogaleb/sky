@@ -12,10 +12,7 @@ import {
   type ScienceTrial,
 } from '@/lib/kid/science';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { awardStars, awardStickers } from '@/app/actions/rewards';
-import { bumpQuestProgress } from '@/app/actions/trail';
-import { logLearningEvent } from '@/app/actions/learning';
-import { checkTrophies } from '@/app/actions/trophies';
+import { useGameSession, GameWinScreen } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
 import HostCharacter from '@/components/kid/host-character';
 
@@ -603,7 +600,14 @@ export default function ScienceLab({ childId, nickname, onExit }: ScienceLabProp
   const [explained, setExplained] = useState(false);
   const [totals, setTotals] = useState({ correct: 0, total: 0 });
   const [starsEarned, setStarsEarned] = useState(0);
-  const [starBalance, setStarBalance] = useState(0);
+  const session = useGameSession({
+    childId,
+    gameKey: 'science_game',
+    stickerId: 'jr-scientist',
+    trophyEvent: 'science_done',
+    milestone: 'science_lab_win',
+  });
+  const starBalance = session.starBalance ?? 0;
   const timers = useRef<number[]>([]);
   const rewarded = useRef(false);
 
@@ -728,6 +732,14 @@ export default function ScienceLab({ childId, nickname, onExit }: ScienceLabProp
   }, [exp, explained]);
 
   /* Finale rewards: fire exactly once. */
+  const restart = useCallback(() => {
+    rewarded.current = false;
+    setDoneIds([]);
+    setTotals({ correct: 0, total: 0 });
+    setStarsEarned(0);
+    setPhase('pick');
+  }, []);
+
   useEffect(() => {
     if (phase !== 'finale' || rewarded.current) return;
     rewarded.current = true;
@@ -736,21 +748,8 @@ export default function ScienceLab({ childId, nickname, onExit }: ScienceLabProp
     setStarsEarned(stars);
     playSfx('fanfare');
     speakAs(HOST, `You did it, ${nickname ?? 'young scientist'}! You are a real scientist now!`);
-    void (async () => {
-      try {
-        const balance = await awardStars(childId, stars);
-        setStarBalance(balance);
-        await bumpQuestProgress(childId, 'science_game', 1);
-        await awardStickers(childId, ['jr-scientist']);
-        await checkTrophies(childId, 'science_done').catch(() => {});
-        await logLearningEvent(childId, 'milestone', {
-          metadata: { kind: 'science_lab_win', correct: totals.correct, total: totals.total },
-        });
-      } catch {
-        /* progress logging is best-effort; the celebration still stands */
-      }
-    })();
-  }, [phase, totals, childId, nickname]);
+    void session.complete({ stars, extraMetadata: { correct: totals.correct, total: totals.total } });
+  }, [phase, totals, childId, nickname, session]);
 
   const renderReveal = () => {
     if (!exp || !trial) return null;
@@ -938,41 +937,23 @@ export default function ScienceLab({ childId, nickname, onExit }: ScienceLabProp
       )}
 
       {phase === 'finale' && (
-        <div className="animate-kid-pop-in mx-4 flex w-full max-w-md flex-col items-center rounded-kid-card bg-white/95 px-8 py-8 text-center shadow-2xl">
-          <div className="animate-kid-bounce-soft">
-            <svg viewBox="0 0 64 64" className="h-24 w-24 md:h-28 md:w-28" role="img" aria-label="Young Scientist medal">
+        <GameWinScreen
+          stars={starsEarned}
+          nickname={nickname}
+          title={`Young Scientist${nickname ? `, ${nickname}` : ''}!`}
+          message={`You guessed ${totals.correct} out of ${totals.total} like a true scientist and earned`}
+          stickerId="jr-scientist"
+          hostAvatar={(
+            <svg viewBox="0 0 64 64" role="img" aria-label="Young Scientist medal">
               <circle cx="32" cy="26" r="18" fill="#FFD93C" stroke="#E0A93C" strokeWidth="3" />
               <path d="M32 16 l3.5 7 7.5 1 -5.5 5.2 1.4 7.4 -6.9 -3.7 -6.9 3.7 1.4 -7.4 -5.5 -5.2 7.5 -1 z" fill="#fff" />
               <path d="M24 42 L18 58 L26 54 L32 60 L38 54 L46 58 L40 42" fill="#4FB3E8" stroke="#2E86C1" strokeWidth="2" strokeLinejoin="round" />
             </svg>
-          </div>
-          <h2 className="mt-3 text-3xl font-black text-kid-ink-900 md:text-4xl">Young Scientist{nickname ? `, ${nickname}` : ''}!</h2>
-          <p className="mt-2 text-lg font-bold text-kid-ink-700">
-            You guessed {totals.correct} out of {totals.total} like a true scientist and earned
-          </p>
-          <div className="mt-2 flex items-center gap-2">
-            <svg viewBox="0 0 64 64" className="h-10 w-10" aria-hidden>
-              <path d="M32 6 L39 24 L58 24 L43 35 L48 54 L32 43 L16 54 L21 35 L6 24 L25 24 Z" fill="#FFC93C" stroke="#E09E00" strokeWidth="3" strokeLinejoin="round" />
-            </svg>
-            <span className="text-4xl font-black tabular-nums text-kid-ink-900">{starsEarned}</span>
-            <span className="text-2xl font-black text-kid-ink-700">stars</span>
-          </div>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={() => {
-                rewarded.current = false;
-                setDoneIds([]);
-                setTotals({ correct: 0, total: 0 });
-                setStarsEarned(0);
-                setPhase('pick');
-              }}
-              className="rounded-full bg-kid-mint-400 px-8 py-3 text-lg font-extrabold text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
-            >
-              More experiments
-            </button>
-          </div>
-        </div>
+          )}
+          onPlayAgain={restart}
+          onExit={onExit}
+          playAgainLabel="More experiments"
+        />
       )}
     </KidShell>
   );

@@ -9,9 +9,7 @@ import {
   type ShapeId,
 } from '@/lib/kid/placement';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { awardStickers } from '@/app/actions/rewards';
-import { checkTrophies } from '@/app/actions/trophies';
-import { logLearningEvent } from '@/app/actions/learning';
+import { useGameSession } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
 import Curio from '@/components/avatars/curio';
 import { ConfettiBurst } from '@/components/kid/celebration';
@@ -163,7 +161,14 @@ export default function WelcomeQuest({ childId, nickname, onDone }: WelcomeQuest
     [feedback, attempts, later, speakPrompt]
   );
 
-  // Celebration + rewards, fired exactly once.
+  // Celebration + rewards, fired exactly once. Runs through the shared
+  // GameShell so one failing step never blocks the others.
+  const session = useGameSession({
+    childId,
+    stickerId: 'brave-beginner',
+    trophyEvent: 'onboarding_done',
+    milestone: 'welcome_quest_done',
+  });
   useEffect(() => {
     if (phase !== 'done' || awardsFired.current) return;
     awardsFired.current = true;
@@ -172,22 +177,11 @@ export default function WelcomeQuest({ childId, nickname, onDone }: WelcomeQuest
     savePlacement(childId, placement.level);
     playSfx('fanfare');
     speakAs('curio', `You're ready for Sky, ${name}! You are a ${placement.label}!`);
-    (async () => {
-      try {
-        await awardStickers(childId, ['brave-beginner']);
-        await logLearningEvent(childId, 'milestone', {
-          metadata: { kind: 'welcome_quest_done', level: placement.level, label: placement.label },
-        });
-      } catch {
-        /* progress logging is best-effort; the celebration still stands */
-      }
-      try {
-        await checkTrophies(childId, 'onboarding_done');
-      } catch {
-        /* trophy check is best-effort */
-      }
-    })();
-  }, [phase, firstTry, childId, name]);
+    void session.complete({
+      stars: 0,
+      extraMetadata: { level: placement.level, label: placement.label },
+    });
+  }, [phase, firstTry, childId, name, session]);
 
   const questionIndex = phase === 'q0' ? 0 : phase === 'q1' ? 1 : phase === 'q2' ? 2 : -1;
 

@@ -457,7 +457,10 @@ body {
     border-bottom-width: 8px;
     border-bottom-style: solid;
     border-bottom-color: #1d7aa8;
-    background: linear-gradient(180deg, var(--color-kid-sky-400) 0%, var(--color-kid-sky-600) 100%);
+    /* Wave 10 a11y: stops darkened just enough that white Fredoka text
+       keeps >= 3:1 contrast across the whole gradient (was ~1.9:1 at the
+       light end). Still bright sky blue. */
+    background: linear-gradient(180deg, #1999d6 0%, #2798d0 100%);
     box-shadow:
       0 10px 24px rgba(23, 50, 79, 0.28),
       0 0 20px rgba(124, 196, 242, 0.45);
@@ -495,7 +498,8 @@ body {
     box-shadow: 0 10px 24px rgba(23, 50, 79, 0.28), 0 0 20px rgba(255, 138, 122, 0.5);
   }
   .btn-kid-sky {
-    background: linear-gradient(180deg, var(--color-kid-sky-400) 0%, var(--color-kid-sky-600) 100%);
+    /* Same Wave 10 contrast stops as .btn-kid (see above). */
+    background: linear-gradient(180deg, #1999d6 0%, #2798d0 100%);
     border-bottom-color: #1d7aa8;
     box-shadow: 0 10px 24px rgba(23, 50, 79, 0.28), 0 0 20px rgba(124, 196, 242, 0.45);
   }

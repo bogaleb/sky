@@ -2,14 +2,15 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-// Wave 8 "Mesmerizing" visual redesign: contract class names are used in the
-// map-phase JSX, every entry point label is still present, handlers are
-// untouched, and no emoji slipped into child-facing surfaces.
+// Wave 10 hub restructure: the Sky Park is now registry-driven
+// (components/kid/game-registry.tsx). Contract class names still hold in the
+// map-phase JSX, every entry point label is still present in the registry,
+// the Trail leads the hub, and no emoji slipped into child-facing surfaces.
 const kidDir = join(process.cwd(), 'components', 'kid');
 const player = readFileSync(join(kidDir, 'session-player.tsx'), 'utf8');
 const map = readFileSync(join(kidDir, 'sky-map.tsx'), 'utf8');
-const fallback = readFileSync(join(kidDir, 'design-fallback.tsx'), 'utf8');
-
+const registry = readFileSync(join(kidDir, 'game-registry.tsx'), 'utf8');
+const art = readFileSync(join(kidDir, 'game-art.tsx'), 'utf8');
 const shell = readFileSync(join(kidDir, 'kid-shell.tsx'), 'utf8');
 
 const PARK_LABELS = [
@@ -45,37 +46,37 @@ const PARK_LABELS = [
   'Opposites Attic',
 ];
 
-const PARK_HANDLERS = [
-  'setShowMemory(true)',
-  'setShowDressUp(true)',
-  'setShowPattern(true)',
-  'setShowPuzzle(true)',
-  'setShowTrophies(true)',
-  'setShowWords(true)',
-  'setShowNumbers(true)',
-  'setShowCinema(true)',
-  'setShowStudio(true)',
-  'setShowBedtime(true)',
-  'setShowWriting(true)',
-  'setShowGeography(true)',
-  'setShowRhythm(true)',
-  'setShowScience(true)',
-  'setShowCoding(true)',
-  'setShowPhonics(true)',
-  'setShowEncyclopedia(true)',
-  'setShowTime(true)',
-  'setShowMoney(true)',
-  'setShowMovies(true)',
-  'setShowHomes(true)',
-  'setShowFeelings(true)',
-  'setShowColors(true)',
-  'setShowRhymes(true)',
-  'setShowPlayground(true)',
-  'setShowFractions(true)',
-  'setShowAvatarStudio(true)',
-  'setShowSentences(true)',
-  'setShowMeasure(true)',
-  'setShowOpposites(true)',
+const PARK_IDS = [
+  'memory',
+  'dressup',
+  'pattern',
+  'puzzle',
+  'trophies',
+  'words',
+  'numbers',
+  'cinema',
+  'studio',
+  'bedtime',
+  'writing',
+  'geography',
+  'rhythm',
+  'science',
+  'coding',
+  'phonics',
+  'encyclopedia',
+  'time',
+  'money',
+  'movies',
+  'homes',
+  'feelings',
+  'colors',
+  'rhymes',
+  'playground',
+  'fractions',
+  'avatar',
+  'sentences',
+  'measure',
+  'opposites',
 ];
 
 const EMOJI = /[🌀-🫿☀-➿⬀-⯿️]/u;
@@ -86,13 +87,17 @@ describe('map redesign contract', () => {
     expect(shell).toMatch(/from '\.\/sky-backdrop'/);
     // The map phase must not render its own copy — KidShell covers it.
     expect(player).not.toContain('<SkyBackdrop />');
-    expect(player).toMatch(/from '\.\/design-fallback'/);
+    // The dead design-fallback shim is gone entirely.
+    expect(player).not.toContain('design-fallback');
   });
 
-  it('uses the design-system contract classes in the map phase', () => {
-    for (const cls of ['glass-kid', 'font-display', 'btn-kid', 'btn-kid-coral', 'btn-kid-sky', 'btn-kid-mint', 'btn-kid-grape']) {
+  it('uses the design-system contract classes in the map phase and registry', () => {
+    for (const cls of ['glass-kid', 'font-display', 'btn-kid']) {
       expect(player, cls).toContain(cls);
     }
+    // GameCard applies the color modifier per entry via template literal.
+    expect(registry).toContain('btn-kid-${entry.color}');
+    expect(registry).toContain('font-display');
   });
 
   it('presents Sky Park as a glass panel with a display-font title', () => {
@@ -101,21 +106,32 @@ describe('map redesign contract', () => {
     expect(player).toMatch(/<h2 className="font-display[^"]*">Sky Park<\/h2>/);
   });
 
-  it('keeps all 30 Sky Park game buttons with contract button classes', () => {
-    for (const label of PARK_LABELS) {
-      expect(player, label).toContain(`>${label}<`);
-    }
-    const buttons = player.match(/className="btn-kid btn-kid-(coral|sky|mint|grape) group"/g) ?? [];
-    expect(buttons.length).toBe(PARK_LABELS.length);
-    for (const color of ['coral', 'sky', 'mint', 'grape']) {
-      expect(player, `btn-kid-${color}`).toContain(`btn-kid-${color}`);
-    }
+  it('leads the hub with the Trail, then the park, then the map', () => {
+    const trail = player.indexOf('<TrailBanner');
+    const park = player.indexOf('aria-label="Sky Park"');
+    const skyMap = player.indexOf('<SkyMap');
+    expect(trail).toBeGreaterThan(-1);
+    expect(park).toBeGreaterThan(trail);
+    expect(skyMap).toBeGreaterThan(park);
   });
 
-  it('keeps every Sky Park onClick handler identical (visual pass only)', () => {
-    for (const handler of PARK_HANDLERS) {
-      expect(player, handler).toContain(handler);
+  it('keeps all 30 Sky Park games in the registry with contract button classes', () => {
+    for (const label of PARK_LABELS) {
+      expect(registry, label).toContain(`title: '${label}'`);
     }
+    for (const id of PARK_IDS) {
+      expect(registry, id).toContain(`id: '${id}'`);
+    }
+    // GameCard keeps the Wave 8/9 chunky button styling for every color.
+    expect(registry).toMatch(/`btn-kid btn-kid-\$\{entry\.color\} group`/);
+  });
+
+  it('opens every park game through the single registry renderer (no per-game booleans)', () => {
+    expect(player).toContain('<GameCard');
+    expect(player).toContain('onOpen={(id) => setOpenGame(id)}');
+    expect(player).toContain('<GameOverlay');
+    expect(player).not.toContain('setShowMemory(true)');
+    expect(player).not.toContain('setShowTrophies(true)');
   });
 
   it('keeps the widget row with all four widgets inside a glass strip', () => {
@@ -133,8 +149,8 @@ describe('map redesign contract', () => {
   });
 
   it('enlarges game button art with hover motion that respects reduced motion', () => {
-    expect(player).toContain('h-12 w-12');
-    expect(player).toContain('motion-safe:group-hover:scale-110');
+    expect(art).toContain('h-12 w-12');
+    expect(art).toContain('motion-safe:group-hover:scale-110');
   });
 });
 
@@ -173,29 +189,11 @@ describe('island card redesign', () => {
   });
 });
 
-describe('design fallback', () => {
-  it('exports the contract names the map phase imports', () => {
-    expect(fallback).toContain('export default function SkyBackdrop');
-    expect(fallback).toContain('export function DesignFallbackStyles');
-  });
-
-  it('defines minimal contract-class styles with a reduced-motion guard', () => {
-    for (const cls of ['.glass-kid', '.btn-kid', '.btn-kid-coral', '.btn-kid-sky', '.btn-kid-mint', '.btn-kid-grape', '.card-kid', '.font-display']) {
-      expect(fallback, cls).toContain(cls);
-    }
-    expect(fallback).toContain('prefers-reduced-motion');
-  });
-
-  it('only injects fallback styles when the real design system is absent', () => {
-    expect(fallback).toContain('getComputedStyle');
-    expect(fallback).toContain('data-sky-design-fallback');
-  });
-});
-
 describe('child-surface hygiene', () => {
   it('adds no emoji to the redesigned surfaces', () => {
     expect(player).not.toMatch(EMOJI);
     expect(map).not.toMatch(EMOJI);
-    expect(fallback).not.toMatch(EMOJI);
+    expect(registry).not.toMatch(EMOJI);
+    expect(art).not.toMatch(EMOJI);
   });
 });

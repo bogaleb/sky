@@ -142,7 +142,7 @@ export function FeedbackOverlay({ correct, streak, pointsEarned, leveledUp, onDo
     >
       {correct && <ConfettiBurst />}
       <div
-        className="animate-kid-pop-in mx-4 flex flex-col items-center rounded-kid-card bg-white/95 px-10 py-8 text-center shadow-2xl"
+        className="card-kid animate-kid-pop-in mx-4 flex flex-col items-center px-10 py-8 text-center"
         onClick={(e) => e.stopPropagation()}
       >
         <div className={correct ? 'animate-kid-bounce-soft' : 'animate-kid-wiggle'}>
@@ -162,7 +162,7 @@ export function FeedbackOverlay({ correct, streak, pointsEarned, leveledUp, onDo
             </svg>
           )}
         </div>
-        <p className="mt-4 text-4xl font-black text-kid-ink-900">{title}</p>
+        <p className="font-display mt-4 text-4xl font-bold text-kid-ink-900">{title}</p>
         {correct && <StarPopRow count={streak >= 5 ? 3 : streak >= 2 ? 2 : 1} />}
         {correct && pointsEarned > 0 && (
           <p className="mt-2 flex items-center gap-2 text-2xl font-extrabold text-kid-sun-500">
@@ -173,7 +173,7 @@ export function FeedbackOverlay({ correct, streak, pointsEarned, leveledUp, onDo
           </p>
         )}
         {leveledUp && (
-          <p className="animate-kid-wiggle mt-3 rounded-full bg-kid-grape-500 px-5 py-2 text-lg font-extrabold text-white shadow-lg">
+          <p className="animate-kid-wiggle mt-3 rounded-full border-b-4 border-kid-grape-600 bg-kid-grape-500 px-5 py-2 text-lg font-black text-white shadow-lg">
             Level up!
           </p>
         )}

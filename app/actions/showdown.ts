@@ -1,7 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
-import { weekKey } from '@/lib/kid/showdown';
+import { tallyWeeklyEvents, weekKey, type WeeklyEventLike } from '@/lib/kid/showdown';
 
 export interface FamilyWeeklyRow {
   childId: string;
@@ -38,11 +38,19 @@ async function requireParent() {
 }
 
 /**
- * Weekly totals per child, honest metric. There is no star ledger table —
- * star_balances holds lifetime totals only — so weekly stars are summed from
- * `session_complete` milestone metadata, the same convention the parent
- * dashboard uses for stars7d. Weekly activities count `attempt` events.
- * Read-only on existing tables; no migrations needed.
+ * Weekly totals per child — honest metric (Wave 10).
+ *
+ * There is no star ledger table (star_balances holds lifetime totals only),
+ * so weekly stars are summed from `learning_events`: EVERY milestone event
+ * carrying a positive numeric `metadata.stars` counts — Trail
+ * session_complete flights, all 30 mini-game wins, and quest-completion
+ * bonuses. Each of those rows is written at the moment stars are awarded, so
+ * the sum equals "stars earned this week". Weekly activities count `attempt`
+ * events, as before. Read-only on existing tables; no migrations needed.
+ *
+ * Pagination: events are fetched in 1000-row pages ordered by created_at
+ * until a short page arrives, so heavy-play families are never silently
+ * truncated (the old .limit(4000) is gone).
  */
 async function familyWeeklyRows(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -57,34 +65,26 @@ async function familyWeeklyRows(
   if (kids.length === 0) return [];
 
   const childIds = kids.map((k) => k.id);
-  const mondayIso = `${weekKey()}T00:00:00.000Z`;
+  const mondayIso = `${weekKey()}T00:00:00.000Z`; // weekKey() is pure UTC — matches this Z filter.
 
-  const { data: events } = await supabase
-    .from('learning_events')
-    .select('child_id, event_type, skill_id, metadata, created_at')
-    .in('child_id', childIds)
-    .gte('created_at', mondayIso)
-    .limit(4000);
-  const rows = (events ?? []) as Array<{
-    child_id: string;
-    event_type: string;
-    skill_id: string | null;
-    metadata: Record<string, unknown>;
-    created_at: string;
-  }>;
-
-  const starsByChild = new Map<string, number>();
-  const activitiesByChild = new Map<string, number>();
-  for (const e of rows) {
-    if (e.event_type === 'milestone' && (e.metadata as { kind?: string }).kind === 'session_complete') {
-      starsByChild.set(
-        e.child_id,
-        (starsByChild.get(e.child_id) ?? 0) + Number((e.metadata as { stars?: number }).stars ?? 0),
-      );
-    } else if (e.event_type === 'attempt' && e.skill_id) {
-      activitiesByChild.set(e.child_id, (activitiesByChild.get(e.child_id) ?? 0) + 1);
-    }
+  const PAGE = 1000;
+  const MAX_PAGES = 20; // 20k events/week is far beyond plausible play; a cap, not a truncation.
+  const all: WeeklyEventLike[] = [];
+  for (let page = 0; page < MAX_PAGES; page += 1) {
+    const { data: events, error } = await supabase
+      .from('learning_events')
+      .select('child_id, event_type, skill_id, metadata')
+      .in('child_id', childIds)
+      .gte('created_at', mondayIso)
+      .order('created_at', { ascending: true })
+      .range(page * PAGE, page * PAGE + PAGE - 1);
+    if (error) throw new Error('Could not load weekly activity.');
+    const rows = (events ?? []) as WeeklyEventLike[];
+    all.push(...rows);
+    if (rows.length < PAGE) break;
   }
+
+  const { starsByChild, activitiesByChild } = tallyWeeklyEvents(all);
 
   return kids.map((k) => ({
     childId: k.id,

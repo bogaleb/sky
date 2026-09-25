@@ -9,8 +9,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import KidShell from '@/components/kid/kid-shell';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { awardStickers } from '@/app/actions/rewards';
-import { checkTrophies } from '@/app/actions/trophies';
+import { useGameSession } from './game-shell';
 import { getCollection } from '@/app/actions/collections';
 import {
   COLLECTION_ANIMALS,
@@ -340,15 +339,19 @@ export default function Encyclopedia({ childId, onExit }: EncyclopediaProps) {
   }, [childId]);
 
   // Book-complete celebration (fires once per mount when already complete).
+  const session = useGameSession({
+    childId,
+    stickerId: 'curious-collector',
+    trophyEvent: 'collection_done',
+  });
   useEffect(() => {
     if (loading || celebrated) return;
     if (!isCollectionComplete('animals', unlocked)) return;
     setCelebrated(true);
     playSfx('fanfare');
     speakAs('curio', 'Wow! Your animal book is full! You found every single animal. You are a true explorer!');
-    awardStickers(childId, ['curious-collector']).catch(() => {});
-    checkTrophies(childId, 'collection_done').catch(() => {});
-  }, [loading, unlocked, celebrated, childId]);
+    void session.complete({ stars: 0 });
+  }, [loading, unlocked, celebrated, childId, session]);
 
   const hearFact = useCallback((animal: AnimalEntry) => {
     playSfx('pop');

@@ -9,12 +9,8 @@ import {
   type TimeQuestion,
 } from '@/lib/kid/time';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { awardStars, awardStickers } from '@/app/actions/rewards';
-import { bumpQuestProgress } from '@/app/actions/trail';
-import { checkTrophies } from '@/app/actions/trophies';
-import { logLearningEvent } from '@/app/actions/learning';
+import { useGameSession, GameWinScreen } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
-import { ConfettiBurst } from '@/components/kid/celebration';
 
 export interface ClockTowerProps {
   childId: string;
@@ -26,20 +22,6 @@ type Phase = 'intro' | 'play' | 'won';
 
 const HOST = 'tuno';
 const CELEBRATE_MS = 1400;
-
-function StarIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 48 48" className={className} aria-hidden>
-      <path
-        d="M24 4l4.8 10.2 11.2 1.4-8.2 7.7 2.1 11-9.9-5.5-9.9 5.5 2.1-11-8.2-7.7 11.2-1.4z"
-        fill="#FFD93C"
-        stroke="#F5A623"
-        strokeWidth="2.5"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 /** Big analog clock showing the question time. Original SVG art, no emoji. */
 function AnalogClock({ question }: { question: TimeQuestion }) {
@@ -114,7 +96,14 @@ export default function ClockTower({ childId, nickname = 'friend', onExit }: Clo
   const [mistakes, setMistakes] = useState(0);
   const [attempts, setAttempts] = useState(0);
   const [starsEarned, setStarsEarned] = useState(0);
-  const [starBalance, setStarBalance] = useState(0);
+  const session = useGameSession({
+    childId,
+    gameKey: 'time_game',
+    stickerId: 'time-keeper',
+    trophyEvent: 'time_done',
+    milestone: 'clock_tower_win',
+  });
+  const starBalance = session.starBalance ?? 0;
   const [picked, setPicked] = useState<string | null>(null);
   const [shakeId, setShakeId] = useState<string | null>(null);
   const timers = useRef<number[]>([]);
@@ -167,20 +156,8 @@ export default function ClockTower({ childId, nickname = 'friend', onExit }: Clo
     setPhase('won');
     playSfx('fanfare');
     speakAs(HOST, `Wonderful, ${nickname}! You read ${ROUNDS_PER_GAME} clocks! You earned ${stars} stars!`);
-    try {
-      const balance = await awardStars(childId, stars);
-      setStarBalance(balance);
-      await bumpQuestProgress(childId, 'time_game', 1);
-      await awardStickers(childId, ['time-keeper']);
-      // 'time_done' trophy def lands in integration; the cast keeps tsc green now.
-      checkTrophies(childId, 'time_done').catch(() => {});
-      await logLearningEvent(childId, 'milestone', {
-        metadata: { kind: 'clock_tower_win', stars, mistakes, attempts },
-      });
-    } catch {
-      /* progress logging is best-effort; the celebration still stands */
-    }
-  }, [childId, nickname, mistakes, attempts]);
+    await session.complete({ stars, mistakes, extraMetadata: { attempts } });
+  }, [childId, nickname, mistakes, attempts, session]);
 
   const pickChoice = (choice: string) => {
     if (!question || phase !== 'play') return;
@@ -274,39 +251,15 @@ export default function ClockTower({ childId, nickname = 'friend', onExit }: Clo
       )}
 
       {phase === 'won' && (
-        <div className="animate-kid-pop-in mx-4 flex w-full max-w-md flex-col items-center rounded-kid-card bg-white/95 px-8 py-8 text-center shadow-2xl">
-          <ConfettiBurst />
-          <div className="animate-kid-bounce-soft">
-            <StarIcon className="h-24 w-24 md:h-28 md:w-28" />
-          </div>
-          <h2 className="mt-3 text-3xl font-black text-kid-ink-900 md:text-4xl">
-            Time Keeper, {nickname}!
-          </h2>
-          <p className="mt-2 text-lg font-bold text-kid-ink-700">
-            You read {ROUNDS_PER_GAME} clocks and earned
-          </p>
-          <div className="mt-2 flex items-center gap-2">
-            <StarIcon className="h-10 w-10" />
-            <span className="text-4xl font-black tabular-nums text-kid-ink-900">{starsEarned}</span>
-            <span className="text-2xl font-black text-kid-ink-700">stars</span>
-          </div>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={startGame}
-              className="rounded-full bg-kid-sky-400 px-8 py-3 text-lg font-extrabold text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
-            >
-              Play again
-            </button>
-            <button
-              type="button"
-              onClick={onExit}
-              className="rounded-full bg-kid-sun-400 px-8 py-3 text-lg font-extrabold text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
-            >
-              Back to Sky Park
-            </button>
-          </div>
-        </div>
+        <GameWinScreen
+          stars={starsEarned}
+          nickname={nickname}
+          title={`Time Keeper, ${nickname}!`}
+          message={`You read ${ROUNDS_PER_GAME} clocks!`}
+          stickerId="time-keeper"
+          onPlayAgain={startGame}
+          onExit={onExit}
+        />
       )}
     </KidShell>
   );

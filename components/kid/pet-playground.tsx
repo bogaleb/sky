@@ -2,10 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getPet, playWithPet } from '@/app/actions/pets';
-import { awardStars, awardStickers } from '@/app/actions/rewards';
-import { bumpQuestProgress } from '@/app/actions/trail';
-import { logLearningEvent } from '@/app/actions/learning';
-import { checkTrophies } from '@/app/actions/trophies';
+import { awardStars } from '@/app/actions/rewards';
+import { useGameSession, reportRewardError } from './game-shell';
 import { getSpecies, type Pet } from '@/lib/kid/pets';
 import {
   PLAYGROUND_GAMES,
@@ -81,6 +79,13 @@ export default function PetPlayground({ childId, onExit }: { childId: string; on
   const [hopKey, setHopKey] = useState(0);
   const [busy, setBusy] = useState(false);
   const [celebrated, setCelebrated] = useState(false);
+  const session = useGameSession({
+    childId,
+    gameKey: 'pet_play',
+    stickerId: 'playground-pro',
+    trophyEvent: 'playground_done',
+    milestone: 'playground_all_played',
+  });
 
   // per-game state
   const [fetchSession, setFetchSession] = useState<FetchSession | null>(null);
@@ -190,18 +195,19 @@ export default function PetPlayground({ childId, onExit }: { childId: string; on
         const p = await playWithPet(childId);
         setPet(p);
       } catch {
-        // pet happiness is a bonus; the kid's rewards still land
+        // pet happiness is a bonus action, not a reward step; the kid's rewards still land
       }
-      await awardStars(childId, STARS_PER_GAME).catch(() => {});
+      try {
+        await awardStars(childId, STARS_PER_GAME);
+      } catch (err) {
+        reportRewardError(childId, 'awardStars', err);
+      }
       if (info) speakAs(info.hostCharacter, 'That was wonderful! You are the best friend ever!');
       // All three played -> celebration.
       if (updated.length >= 3 && !celebratedRef.current) {
         celebratedRef.current = true;
         setCelebrated(true);
-        await awardStickers(childId, ['playground-pro']).catch(() => {});
-        void checkTrophies(childId, 'playground_done').catch(() => {});
-        await bumpQuestProgress(childId, 'pet_play', 1).catch(() => {});
-        await logLearningEvent(childId, 'milestone', { metadata: { kind: 'playground_all_played' } }).catch(() => {});
+        await session.complete({ stars: 0 });
         playSfx('fanfare');
       }
     } finally {

@@ -3,10 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { pickSession, ROUNDS_PER_GAME, type FaceParams, type FeelingRound } from '@/lib/kid/feelings';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { awardStars, awardStickers } from '@/app/actions/rewards';
-import { bumpQuestProgress } from '@/app/actions/trail';
-import { logLearningEvent } from '@/app/actions/learning';
-import { checkTrophies } from '@/app/actions/trophies';
+import { useGameSession, GameWinScreen } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
 
 export interface FeelingsTheaterProps {
@@ -80,20 +77,6 @@ function FeelingFace({ face, size = 'h-44 w-44 md:h-64 md:w-64' }: { face: FaceP
       {face.mouth === 'wavy' && (
         <path d="M65 138 Q78 128 90 138 Q102 148 114 138 Q126 128 135 138" fill="none" stroke="#7C2D12" strokeWidth="9" strokeLinecap="round" />
       )}
-    </svg>
-  );
-}
-
-function StarIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 64 64" className={className} aria-hidden>
-      <path
-        d="M32 6 L39 24 L58 24 L43 35 L48 54 L32 43 L16 54 L21 35 L6 24 L25 24 Z"
-        fill="#FFC93C"
-        stroke="#E09E00"
-        strokeWidth="3"
-        strokeLinejoin="round"
-      />
     </svg>
   );
 }
@@ -186,7 +169,14 @@ export default function FeelingsTheater({ childId, nickname = 'friend', onExit }
   const [picked, setPicked] = useState<number | null>(null);
   const [wrongPick, setWrongPick] = useState<number | null>(null);
   const [starsEarned, setStarsEarned] = useState(0);
-  const [starBalance, setStarBalance] = useState(0);
+  const session = useGameSession({
+    childId,
+    gameKey: 'feelings_game',
+    stickerId: 'feelings-friend',
+    trophyEvent: 'feelings_done',
+    milestone: 'feelings_theater_win',
+  });
+  const starBalance = session.starBalance ?? 0;
   const [didBreathe, setDidBreathe] = useState(false);
 
   useEffect(() => {
@@ -217,19 +207,8 @@ export default function FeelingsTheater({ childId, nickname = 'friend', onExit }
     setPhase('won');
     playSfx('fanfare');
     speakAs('tuno', `Beautiful work, ${nickname}! You named every feeling. You earned ${stars} stars!`);
-    try {
-      const balance = await awardStars(childId, stars);
-      setStarBalance(balance);
-      await bumpQuestProgress(childId, 'feelings_game', 1);
-      await awardStickers(childId, ['feelings-friend']);
-      await checkTrophies(childId, 'feelings_done').catch(() => {});
-      await logLearningEvent(childId, 'milestone', {
-        metadata: { kind: 'feelings_theater_win', rounds: ROUNDS_PER_GAME },
-      });
-    } catch {
-      /* progress logging is best-effort; the celebration still stands */
-    }
-  }, [childId, nickname]);
+    await session.complete({ stars, extraMetadata: { rounds: ROUNDS_PER_GAME } });
+  }, [childId, nickname, session]);
 
   const advance = useCallback(() => {
     if (roundIndex + 1 >= ROUNDS_PER_GAME) {
@@ -378,31 +357,16 @@ export default function FeelingsTheater({ childId, nickname = 'friend', onExit }
       {phase === 'breathe' && <BreathingBreak onDone={resumeAfterBreathe} nickname={nickname} />}
 
       {phase === 'won' && (
-        <div className="animate-kid-pop-in mx-4 flex w-full max-w-md flex-col items-center rounded-kid-card bg-white/95 px-8 py-8 text-center shadow-2xl">
-          <div className="animate-kid-bounce-soft">
-            <StarIcon className="h-24 w-24 md:h-28 md:w-28" />
-          </div>
-          <h2 className="mt-3 text-3xl font-black text-kid-ink-900 md:text-4xl">
-            Every feeling is okay, {nickname}!
-          </h2>
-          <p className="mt-2 text-lg font-bold text-kid-ink-700">
-            You named all {ROUNDS_PER_GAME} feelings and earned
-          </p>
-          <div className="mt-2 flex items-center gap-2">
-            <StarIcon className="h-10 w-10" />
-            <span className="text-4xl font-black tabular-nums text-kid-ink-900">{starsEarned}</span>
-            <span className="text-2xl font-black text-kid-ink-700">stars</span>
-          </div>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={startShow}
-              className="min-h-[72px] rounded-full bg-kid-mint-500 px-8 py-3 text-lg font-extrabold text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
-            >
-              Play again
-            </button>
-          </div>
-        </div>
+        <GameWinScreen
+          stars={starsEarned}
+          nickname={nickname}
+          title={`Every feeling is okay, ${nickname}!`}
+          message={`You named all ${ROUNDS_PER_GAME} feelings and earned`}
+          stickerId="feelings-friend"
+          hostAvatar={<FeelingFace face={{ mouth: 'smile', eyes: 'happy-arcs' }} size="h-24 w-24 md:h-28 md:w-28" />}
+          onPlayAgain={startShow}
+          onExit={onExit}
+        />
       )}
     </KidShell>
   );

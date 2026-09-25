@@ -20,12 +20,52 @@ export interface RankedSibling extends SiblingEntry {
   gapToNext: number;
 }
 
-/** Monday (00:00 UTC) of the week containing `now`, as YYYY-MM-DD. */
+/**
+ * Monday (00:00 UTC) of the week containing `now`, as YYYY-MM-DD.
+ *
+ * Pure UTC arithmetic on purpose: the server action builds a `...T00:00:00Z`
+ * filter from this key, so local-time getters here would shift the week
+ * boundary by hours for anyone outside UTC (Wave 10 honesty fix).
+ */
 export function weekKey(now: Date = new Date()): string {
-  const d = new Date(now);
-  const diff = (d.getDay() + 6) % 7; // days since Monday
-  d.setDate(d.getDate() - diff);
-  return d.toISOString().slice(0, 10);
+  const monday = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  const diff = (monday.getUTCDay() + 6) % 7; // days since Monday, UTC
+  monday.setUTCDate(monday.getUTCDate() - diff);
+  return monday.toISOString().slice(0, 10);
+}
+
+/** Minimal shape of a learning_events row needed for weekly tallies. */
+export interface WeeklyEventLike {
+  child_id: string;
+  event_type: string;
+  skill_id: string | null;
+  metadata: Record<string, unknown> | null;
+}
+
+/**
+ * Honest weekly tally from raw events (pure — the server action paginates and
+ * calls this). Stars: EVERY milestone carrying a positive numeric
+ * `metadata.stars` counts — Trail session_complete, all 30 mini-game wins,
+ * quest-completion bonuses — because every one of those is a real star award.
+ * Activities: attempt events with a skill_id, as before.
+ */
+export function tallyWeeklyEvents(events: WeeklyEventLike[]): {
+  starsByChild: Map<string, number>;
+  activitiesByChild: Map<string, number>;
+} {
+  const starsByChild = new Map<string, number>();
+  const activitiesByChild = new Map<string, number>();
+  for (const e of events) {
+    if (e.event_type === 'milestone') {
+      const stars = Number(e.metadata?.stars);
+      if (Number.isFinite(stars) && stars > 0) {
+        starsByChild.set(e.child_id, (starsByChild.get(e.child_id) ?? 0) + stars);
+      }
+    } else if (e.event_type === 'attempt' && e.skill_id) {
+      activitiesByChild.set(e.child_id, (activitiesByChild.get(e.child_id) ?? 0) + 1);
+    }
+  }
+  return { starsByChild, activitiesByChild };
 }
 
 /**

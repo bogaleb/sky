@@ -236,6 +236,10 @@ const ALLOWED_EVENT_TYPES = new Set([
   'milestone',
   'break_taken',
   'frustration_flag',
+  // Wave 10 honesty: reward-pipeline failures (awardStars / stickers / trophies
+  // that threw after the child already celebrated). Written best-effort by
+  // logRewardError so failures are observable instead of swallowed.
+  'reward_error',
 ]);
 
 export async function logLearningEvent(
@@ -255,4 +259,25 @@ export async function logLearningEvent(
   });
   if (error || !data) throw new Error('Could not log event.');
   return data;
+}
+
+/**
+ * Wave 10 honesty: record a reward-pipeline failure (e.g. awardStars threw
+ * after the win screen already celebrated). Never throws — observability must
+ * never break gameplay. Called by the client-side reward-error buffer
+ * (lib/kid/reward-errors.ts); Track 1's game-shell wires reportRewardError
+ * into its reward catch blocks.
+ */
+export async function logRewardError(
+  childId: string,
+  step: string,
+  message: string,
+): Promise<void> {
+  try {
+    await logLearningEvent(childId, 'reward_error', {
+      metadata: { step, message: message.slice(0, 500) },
+    });
+  } catch {
+    /* the watcher itself stays silent — gameplay comes first */
+  }
 }

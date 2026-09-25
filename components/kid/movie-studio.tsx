@@ -12,10 +12,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AVATARS } from '@/components/avatars';
 import { getCharacter } from '@/lib/kid/characters';
 import { playSfx, speakAs, stopSpeaking } from '@/lib/kid/audio';
-import { awardStars, awardStickers } from '@/app/actions/rewards';
-import { bumpQuestProgress } from '@/app/actions/trail';
-import { checkTrophies } from '@/app/actions/trophies';
-import { logLearningEvent } from '@/app/actions/learning';
+import { useGameSession } from './game-shell';
 import { browserStorage, type StorageLike } from '@/lib/kid/offline';
 import {
   BACKDROPS,
@@ -215,6 +212,13 @@ export default function MovieStudio({ childId, nickname = 'friend', onExit }: Mo
   const [gallery, setGallery] = useState<Movie[]>([]);
   const [starsEarned, setStarsEarned] = useState(0);
   const rewardedRef = useRef(false);
+  const session = useGameSession({
+    childId,
+    gameKey: 'movie_game',
+    stickerId: 'movie-maker',
+    trophyEvent: 'movie_done',
+    milestone: 'movie_studio_premiere',
+  });
 
   // Load the saved-movie gallery on mount.
   useEffect(() => {
@@ -340,23 +344,10 @@ export default function MovieStudio({ childId, nickname = 'friend', onExit }: Mo
       }
     }
     void (async () => {
-      try {
-        await awardStars(childId, 10);
-        setStarsEarned(10);
-        await bumpQuestProgress(childId, 'movie_game', 1);
-        // 'movie-maker' sticker def lands via the sibling Wave 6 track;
-        // awardStickers filters unknown ids, so this is safe until then.
-        await awardStickers(childId, ['movie-maker']);
-        await logLearningEvent(childId, 'milestone', {
-          metadata: { kind: 'movie_studio_premiere', backdrop: movie?.backdropId },
-        });
-      } catch {
-        /* rewards are best-effort; the show still goes on */
-      }
-      // Trophy def lands in integration; until then this is a safe no-op.
-      void checkTrophies(childId, 'movie_done').catch(() => {});
+      setStarsEarned(10);
+      await session.complete({ stars: 10, extraMetadata: { backdrop: movie?.backdropId } });
     })();
-  }, [phase, childId, movie]);
+  }, [phase, childId, movie, session]);
 
   const nextBeat = useCallback(() => {
     playSfx('pop');

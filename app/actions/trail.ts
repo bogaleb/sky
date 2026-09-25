@@ -131,6 +131,11 @@ export async function bumpQuestProgress(
 
   if (newlyCompleted && def.stars > 0) {
     await supabase.rpc('award_stars', { p_child_id: childId, p_amount: def.stars });
+    // Wave 10 honesty: quest bonuses are real star awards, so they join the
+    // weekly tally feed (the Showdown sums every milestone with metadata.stars).
+    void logLearningEvent(childId, 'milestone', {
+      metadata: { kind: 'quest_complete', questId, stars: def.stars },
+    }).catch(() => {});
   }
 
   if (newlyCompleted) {

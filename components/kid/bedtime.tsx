@@ -1,11 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { awardStars, awardStickers } from '@/app/actions/rewards';
-import { checkTrophies } from '@/app/actions/trophies';
 import type { TrophyEvent } from '@/lib/kid/trophies';
-import { logLearningEvent } from '@/app/actions/learning';
 import { playSfx, speakAs, stopSpeaking, unlockAudio } from '@/lib/kid/audio';
+import { useGameSession } from './game-shell';
 import { AVATARS } from '@/components/avatars';
 import Storybook from './storybook';
 import Songbook from './songbook';
@@ -193,6 +191,11 @@ export default function Bedtime({
   const [breathing, setBreathing] = useState(false);
   const doneRef = useRef(false);
   const finaleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const session = useGameSession({
+    childId,
+    trophyEvent: BEDTIME_TROPHY_EVENT,
+    milestone: 'bedtime_complete',
+  });
 
   const stories = useMemo(() => calmStories(), []);
   const songs = useMemo(() => calmSongs(), []);
@@ -239,25 +242,16 @@ export default function Bedtime({
       doneRef.current = true;
       stopSpeaking();
       playSfx('star');
-      try {
-        await awardStars(childId, BEDTIME_STARS);
-        const stickers = [SWEET_DREAMS_STICKER];
-        if (door === 'breathe') stickers.push(STAR_GAZER_STICKER);
-        await awardStickers(childId, stickers);
-        await logLearningEvent(childId, 'milestone', {
-          metadata: { kind: 'bedtime_complete', door },
-        });
-      } catch {
-        /* best-effort; the sleepy moment still counts */
-      }
-      void checkTrophies(childId, BEDTIME_TROPHY_EVENT).catch(() => {});
+      const stickers = [SWEET_DREAMS_STICKER];
+      if (door === 'breathe') stickers.push(STAR_GAZER_STICKER);
+      await session.complete({ stars: BEDTIME_STARS, stickerIds: stickers, extraMetadata: { door } });
       setActiveStory(null);
       setActiveSong(null);
       setBreath(null);
       setBreathing(false);
       setPhase('sweet');
     },
-    [childId],
+    [childId, session],
   );
 
   /* ---------------- Star-breathing state machine ---------------- */

@@ -40,12 +40,37 @@ export default function VideoSpot({
   rounded?: boolean;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
   const [started, setStarted] = useState(false);
   const [failed, setFailed] = useState(false);
   const [muted] = useState(() => isMuted());
+  // Wave 10 video diet: don't fetch the bytes until the player is near
+  // the viewport. Falls back to loading immediately where
+  // IntersectionObserver is unavailable.
+  const [srcReady, setSrcReady] = useState(false);
   const character = getCharacter(characterId);
 
   useEffect(() => {
+    const el = wrapRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') {
+      setSrcReady(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setSrcReady(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: '400px' }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!srcReady) return;
     const video = videoRef.current;
     if (!video) return;
 
@@ -78,7 +103,7 @@ export default function VideoSpot({
       stopMusicBed();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [src]);
+  }, [src, srcReady]);
 
   if (failed) {
     // Graceful fallback: the character speaks their line over a pretty backdrop.
@@ -107,16 +132,17 @@ export default function VideoSpot({
 
   return (
     <div
+      ref={wrapRef}
       className={rounded ? 'kid-video-spot' : 'kid-video-spot kid-video-spot--bleed'}
       role="img"
       aria-label={label}
     >
       <video
         ref={videoRef}
-        src={src}
+        src={srcReady ? src : undefined}
         poster={poster}
         playsInline
-        preload="auto"
+        preload="metadata"
         onError={() => setFailed(true)}
         className="kid-video-spot__video"
       />

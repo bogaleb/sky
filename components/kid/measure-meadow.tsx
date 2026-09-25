@@ -9,12 +9,8 @@ import {
   type MeasureQuestion,
 } from '@/lib/kid/measure';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { awardStars, awardStickers } from '@/app/actions/rewards';
-import { bumpQuestProgress } from '@/app/actions/trail';
-import { checkTrophies } from '@/app/actions/trophies';
-import { logLearningEvent } from '@/app/actions/learning';
+import { useGameSession, GameWinScreen } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
-import { ConfettiBurst } from '@/components/kid/celebration';
 
 export interface MeasureMeadowProps {
   childId: string;
@@ -255,20 +251,6 @@ function OptionArt({ option, question }: { option: MeasureOption; question: Meas
   }
 }
 
-function StarIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 48 48" className={className} aria-hidden>
-      <path
-        d="M24 4l4.8 10.2 11.2 1.4-8.2 7.7 2.1 11-9.9-5.5-9.9 5.5 2.1-11-8.2-7.7 11.2-1.4z"
-        fill="#FFD93C"
-        stroke="#F5A623"
-        strokeWidth="2.5"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 export default function MeasureMeadow({ childId, nickname = 'friend', onExit }: MeasureMeadowProps) {
   const [phase, setPhase] = useState<Phase>('intro');
   const [roundIndex, setRoundIndex] = useState(0);
@@ -276,7 +258,14 @@ export default function MeasureMeadow({ childId, nickname = 'friend', onExit }: 
   const [picked, setPicked] = useState<number | null>(null);
   const [mistakes, setMistakes] = useState(0);
   const [starsEarned, setStarsEarned] = useState(0);
-  const [starBalance, setStarBalance] = useState(0);
+  const session = useGameSession({
+    childId,
+    gameKey: 'measure_game',
+    stickerId: 'measure-master',
+    trophyEvent: 'measure_done',
+    milestone: 'measure_meadow_win',
+  });
+  const starBalance = session.starBalance ?? 0;
   const [shakeId, setShakeId] = useState<number | null>(null);
   const timers = useRef<number[]>([]);
 
@@ -330,21 +319,8 @@ export default function MeasureMeadow({ childId, nickname = 'friend', onExit }: 
     setPhase('won');
     playSfx('fanfare');
     speakAs(HOST, `Measuring complete, ${nickname}! You compared ${ROUNDS_PER_GAME} things! You earned ${stars} stars!`);
-    try {
-      const balance = await awardStars(childId, stars);
-      setStarBalance(balance);
-      await bumpQuestProgress(childId, 'measure_game', 1);
-      // 'measure-master' sticker def lands with Track A; safe no-op until then.
-      await awardStickers(childId, ['measure-master']);
-      // 'measure_done' trophy def lands in integration; the cast keeps tsc green now.
-      checkTrophies(childId, 'measure_done').catch(() => {});
-      await logLearningEvent(childId, 'milestone', {
-        metadata: { kind: 'measure_meadow_win', stars, mistakes, rounds: ROUNDS_PER_GAME },
-      });
-    } catch {
-      /* progress logging is best-effort; the celebration still stands */
-    }
-  }, [childId, nickname, mistakes]);
+    await session.complete({ stars, mistakes, extraMetadata: { rounds: ROUNDS_PER_GAME } });
+  }, [childId, nickname, mistakes, session]);
 
   const pickOption = (id: number) => {
     if (!question || phase !== 'play' || picked !== null) return;
@@ -445,37 +421,15 @@ export default function MeasureMeadow({ childId, nickname = 'friend', onExit }: 
       )}
 
       {phase === 'won' && (
-        <div className="animate-kid-pop-in mx-4 flex w-full max-w-md flex-col items-center rounded-kid-card bg-white/95 px-8 py-8 text-center shadow-2xl">
-          <ConfettiBurst />
-          <div className="animate-kid-bounce-soft">
-            <StarIcon className="h-24 w-24 md:h-28 md:w-28" />
-          </div>
-          <h2 className="mt-3 text-3xl font-black text-kid-ink-900 md:text-4xl">Measure Master, {nickname}!</h2>
-          <p className="mt-2 text-lg font-bold text-kid-ink-700">
-            You compared {ROUNDS_PER_GAME} things and earned
-          </p>
-          <div className="mt-2 flex items-center gap-2">
-            <StarIcon className="h-10 w-10" />
-            <span className="text-4xl font-black tabular-nums text-kid-ink-900">{starsEarned}</span>
-            <span className="text-2xl font-black text-kid-ink-700">stars</span>
-          </div>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={startGame}
-              className="min-h-[72px] rounded-full bg-kid-sky-400 px-8 py-3 text-lg font-extrabold text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
-            >
-              Play again
-            </button>
-            <button
-              type="button"
-              onClick={onExit}
-              className="min-h-[72px] rounded-full bg-kid-sun-400 px-8 py-3 text-lg font-extrabold text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
-            >
-              Back to Sky Park
-            </button>
-          </div>
-        </div>
+        <GameWinScreen
+          stars={starsEarned}
+          nickname={nickname}
+          title={`Measure Master, ${nickname}!`}
+          message={`You compared ${ROUNDS_PER_GAME} things!`}
+          stickerId="measure-master"
+          onPlayAgain={startGame}
+          onExit={onExit}
+        />
       )}
     </KidShell>
   );

@@ -4,9 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AVATARS } from '@/components/avatars';
 import { getCharacter } from '@/lib/kid/characters';
 import { playSfx, speakAs, stopSpeaking, unlockAudio } from '@/lib/kid/audio';
-import { awardStars, awardStickers } from '@/app/actions/rewards';
-import { checkTrophies } from '@/app/actions/trophies';
-import { logLearningEvent } from '@/app/actions/learning';
+import { useGameSession } from './game-shell';
 import {
   EPISODES,
   FRIEND_NAMES,
@@ -343,6 +341,12 @@ export default function StoryCinema({ childId, onExit }: { childId: string; onEx
   const [starsEarned, setStarsEarned] = useState(0);
   const playingRef = useRef(true);
   const rewardedRef = useRef(false);
+  const session = useGameSession({
+    childId,
+    stickerId: 'movie-star',
+    trophyEvent: 'cinema_done',
+    milestone: 'cinema_watched',
+  });
 
   const scene: CinemaScene | null = episode ? episode.scenes[sceneIndex] ?? null : null;
 
@@ -445,22 +449,10 @@ export default function StoryCinema({ childId, onExit }: { childId: string; onEx
     if (phase !== 'end' || !episode || rewardedRef.current) return;
     rewardedRef.current = true;
     void (async () => {
-      try {
-        await awardStars(childId, 5);
-        setStarsEarned(5);
-        // 'movie-star' sticker is defined by the content track; awardStickers
-        // ignores unknown ids, so this is safe until it lands.
-        await awardStickers(childId, ['movie-star']);
-        await logLearningEvent(childId, 'milestone', {
-          metadata: { kind: 'cinema_watched', episode: episode.id },
-        });
-      } catch {
-        /* rewards are best-effort; the celebration still stands */
-      }
-      // Trophy def lands in integration; until then this is a safe no-op.
-      void checkTrophies(childId, 'cinema_done').catch(() => {});
+      setStarsEarned(5);
+      await session.complete({ stars: 5, extraMetadata: { episode: episode.id } });
     })();
-  }, [phase, episode, childId]);
+  }, [phase, episode, childId, session]);
 
   return (
     <div className="flex min-h-full w-full flex-col items-center bg-gradient-to-b from-kid-sky-300 to-kid-sky-500 px-4 py-6">

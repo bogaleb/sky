@@ -13,10 +13,7 @@ import {
   type GeoRound,
 } from '@/lib/kid/geography';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { awardStars, awardStickers } from '@/app/actions/rewards';
-import { bumpQuestProgress } from '@/app/actions/trail';
-import { checkTrophies } from '@/app/actions/trophies';
-import { logLearningEvent } from '@/app/actions/learning';
+import { useGameSession, GameWinScreen } from './game-shell';
 import { unlockItem } from '@/app/actions/collections';
 import KidShell from '@/components/kid/kid-shell';
 import HostCharacter from '@/components/kid/host-character';
@@ -50,20 +47,6 @@ function SpeakerIcon({ className }: { className?: string }) {
       <path d="M10 24 h12 l14 -11 v38 l-14 -11 h-12 z" fill="#3B82F6" stroke="#17324F" strokeWidth="3" strokeLinejoin="round" />
       <path d="M42 24 q9 8 0 16" fill="none" stroke="#17324F" strokeWidth="3" strokeLinecap="round" />
       <path d="M48 18 q13 14 0 28" fill="none" stroke="#17324F" strokeWidth="3" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function StarIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 64 64" className={className} aria-hidden>
-      <path
-        d="M32 6 L39 24 L58 24 L43 35 L48 54 L32 43 L16 54 L21 35 L6 24 L25 24 Z"
-        fill="#FFC93C"
-        stroke="#E09E00"
-        strokeWidth="3"
-        strokeLinejoin="round"
-      />
     </svg>
   );
 }
@@ -596,7 +579,14 @@ export default function WorldTour({ childId, nickname = 'friend', onExit }: Worl
   const [correctCount, setCorrectCount] = useState(0);
   const [picked, setPicked] = useState<{ id: string; correct: boolean } | null>(null);
   const [starsEarned, setStarsEarned] = useState(0);
-  const [starBalance, setStarBalance] = useState(0);
+  const session = useGameSession({
+    childId,
+    gameKey: 'geography_game',
+    stickerId: 'globe-trotter',
+    trophyEvent: 'geography_done',
+    milestone: 'world_tour_win',
+  });
+  const starBalance = session.starBalance ?? 0;
   const timers = useRef<number[]>([]);
 
   const mode: GeoMode = MODES[roundIndex % MODES.length];
@@ -645,27 +635,21 @@ export default function WorldTour({ childId, nickname = 'friend', onExit }: Worl
         HOST,
         `Incredible journey, ${nickname}! You visited every corner of the map! You earned ${stars} stars!`
       );
+      // Bespoke game logic (not part of the shared reward sequence):
+      // unlock every animal met on the tour into the child's animal book.
       try {
-        const balance = await awardStars(childId, stars);
-        setStarBalance(balance);
-        await bumpQuestProgress(childId, 'geography_game', 1);
-        await awardStickers(childId, ['globe-trotter']);
-        void checkTrophies(childId, 'geography_done').catch(() => {});
-        // Unlock every animal met on the tour into the child's animal book.
         const seen = new Set<string>();
         for (let i = 0; i < ROUNDS_PER_GAME; i += 1) {
           const r = generateRound(MODES[i % MODES.length], gameSeed + i * 7919);
           if (r.mode === 'animal' && r.animalId) seen.add(r.animalId);
         }
         await Promise.all([...seen].map((id) => unlockItem(childId, 'animals', id).catch(() => {})));
-        await logLearningEvent(childId, 'milestone', {
-          metadata: { kind: 'world_tour_win', stars, attempts: finalAttempts },
-        });
       } catch {
-        /* progress logging is best-effort; the celebration still stands */
+        /* animal-book unlocks are best-effort; the celebration still stands */
       }
+      await session.complete({ stars, extraMetadata: { attempts: finalAttempts } });
     },
-    [childId, nickname, gameSeed]
+    [childId, nickname, gameSeed, session]
   );
 
   const choose = useCallback(
@@ -780,38 +764,17 @@ export default function WorldTour({ childId, nickname = 'friend', onExit }: Worl
       )}
 
       {phase === 'won' && (
-        <div className="animate-kid-pop-in mx-4 flex w-full max-w-md flex-col items-center rounded-kid-card bg-white/95 px-8 py-8 text-center shadow-2xl">
-          <div className="animate-kid-bounce-soft">
-            <StarIcon className="h-24 w-24 md:h-28 md:w-28" />
-          </div>
-          <h2 className="mt-3 text-3xl font-black text-kid-ink-900 md:text-4xl">
-            World traveler, {nickname}!
-          </h2>
-          <p className="mt-2 text-lg font-bold text-kid-ink-700">
-            You toured all {ROUNDS_PER_GAME} stops in {attempts} tries and earned
-          </p>
-          <div className="mt-2 flex items-center gap-2">
-            <StarIcon className="h-10 w-10" />
-            <span className="text-4xl font-black tabular-nums text-kid-ink-900">{starsEarned}</span>
-            <span className="text-2xl font-black text-kid-ink-700">stars</span>
-          </div>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={startGame}
-              className="rounded-full bg-kid-sky-400 px-8 py-3 text-lg font-extrabold text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
-            >
-              Tour again
-            </button>
-            <button
-              type="button"
-              onClick={onExit}
-              className="rounded-full bg-kid-sun-400 px-8 py-3 text-lg font-extrabold text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
-            >
-              Back to map
-            </button>
-          </div>
-        </div>
+        <GameWinScreen
+          stars={starsEarned}
+          nickname={nickname}
+          title={`World traveler, ${nickname}!`}
+          message={`You toured all ${ROUNDS_PER_GAME} stops in ${attempts} tries and earned`}
+          stickerId="globe-trotter"
+          hostAvatar={<HostCharacter characterId={HOST} mood="cheer" />}
+          onPlayAgain={startGame}
+          onExit={onExit}
+          playAgainLabel="Tour again"
+        />
       )}
     </KidShell>
   );

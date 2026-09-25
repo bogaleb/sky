@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { AttemptResult, PlannedStep } from '@/lib/kid/types';
 import { countObjectsFrom, listenScriptFrom, traceTargetFrom } from '@/lib/kid/card-mapping';
-import { speak, playSfx, stopSpeaking } from '@/lib/kid/audio';
+import { speak, speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
 import PromptBar from './prompt-bar';
 import ChoiceRenderer from './activities/choice';
 import CountRenderer from './activities/count';
@@ -34,6 +34,10 @@ export default function ActivityStage({ step, onSubmit, onComplete, onMood }: Ac
   const [locked, setLocked] = useState(false);
   const [feedback, setFeedback] = useState<AttemptResult | null>(null);
   const [pickedId, setPickedId] = useState<string | null>(null);
+  // Wave 10: gentle retry state for when grading itself fails (network/RPC
+  // down). Non-readers get a character voice line + one big button.
+  const [submitError, setSubmitError] = useState(false);
+  const lastAnswerRef = useRef<unknown>(null);
   const startRef = useRef(Date.now());
   const feedbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -46,6 +50,8 @@ export default function ActivityStage({ step, onSubmit, onComplete, onMood }: Ac
     setLocked(false);
     setFeedback(null);
     setPickedId(null);
+    setSubmitError(false);
+    lastAnswerRef.current = null;
     startRef.current = Date.now();
     onMood('idle');
     const t = setTimeout(() => speak(narration), 600);
@@ -60,6 +66,8 @@ export default function ActivityStage({ step, onSubmit, onComplete, onMood }: Ac
   const commit = async (answer: unknown) => {
     if (locked) return;
     setLocked(true);
+    setSubmitError(false);
+    lastAnswerRef.current = answer;
     stopSpeaking();
     if (answer && typeof answer === 'object' && 'choice' in answer) {
       setPickedId((answer as { choice: string }).choice);
@@ -78,9 +86,22 @@ export default function ActivityStage({ step, onSubmit, onComplete, onMood }: Ac
       // Auto-advance after the celebration; tap skips ahead.
       feedbackTimer.current = setTimeout(() => advance(result), result.correct ? 2600 : 3200);
     } catch {
+      // Wave 10: grading failed (offline/RPC error). Never leave the child
+      // staring at a dead screen — unlock with a friendly, non-reader retry.
       setLocked(false);
-      onMood('idle');
+      onMood('oops');
+      setSubmitError(true);
+      speakAs(
+        step.hostCharacter,
+        'Oh no! My star-mail got all tangled up. Tap the big button and we will try that one more time!',
+      );
     }
+  };
+
+  const retrySubmit = () => {
+    if (locked) return;
+    setSubmitError(false);
+    void commit(lastAnswerRef.current);
   };
 
   const advance = (result: AttemptResult) => {
@@ -168,6 +189,24 @@ export default function ActivityStage({ step, onSubmit, onComplete, onMood }: Ac
           leveledUp={feedback.leveledUp}
           onDone={() => advance(feedback)}
         />
+      )}
+
+      {submitError && !feedback && (
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="card-kid mx-4 flex w-full max-w-md flex-col items-center gap-4 px-8 py-8 text-center"
+        >
+          <p className="font-display text-2xl font-black text-kid-ink-900">
+            Oops! My star-mail got tangled!
+          </p>
+          <p className="text-base font-bold text-kid-ink-700">
+            That answer never made it to the sky. Let&apos;s send it one more time.
+          </p>
+          <button type="button" onClick={retrySubmit} className="btn-kid btn-kid-sky min-h-[72px] px-12 text-2xl">
+            Try again
+          </button>
+        </div>
       )}
     </div>
   );

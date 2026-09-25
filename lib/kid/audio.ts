@@ -162,11 +162,34 @@ export function playSfx(name: SfxName): void {
 /** Unlock audio on first user gesture (mobile autoplay policy). */
 export function unlockAudio(): void {
   ctx();
-  // Warm up the voice list for speechSynthesis.
+  warmVoices();
+}
+
+/**
+ * iOS Safari populates speechSynthesis voices asynchronously: the first
+ * getVoices() call usually returns []. Listen for voiceschanged once at
+ * module load so later utterances can pick a warm English voice.
+ * API-stable: no exported signatures change.
+ */
+function warmVoices(): void {
   try {
     window.speechSynthesis?.getVoices();
   } catch {
     /* noop */
+  }
+}
+
+if (typeof window !== 'undefined') {
+  try {
+    const synth = window.speechSynthesis;
+    if (synth && typeof synth.addEventListener === 'function') {
+      synth.addEventListener('voiceschanged', warmVoices);
+    } else if (synth) {
+      // Very old WebKit exposes onvoiceschanged only.
+      synth.onvoiceschanged = warmVoices;
+    }
+  } catch {
+    /* narration is enhancement-only */
   }
 }
 
