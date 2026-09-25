@@ -18,6 +18,11 @@ import NumberRun from './number-run';
 import StoryCinema from './story-cinema';
 import CreativeStudio from './studio';
 import Bedtime from './bedtime';
+import LetterLab from './letter-lab';
+import WorldTour from './world-tour';
+import RhythmStudio from './rhythm-studio';
+import ScienceLab from './science-lab';
+import UpNext from './up-next';
 import TrophyShelf from './trophy-shelf';
 import CharacterTalk from './character-talk';
 import DressUp from './dress-up';
@@ -348,6 +353,10 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
   const [showCinema, setShowCinema] = useState(false);
   const [showStudio, setShowStudio] = useState(false);
   const [showBedtime, setShowBedtime] = useState(false);
+  const [showWriting, setShowWriting] = useState(false);
+  const [showGeography, setShowGeography] = useState(false);
+  const [showRhythm, setShowRhythm] = useState(false);
+  const [showScience, setShowScience] = useState(false);
   const [showTrophies, setShowTrophies] = useState(false);
   const [talkWith, setTalkWith] = useState<string | null>(null);
   const resultsRef = useRef<AttemptResult[]>([]);
@@ -783,6 +792,83 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
               <span className="text-xs font-bold opacity-90">wind down</span>
             </button>
           </div>
+          <div className="mt-3 flex flex-wrap gap-2 md:gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowWriting(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-sky-300 px-4 py-4 text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <path d="M10 36L34 12l4 4L14 40l-6 2z" fill="#17324F" />
+                <path d="M34 12l2-2 4 4-2 2z" fill="#FF8C42" />
+                <path d="M8 38l6-1-5-5z" fill="#17324F" />
+                <text x="30" y="42" fontSize="10" fontWeight="900" fill="#17324F">Aa</text>
+              </svg>
+              <span className="text-lg font-black">Letter Lab</span>
+              <span className="text-xs font-bold opacity-80">trace your ABCs</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowGeography(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-mint-400 px-4 py-4 text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <circle cx="24" cy="24" r="16" fill="#3B82F6" />
+                <path d="M14 20c4-5 10-7 14-5s8 1 8 5-4 6-8 6-6 4-10 2-6-4-4-8z" fill="#22C55E" />
+                <path d="M30 12l2 3-2 3-2-3z" fill="#FFE66D" />
+              </svg>
+              <span className="text-lg font-black">World Tour</span>
+              <span className="text-xs font-bold opacity-80">explore with Atlas</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowRhythm(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-grape-400 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <circle cx="16" cy="34" r="9" fill="#fff" opacity="0.95" />
+                <circle cx="32" cy="30" r="9" fill="#fff" opacity="0.7" />
+                <rect x="23" y="8" width="4" height="14" rx="2" fill="#fff" opacity="0.95" transform="rotate(15 25 15)" />
+                <rect x="33" y="6" width="4" height="14" rx="2" fill="#fff" opacity="0.75" transform="rotate(-12 35 13)" />
+              </svg>
+              <span className="text-lg font-black">Rhythm Studio</span>
+              <span className="text-xs font-bold opacity-90">tap the beat</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowScience(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-coral-400 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <path d="M20 6h8v10l8 18a6 6 0 0 1-5.5 8h-13A6 6 0 0 1 12 34l8-18z" fill="#fff" opacity="0.95" />
+                <path d="M17 32h14l2.5 4.5a3 3 0 0 1-2.7 4.5H17.2a3 3 0 0 1-2.7-4.5z" fill="#22C55E" />
+                <circle cx="22" cy="28" r="2" fill="#fff" opacity="0.8" />
+                <circle cx="27" cy="30" r="1.6" fill="#fff" opacity="0.8" />
+              </svg>
+              <span className="text-lg font-black">Science Lab</span>
+              <span className="text-xs font-bold opacity-90">try experiments</span>
+            </button>
+          </div>
+          <UpNext
+            childId={child.id}
+            onPracticeIsland={(islandId) => {
+              const isl = getIsland(islandId);
+              if (isl) void startIslandSession(isl);
+            }}
+            onStartTrail={() => void startTrailQuest()}
+          />
           <SkyMap
             nickname={child.nickname}
             onSelectIsland={(isl) => void startIslandSession(isl)}
@@ -831,6 +917,26 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
         </div>
       )}
       {showBedtime && <Bedtime childId={child.id} nickname={child.nickname} onExit={() => setShowBedtime(false)} />}
+      {showWriting && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <LetterLab childId={child.id} nickname={child.nickname} onExit={() => setShowWriting(false)} />
+        </div>
+      )}
+      {showGeography && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <WorldTour childId={child.id} nickname={child.nickname} onExit={() => setShowGeography(false)} />
+        </div>
+      )}
+      {showRhythm && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <RhythmStudio childId={child.id} nickname={child.nickname} onExit={() => setShowRhythm(false)} />
+        </div>
+      )}
+      {showScience && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <ScienceLab childId={child.id} nickname={child.nickname} onExit={() => setShowScience(false)} />
+        </div>
+      )}
       {showTrophies && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
           <div className="flex justify-start p-4">

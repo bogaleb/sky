@@ -1,12 +1,21 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { questDateKey } from '@/lib/kid/quests';
+import { TRAIL_LENGTH, getTrailStop } from '@/lib/kid/trail';
+import type { MasterySignal, TrailSignal } from '@/lib/kid/recommend';
 
 /** Per-subject progress for the sky map: mastered skills / total skills. */
 export interface IslandProgress {
   subjectCode: string;
   mastered: number;
   total: number;
+}
+
+/** Everything the Up Next rail needs to build recommendations. */
+export interface PracticeSignals {
+  mastery: MasterySignal[];
+  trail: TrailSignal;
 }
 
 async function requireChild(childId: string) {
@@ -66,4 +75,76 @@ export async function getIslandProgress(childId: string): Promise<IslandProgress
     mastered: mastered.get(subjectCode) ?? 0,
     total,
   }));
+}
+
+/**
+ * Read-only signals for the Up Next recommendation rail: per-skill
+ * mastery + recency from skill_mastery, plus the child's trail state
+ * (next stop available? trail quest done today?).
+ *
+ * Never writes. The child must belong to the signed-in parent.
+ */
+export async function getPracticeSignals(childId: string): Promise<PracticeSignals> {
+  const supabase = await requireChild(childId);
+
+  const [{ data: skills }, { data: masteryRows }, { data: trailProgress }, { data: trailQuest }] =
+    await Promise.all([
+      supabase.from('skills').select('id, subject_code'),
+      supabase
+        .from('skill_mastery')
+        .select('skill_id, status, attempts, correct, last_practiced_at, next_review_at')
+        .eq('child_id', childId),
+      supabase
+        .from('trail_progress')
+        .select('position, quests_completed')
+        .eq('child_id', childId)
+        .maybeSingle(),
+      supabase
+        .from('quest_progress')
+        .select('completed')
+        .eq('child_id', childId)
+        .eq('quest_date', questDateKey())
+        .eq('quest_id', 'trail_quest')
+        .maybeSingle(),
+    ]);
+
+  const subjectBySkill = new Map<string, string>();
+  for (const s of (skills ?? []) as Array<{ id: string; subject_code: string }>) {
+    subjectBySkill.set(s.id, s.subject_code);
+  }
+
+  const mastery: MasterySignal[] = (
+    (masteryRows ?? []) as Array<{
+      skill_id: string;
+      status: 'emerging' | 'developing' | 'proficient' | 'mastered';
+      attempts: number;
+      correct: number;
+      last_practiced_at: string | null;
+      next_review_at: string | null;
+    }>
+  )
+    .filter((m) => subjectBySkill.has(m.skill_id))
+    .map((m) => ({
+      skillId: m.skill_id,
+      islandId: subjectBySkill.get(m.skill_id) as string,
+      mastery:
+        m.status === 'mastered' ? 1 : m.attempts > 0 ? Math.min(1, m.correct / m.attempts) : 0,
+      lastPracticedAt: m.last_practiced_at,
+      attempts: m.attempts,
+      nextReviewAt: m.next_review_at,
+    }));
+
+  const questsCompleted = trailProgress?.quests_completed ?? 0;
+  const position = trailProgress?.position ?? 0;
+  const stopIslandId =
+    questsCompleted < TRAIL_LENGTH ? getTrailStop(position)?.subjectCode : undefined;
+
+  return {
+    mastery,
+    trail: {
+      nextStopAvailable: questsCompleted < TRAIL_LENGTH,
+      trailDoneToday: trailQuest?.completed === true,
+      ...(stopIslandId ? { stopIslandId } : {}),
+    },
+  };
 }

@@ -62,6 +62,11 @@ export const STICKERS: Sticker[] = [
   { id: 'little-artist', name: 'Little Artist', description: 'Made art in the Creative Studio!', characterId: 'curio', colors: ['#FF7BAC', '#FFD93C'] },
   { id: 'movie-star', name: 'Movie Star', description: 'Watched a Sky Cinema tale!', characterId: 'nova', colors: ['#FF6B6B', '#FFD93C'] },
   { id: 'sweet-dreams', name: 'Sweet Dreams', description: 'Finished a cozy bedtime!', characterId: 'luna', colors: ['#6C4FD8', '#FFD93D'] },
+  // Wave 4 play & creativity
+  { id: 'pen-pal', name: 'Pen Pal', description: 'Traced your ABCs!', characterId: 'luna', colors: ['#9B7EDE', '#FFD166'] },
+  { id: 'globe-trotter', name: 'Globe Trotter', description: 'Explored the wide world!', characterId: 'atlas', colors: ['#8FB8DE', '#7ED6A5'] },
+  { id: 'beat-master', name: 'Beat Master', description: 'Played the sky drums!', characterId: 'riff', colors: ['#FF7BAC', '#FFD93C'] },
+  { id: 'jr-scientist', name: 'Junior Scientist', description: 'Ran a real experiment!', characterId: 'bea', colors: ['#7ED6A5', '#5BC8E8'] },
 ];
 
 export function getSticker(id: string): Sticker | undefined {

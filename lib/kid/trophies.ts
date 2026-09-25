@@ -41,6 +41,10 @@ export const TROPHIES: Trophy[] = [
   { id: 'cinema-first', name: 'Movie Star', description: 'Watched your first Story Cinema tale!', category: 'explorer', starBonus: 10, art: 'ribbon' },
   { id: 'art-first', name: 'Little Artist', description: 'Saved your first Creative Studio artwork!', category: 'explorer', starBonus: 10, art: 'gem' },
   { id: 'bedtime-first', name: 'Sleepy Star', description: 'Finished a cozy bedtime wind-down!', category: 'explorer', starBonus: 10, art: 'ribbon' },
+  { id: 'writing-first', name: 'First Strokes', description: 'Traced your first ABCs in the Letter Lab!', category: 'explorer', starBonus: 10, art: 'star' },
+  { id: 'geography-first', name: 'Globe Explorer', description: 'Played your first Atlas World Tour game!', category: 'explorer', starBonus: 10, art: 'gem' },
+  { id: 'rhythm-first', name: 'Rhythm Rookie', description: 'Played your first Rhythm Studio tune!', category: 'explorer', starBonus: 10, art: 'ribbon' },
+  { id: 'science-first', name: 'Young Scientist', description: 'Ran your first Science Lab experiment!', category: 'explorer', starBonus: 10, art: 'medal' },
   // Learner — practice and mastery
   { id: 'activities-10', name: 'Practice Pro', description: 'Finished 10 activities!', category: 'learner', starBonus: 10, art: 'medal' },
   { id: 'activities-50', name: 'Super Solver', description: 'Finished 50 activities!', category: 'learner', starBonus: 20, art: 'cup' },
@@ -85,4 +89,8 @@ export type TrophyEvent =
   | 'number_done'
   | 'cinema_done'
   | 'art_done'
-  | 'bedtime_done';
+  | 'bedtime_done'
+  | 'writing_done'
+  | 'geography_done'
+  | 'rhythm_done'
+  | 'science_done';
