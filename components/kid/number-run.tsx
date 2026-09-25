@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   generateRound,
   levelForRound,
@@ -9,6 +9,13 @@ import {
   type NumberRound,
   type DotGroup,
 } from '@/lib/kid/numbers';
+import {
+  levelFor,
+  recordResult,
+  adaptiveRamp,
+  placementSeedLevel,
+  type DifficultyLevel,
+} from '@/lib/kid/adapt';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
 import { awardStars, awardStickers } from '@/app/actions/rewards';
 import { bumpQuestProgress } from '@/app/actions/trail';
@@ -227,9 +234,23 @@ export default function NumberRun({ childId, nickname = 'friend', onExit }: Numb
   const [picked, setPicked] = useState<{ value: number; correct: boolean } | null>(null);
   const [starsEarned, setStarsEarned] = useState(0);
   const [starBalance, setStarBalance] = useState(0);
+  // Adaptive difficulty (ZPD): round difficulty follows the child's level.
+  const [adaptLevel, setAdaptLevel] = useState<DifficultyLevel>(() =>
+    levelFor('number-run', placementSeedLevel(childId))
+  );
   const timers = useRef<number[]>([]);
 
-  const round = generateRound(levelForRound(roundIndex), gameSeed + roundIndex * 7919);
+  // The stock 8-round ramp, biased easier/harder by the adaptive level.
+  const baseRamp = useMemo(
+    () => Array.from({ length: ROUNDS_PER_GAME }, (_, i) => levelForRound(i)),
+    []
+  );
+  const roundLevels = useMemo(() => adaptiveRamp(baseRamp, adaptLevel), [baseRamp, adaptLevel]);
+
+  const round = generateRound(
+    roundLevels[Math.min(roundIndex, roundLevels.length - 1)],
+    gameSeed + roundIndex * 7919
+  );
 
   const later = useCallback((ms: number, fn: () => void) => {
     const id = window.setTimeout(() => {
@@ -250,6 +271,10 @@ export default function NumberRun({ childId, nickname = 'friend', onExit }: Numb
   const startGame = useCallback(() => {
     timers.current.forEach((t) => window.clearTimeout(t));
     timers.current = [];
+    // Re-read the adaptive level each game so recent results reshape content.
+    const level = levelFor('number-run', placementSeedLevel(childId));
+    setAdaptLevel(level);
+    const levels = adaptiveRamp(baseRamp, level);
     setRoundIndex(0);
     setAttempts(0);
     setCorrectCount(0);
@@ -258,10 +283,10 @@ export default function NumberRun({ childId, nickname = 'friend', onExit }: Numb
     setPhase('play');
     playSfx('whoosh');
     later(400, () => {
-      const first = generateRound(levelForRound(0), gameSeed);
+      const first = generateRound(levels[0], gameSeed);
       speakAs(HOST, first.prompt);
     });
-  }, [gameSeed, later]);
+  }, [gameSeed, later, baseRamp]);
 
   const handleWin = useCallback(
     async (finalAttempts: number) => {
@@ -297,6 +322,8 @@ export default function NumberRun({ childId, nickname = 'friend', onExit }: Numb
   const choose = useCallback(
     (value: number) => {
       if (picked || phase !== 'play') return;
+      // Feed the adaptive engine: every answer is a signal.
+      recordResult('number-run', value === round.answer);
       const nextAttempts = attempts + 1;
       setAttempts(nextAttempts);
       if (value === round.answer) {
@@ -311,7 +338,10 @@ export default function NumberRun({ childId, nickname = 'friend', onExit }: Numb
             void handleWin(nextAttempts);
           } else {
             setRoundIndex((i) => i + 1);
-            const next = generateRound(levelForRound(roundIndex + 1), gameSeed + (roundIndex + 1) * 7919);
+            const next = generateRound(
+              roundLevels[Math.min(roundIndex + 1, roundLevels.length - 1)],
+              gameSeed + (roundIndex + 1) * 7919
+            );
             later(350, () => speakAs(HOST, next.prompt));
           }
         });
@@ -322,7 +352,7 @@ export default function NumberRun({ childId, nickname = 'friend', onExit }: Numb
         later(750, () => setPicked(null));
       }
     },
-    [picked, phase, attempts, round, roundIndex, correctCount, gameSeed, later, handleWin]
+    [picked, phase, attempts, round, roundIndex, roundLevels, correctCount, gameSeed, later, handleWin]
   );
 
   const speakQuestion = useCallback(() => {

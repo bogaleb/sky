@@ -23,6 +23,11 @@ import WorldTour from './world-tour';
 import RhythmStudio from './rhythm-studio';
 import ScienceLab from './science-lab';
 import CodingCove from './coding-cove';
+import ClockTower from './clock-tower';
+import CoinCove from './coin-cove';
+import MovieStudio from './movie-studio';
+import CharacterHomes from './character-homes';
+import ShowdownCard from './showdown-card';
 import PhonicsFun from './phonics-fun';
 import Encyclopedia from './encyclopedia';
 import WelcomeQuest from './welcome-quest';
@@ -369,6 +374,10 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
   const [showCoding, setShowCoding] = useState(false);
   const [showPhonics, setShowPhonics] = useState(false);
   const [showEncyclopedia, setShowEncyclopedia] = useState(false);
+  const [showTime, setShowTime] = useState(false);
+  const [showMoney, setShowMoney] = useState(false);
+  const [showMovies, setShowMovies] = useState(false);
+  const [showHomes, setShowHomes] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
   const [showTrophies, setShowTrophies] = useState(false);
   const [talkWith, setTalkWith] = useState<string | null>(null);
@@ -937,6 +946,77 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
               <span className="text-xs font-bold opacity-90">collect critters</span>
             </button>
           </div>
+          <div className="mt-3 flex flex-wrap gap-2 md:gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowTime(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-sky-500 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <circle cx="24" cy="24" r="17" fill="#fff" opacity="0.95" />
+                <circle cx="24" cy="24" r="17" fill="none" stroke="#0B5E8A" strokeWidth="4" />
+                <path d="M24 24V13M24 24l7 5" stroke="#0B5E8A" strokeWidth="4" strokeLinecap="round" />
+                <circle cx="24" cy="24" r="3" fill="#0B5E8A" />
+              </svg>
+              <span className="text-lg font-black">Clock Tower</span>
+              <span className="text-xs font-bold opacity-90">tell the time</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowMoney(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-sun-400 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <ellipse cx="24" cy="34" rx="13" ry="5" fill="#fff" opacity="0.7" />
+                <ellipse cx="24" cy="27" rx="13" ry="5" fill="#fff" opacity="0.85" />
+                <ellipse cx="24" cy="20" rx="13" ry="5" fill="#fff" opacity="0.95" />
+                <ellipse cx="24" cy="20" rx="13" ry="5" fill="none" stroke="#B45309" strokeWidth="2.5" />
+                <text x="24" y="25" fontSize="11" fontWeight="900" fill="#B45309" textAnchor="middle">25</text>
+              </svg>
+              <span className="text-lg font-black">Coin Cove</span>
+              <span className="text-xs font-bold opacity-90">count coins</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowMovies(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-grape-500 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <rect x="7" y="14" width="34" height="26" rx="5" fill="#fff" opacity="0.95" />
+                <rect x="7" y="8" width="34" height="8" rx="3" fill="#fff" opacity="0.7" />
+                <path d="M10 8l4 8M18 8l4 8M26 8l4 8M34 8l4 8" stroke="#6D28D9" strokeWidth="2.5" />
+                <path d="M20 21l10 6-10 6z" fill="#6D28D9" />
+              </svg>
+              <span className="text-lg font-black">Movie Studio</span>
+              <span className="text-xs font-bold opacity-90">direct cartoons</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowHomes(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-coral-500 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <path d="M6 24L24 8l18 16" fill="none" stroke="#fff" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+                <rect x="12" y="22" width="24" height="17" rx="3" fill="#fff" opacity="0.95" />
+                <rect x="21" y="30" width="6" height="9" rx="2" fill="#C2410C" />
+                <circle cx="24" cy="18" r="4" fill="#FDE68A" />
+              </svg>
+              <span className="text-lg font-black">Character Homes</span>
+              <span className="text-xs font-bold opacity-90">visit friends</span>
+            </button>
+          </div>
           <UpNext
             childId={child.id}
             onPracticeIsland={(islandId) => {
@@ -948,6 +1028,7 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
           <div className="flex w-full max-w-4xl flex-wrap items-stretch justify-center gap-3 px-4">
             <GoalMeter childId={child.id} />
             <DailyGift childId={child.id} nickname={child.nickname} />
+            <ShowdownCard childId={child.id} />
           </div>
           <SkyMap
             nickname={child.nickname}
@@ -1030,6 +1111,26 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
       {showEncyclopedia && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
           <Encyclopedia childId={child.id} onExit={() => setShowEncyclopedia(false)} />
+        </div>
+      )}
+      {showTime && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <ClockTower childId={child.id} nickname={child.nickname} onExit={() => setShowTime(false)} />
+        </div>
+      )}
+      {showMoney && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <CoinCove childId={child.id} nickname={child.nickname} onExit={() => setShowMoney(false)} />
+        </div>
+      )}
+      {showMovies && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <MovieStudio childId={child.id} nickname={child.nickname} onExit={() => setShowMovies(false)} />
+        </div>
+      )}
+      {showHomes && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <CharacterHomes childId={child.id} nickname={child.nickname} onExit={() => setShowHomes(false)} />
         </div>
       )}
       {showWelcome && (

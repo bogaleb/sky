@@ -50,6 +50,11 @@ export const TROPHIES: Trophy[] = [
   { id: 'welcome-first', name: 'Sky Newcomer', description: 'Finished the Welcome Quest!', category: 'explorer', starBonus: 10, art: 'star' },
   { id: 'goal-first', name: 'Goal Getter', description: 'Smashed your weekly learning goal!', category: 'explorer', starBonus: 15, art: 'cup' },
   { id: 'collector-first', name: 'Curious Collector', description: 'Filled your animal book!', category: 'explorer', starBonus: 25, art: 'crown' },
+  { id: 'time-first', name: 'Clock Star', description: 'Told time in the Clock Tower!', category: 'explorer', starBonus: 10, art: 'medal' },
+  { id: 'money-first', name: 'Coin Collector', description: 'Counted coins in Coin Cove!', category: 'explorer', starBonus: 10, art: 'gem' },
+  { id: 'showdown-first', name: 'Friendly Rival', description: 'Finished a sibling Star Sprint!', category: 'explorer', starBonus: 15, art: 'cup' },
+  { id: 'movie-first', name: 'Movie Director', description: 'Premiered your first cartoon!', category: 'explorer', starBonus: 15, art: 'ribbon' },
+  { id: 'homes-first', name: 'Home Explorer', description: 'Visited every character home!', category: 'explorer', starBonus: 20, art: 'crown' },
   // Learner — practice and mastery
   { id: 'activities-10', name: 'Practice Pro', description: 'Finished 10 activities!', category: 'learner', starBonus: 10, art: 'medal' },
   { id: 'activities-50', name: 'Super Solver', description: 'Finished 50 activities!', category: 'learner', starBonus: 20, art: 'cup' },
@@ -103,4 +108,9 @@ export type TrophyEvent =
   | 'phonics_done'
   | 'onboarding_done'
   | 'goal_done'
-  | 'collection_done';
+  | 'collection_done'
+  | 'time_done'
+  | 'money_done'
+  | 'showdown_done'
+  | 'movie_done'
+  | 'homes_done';

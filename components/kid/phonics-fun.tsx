@@ -2,12 +2,21 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  pickSession,
   pickChoices,
   isBlendable,
+  phonicsForLevel,
+  PHONICS_RAMP,
   PHONICS_PER_GAME,
   type PhonicsEntry,
 } from '@/lib/kid/phonics';
+import {
+  levelFor,
+  recordResult,
+  adaptiveRamp,
+  pickAdaptiveItems,
+  placementSeedLevel,
+  type DifficultyLevel,
+} from '@/lib/kid/adapt';
 import { pictogramFor, hasPictogram } from '@/lib/kid/words';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
 import { awardStars, awardStickers } from '@/app/actions/rewards';
@@ -86,6 +95,10 @@ export default function PhonicsFun({ childId, nickname = 'friend', onExit }: Pho
   const [shakeId, setShakeId] = useState<string | null>(null);
   const [starsEarned, setStarsEarned] = useState(0);
   const [starBalance, setStarBalance] = useState(0);
+  // Adaptive difficulty (ZPD): content difficulty follows the child's level.
+  const [adaptLevel, setAdaptLevel] = useState<DifficultyLevel>(() =>
+    levelFor('phonics-fun', placementSeedLevel(childId))
+  );
   const timers = useRef<number[]>([]);
 
   const LunaAvatar = AVATARS.luna.Component;
@@ -131,7 +144,15 @@ export default function PhonicsFun({ childId, nickname = 'friend', onExit }: Pho
 
   const startGame = useCallback(() => {
     const seed = Date.now();
-    const picked = pickSession(seed);
+    // Re-read the adaptive level each game so recent results reshape content.
+    const level = levelFor('phonics-fun', placementSeedLevel(childId));
+    setAdaptLevel(level);
+    const picked = pickAdaptiveItems(
+      [phonicsForLevel(1), phonicsForLevel(2), phonicsForLevel(3)],
+      adaptiveRamp(PHONICS_RAMP, level),
+      seed,
+      (w) => w.word
+    );
     setItems(picked);
     setItemIndex(0);
     setAttempts(0);
@@ -211,6 +232,8 @@ export default function PhonicsFun({ childId, nickname = 'friend', onExit }: Pho
 
   const pickChoice = (choice: PhonicsEntry) => {
     if (!item || celebrating || roundPhase !== 'match') return;
+    // Feed the adaptive engine: every word choice is a signal.
+    recordResult('phonics-fun', choice.word === item.word);
     // Every tap previews the word aloud so non-readers can play.
     speakAs(HOST, choice.word);
     if (choice.word === item.word) {

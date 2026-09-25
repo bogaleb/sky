@@ -2,12 +2,21 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  pickGameWords,
   pictogramFor,
   seededShuffle,
+  wordsForLevel,
+  LEVEL_RAMP,
   WORDS_PER_GAME,
   type WordEntry,
 } from '@/lib/kid/words';
+import {
+  levelFor,
+  recordResult,
+  adaptiveRamp,
+  pickAdaptiveItems,
+  placementSeedLevel,
+  type DifficultyLevel,
+} from '@/lib/kid/adapt';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
 import { awardStars, awardStickers } from '@/app/actions/rewards';
 import { bumpQuestProgress } from '@/app/actions/trail';
@@ -66,6 +75,10 @@ export default function WordBuilder({ childId, nickname = 'friend', onExit }: Wo
   const [shakeId, setShakeId] = useState<number | null>(null);
   const [starsEarned, setStarsEarned] = useState(0);
   const [starBalance, setStarBalance] = useState(0);
+  // Adaptive difficulty (ZPD): word difficulty follows the child's level.
+  const [adaptLevel, setAdaptLevel] = useState<DifficultyLevel>(() =>
+    levelFor('word-builder', placementSeedLevel(childId))
+  );
   const timers = useRef<number[]>([]);
 
   const later = useCallback((ms: number, fn: () => void) => {
@@ -105,7 +118,15 @@ export default function WordBuilder({ childId, nickname = 'friend', onExit }: Wo
 
   const startGame = useCallback(() => {
     const seed = Date.now();
-    const picked = pickGameWords(seed);
+    // Re-read the adaptive level each game so recent results reshape content.
+    const level = levelFor('word-builder', placementSeedLevel(childId));
+    setAdaptLevel(level);
+    const picked = pickAdaptiveItems(
+      [wordsForLevel(1), wordsForLevel(2), wordsForLevel(3), wordsForLevel(4)],
+      adaptiveRamp(LEVEL_RAMP, level),
+      seed,
+      (w) => w.word
+    );
     setWords(picked);
     setWordIndex(0);
     setMistakes(0);
@@ -143,6 +164,8 @@ export default function WordBuilder({ childId, nickname = 'friend', onExit }: Wo
   const tapTile = (tile: Tile) => {
     if (celebrating || phase !== 'play' || !word) return;
     const expected = word.word[built.length];
+    // Feed the adaptive engine: every tile tap is a signal.
+    recordResult('word-builder', tile.letter === expected);
     if (tile.letter === expected) {
       playSfx('click');
       const nextBuilt = [...built, tile];

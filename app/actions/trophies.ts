@@ -256,6 +256,21 @@ export async function checkTrophies(
     case 'collection_done':
       await grant('collector-first');
       break;
+    case 'time_done':
+      await grant('time-first');
+      break;
+    case 'money_done':
+      await grant('money-first');
+      break;
+    case 'showdown_done':
+      await grant('showdown-first');
+      break;
+    case 'movie_done':
+      await grant('movie-first');
+      break;
+    case 'homes_done':
+      await grant('homes-first');
+      break;
     default: {
       // Unknown events are ignored so new gameplay can fire freely.
       const _exhaustive: never = event;

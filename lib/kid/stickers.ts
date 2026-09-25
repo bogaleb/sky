@@ -73,6 +73,12 @@ export const STICKERS: Sticker[] = [
   { id: 'code-captain', name: 'Code Captain', description: "Programmed Milo's path!", characterId: 'milo', colors: ['#5BC8E8', '#9B7EDE'] },
   { id: 'curious-collector', name: 'Curious Collector', description: 'Filled your animal book!', characterId: 'bea', colors: ['#7ED6A5', '#FFD93C'] },
   { id: 'sound-sleuth', name: 'Sound Sleuth', description: 'Blended your first word!', characterId: 'luna', colors: ['#9B7EDE', '#5BC8E8'] },
+  // Wave 6 — new games, showdowns, movies, and character homes
+  { id: 'time-keeper', name: 'Time Keeper', description: 'Told time in the Clock Tower!', characterId: 'tuno', colors: ['#7ED6A5', '#5BC8E8'] },
+  { id: 'money-master', name: 'Money Master', description: 'Counted coins in Coin Cove!', characterId: 'milo', colors: ['#FFD93D', '#7ED6A5'] },
+  { id: 'friendly-rival', name: 'Friendly Rival', description: 'Finished a sibling showdown!', characterId: 'curio', colors: ['#FF8C42', '#FF7BAC'] },
+  { id: 'movie-maker', name: 'Movie Maker', description: 'Directed your first cartoon!', characterId: 'luna', colors: ['#9B7EDE', '#FF7BAC'] },
+  { id: 'home-sweet-home', name: 'Home Sweet Home', description: 'Visited every character home!', characterId: 'curio', colors: ['#FF9A3D', '#7ED6A5'] },
 ];
 
 export function getSticker(id: string): Sticker | undefined {

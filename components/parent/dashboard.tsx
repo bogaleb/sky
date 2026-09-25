@@ -12,6 +12,7 @@ import { AVATARS } from '@/components/avatars';
 import PinGate from './pin-gate';
 import WeeklyGoals from './weekly-goals';
 import Certificate from './certificate';
+import FamilyLeaderboard from './family-leaderboard';
 import { getTrophies } from '@/app/actions/trophies';
 
 function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
@@ -402,6 +403,11 @@ export default function Dashboard() {
           </div>
 
           {active && <ChildReport key={active.id} child={active} />}
+
+          {/* Family leaderboard: sibling Star Sprint, all children */}
+          <div className="mt-6">
+            <FamilyLeaderboard />
+          </div>
         </>
       )}
     </main>
