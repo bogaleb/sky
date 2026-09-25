@@ -30,6 +30,107 @@
 
   --radius-parent-card: 1.25rem;
   --radius-parent-pill: 999px;
+
+  /* ---- Kid world (Phase 3): vibrant, joyful, high-energy ---- */
+  --color-kid-sky-300: #7dd8f7;
+  --color-kid-sky-400: #4cc9f0;
+  --color-kid-sky-600: #2a9fd8;
+
+  --color-kid-sun-300: #ffd968;
+  --color-kid-sun-400: #ffc93c;
+  --color-kid-sun-500: #ffae00;
+
+  --color-kid-coral-400: #ff8a7a;
+  --color-kid-coral-500: #ff6b6b;
+  --color-kid-coral-600: #e14e4e;
+
+  --color-kid-grape-400: #b983ff;
+  --color-kid-grape-500: #9b5de5;
+  --color-kid-grape-700: #6d3fc0;
+
+  --color-kid-mint-400: #4fd8c4;
+  --color-kid-mint-500: #2ec4b6;
+  --color-kid-mint-600: #1da192;
+
+  --color-kid-berry-400: #ff8ac2;
+  --color-kid-berry-500: #f15bb5;
+
+  --color-kid-ink-700: #2b4a6f;
+  --color-kid-ink-900: #17324f;
+
+  --color-kid-cream: #fff9ec;
+
+  --radius-kid-card: 2rem;
+  --radius-kid-pill: 999px;
+
+  /* ---- Kid keyframes ---- */
+  --animate-kid-float: kid-float 5s ease-in-out infinite;
+  --animate-kid-drift: kid-drift linear infinite;
+  --animate-kid-bob: kid-bob 2.6s ease-in-out infinite;
+  --animate-kid-pop-in: kid-pop-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-kid-wiggle: kid-wiggle 0.6s ease-in-out;
+  --animate-kid-shake: kid-shake 0.5s ease-in-out;
+  --animate-kid-sparkle: kid-sparkle 1.8s ease-in-out infinite;
+  --animate-kid-pulse-ring: kid-pulse-ring 1.6s ease-out infinite;
+  --animate-kid-bounce-soft: kid-bounce-soft 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --animate-kid-spin-slow: kid-spin-slow 24s linear infinite;
+  --animate-kid-rise: kid-rise 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-kid-sway: kid-sway 4s ease-in-out infinite;
+
+  @keyframes kid-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-14px); }
+  }
+  @keyframes kid-drift {
+    from { transform: translateX(-15%); }
+    to { transform: translateX(115%); }
+  }
+  @keyframes kid-bob {
+    0%, 100% { transform: translateY(0) rotate(-1.2deg); }
+    50% { transform: translateY(-9px) rotate(1.2deg); }
+  }
+  @keyframes kid-pop-in {
+    0% { transform: scale(0.3); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes kid-wiggle {
+    0%, 100% { transform: rotate(0); }
+    25% { transform: rotate(-7deg) scale(1.04); }
+    50% { transform: rotate(6deg) scale(1.08); }
+    75% { transform: rotate(-4deg) scale(1.04); }
+  }
+  @keyframes kid-shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-12px); }
+    40% { transform: translateX(10px); }
+    60% { transform: translateX(-7px); }
+    80% { transform: translateX(5px); }
+  }
+  @keyframes kid-sparkle {
+    0%, 100% { transform: scale(0.7) rotate(0deg); opacity: 0.55; }
+    50% { transform: scale(1.15) rotate(20deg); opacity: 1; }
+  }
+  @keyframes kid-pulse-ring {
+    0% { transform: scale(0.9); opacity: 0.7; }
+    100% { transform: scale(1.9); opacity: 0; }
+  }
+  @keyframes kid-bounce-soft {
+    0% { transform: scale(1); }
+    35% { transform: scale(1.18, 0.86); }
+    60% { transform: scale(0.94, 1.08); }
+    100% { transform: scale(1); }
+  }
+  @keyframes kid-spin-slow {
+    to { transform: rotate(360deg); }
+  }
+  @keyframes kid-rise {
+    0% { transform: translateY(46px) scale(0.92); opacity: 0; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+  }
+  @keyframes kid-sway {
+    0%, 100% { transform: rotate(-2.5deg); }
+    50% { transform: rotate(2.5deg); }
+  }
 }
 
 html {

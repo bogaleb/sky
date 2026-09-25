@@ -47,6 +47,12 @@ export interface SessionPlanResult {
     targetLevel: number;
     /** Client-safe card from fetch_activity_card (answer stripped). */
     card: unknown;
+    /** Display enrichment for the kid shell (no answer keys). */
+    skillName: string;
+    subjectCode: string;
+    subjectName: string;
+    islandName: string;
+    hostCharacter: string;
   }>;
   notes: string[];
   frustrated: boolean;
@@ -62,7 +68,7 @@ export async function getSessionPlan(
   // the service client. We select only client-safe columns — never `answer`.
   const service = createServiceClient();
 
-  const [{ data: skills }, { data: masteryRows }, { data: prereqs }, { data: activities }, { data: events }] =
+  const [{ data: skills }, { data: masteryRows }, { data: prereqs }, { data: activities }, { data: events }, { data: subjects }] =
     await Promise.all([
       supabase.from('skills').select('id, code, subject_code, name, age_min, age_max'),
       supabase.from('skill_mastery').select('*').eq('child_id', child.id),
@@ -77,6 +83,7 @@ export async function getSessionPlan(
         .eq('event_type', 'attempt')
         .order('created_at', { ascending: false })
         .limit(30),
+      supabase.from('subjects').select('code, name, island_name, host_character'),
     ]);
 
   const skillInfos: SkillInfo[] = (skills ?? []).map((s) => ({
@@ -140,6 +147,8 @@ export async function getSessionPlan(
 
   // Resolve each planned activity through fetch_activity_card so the client
   // only ever receives the answer-stripped card.
+  const skillById = new Map((skills ?? []).map((s) => [s.id, s]));
+  const subjectByCode = new Map((subjects ?? []).map((s) => [s.code, s]));
   const resolved = await Promise.all(
     plan.activities.map(async (p) => {
       const { data, error } = await supabase.rpc('fetch_activity_card', {
@@ -147,11 +156,18 @@ export async function getSessionPlan(
         p_activity_id: p.activity.id,
       });
       if (error || !data) throw new Error('Could not load activity.');
+      const skill = skillById.get(p.activity.skillId);
+      const subject = skill ? subjectByCode.get(skill.subject_code) : undefined;
       return {
         activity: p.activity,
         reason: p.reason,
         targetLevel: p.targetLevel,
         card: data,
+        skillName: skill?.name ?? 'Practice',
+        subjectCode: skill?.subject_code ?? '',
+        subjectName: subject?.name ?? 'Sky',
+        islandName: subject?.island_name ?? 'Sky',
+        hostCharacter: subject?.host_character ?? 'curio',
       };
     })
   );
