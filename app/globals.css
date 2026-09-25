@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+/*
+ * Sky design tokens — Phase 1 (parent-facing surfaces).
+ *
+ * The parent experience is visually distinct from the kid world by design:
+ * calm, trustworthy, high-contrast. Kid-facing tokens (--kid-*) arrive with
+ * the kid shell in Phase 3. Nothing kid-facing is hard-coded there.
+ */
+@theme {
+  --font-sans: "Avenir Next", "Segoe UI", system-ui, -apple-system, sans-serif;
+
+  --color-parent-sky-50: #f2f8fd;
+  --color-parent-sky-100: #e4f0fa;
+  --color-parent-sky-200: #c4e0f5;
+  --color-parent-sky-600: #1f6fb4;
+  --color-parent-sky-700: #185a93;
+  --color-parent-sky-900: #123c60;
+
+  --color-parent-ink-900: #16283a;
+  --color-parent-ink-600: #44586e;
+  --color-parent-ink-400: #7d90a5;
+
+  --color-parent-sun-400: #f5b942;
+  --color-parent-sun-500: #eda31a;
+
+  --color-parent-leaf-600: #2f9e6e;
+
+  --color-parent-rose-600: #d6455b;
+
+  --radius-parent-card: 1.25rem;
+  --radius-parent-pill: 999px;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background: var(--color-parent-sky-50);
+  color: var(--color-parent-ink-900);
+  font-family: var(--font-sans);
+}
+
+/* Visible, high-contrast focus for keyboard users (Phase 10 audit will expand). */
+:focus-visible {
+  outline: 3px solid var(--color-parent-sky-600);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
