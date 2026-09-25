@@ -4,7 +4,7 @@
 -- Mirrors the trophy_awards convention: RLS on, parents can read their own
 -- children's collections, kid sessions can insert for their own children.
 
-create table public.collection_items (
+create table if not exists public.collection_items (
   child_id uuid not null references public.children (id) on delete cascade,
   collection_id text not null,
   item_id text not null,
@@ -14,15 +14,17 @@ create table public.collection_items (
 
 alter table public.collection_items enable row level security;
 
+drop policy if exists "parents read their children's collections" on public.collection_items;
 create policy "parents read their children's collections"
   on public.collection_items for select
   to authenticated
   using (child_id in (select id from public.children where parent_id = auth.uid()));
 
+drop policy if exists "kid sessions unlock items for their own children" on public.collection_items;
 create policy "kid sessions unlock items for their own children"
   on public.collection_items for insert
   to authenticated
   with check (child_id in (select id from public.children where parent_id = auth.uid()));
 
-create index collection_items_child_idx
+create index if not exists collection_items_child_idx
   on public.collection_items (child_id, collection_id, found_at desc);

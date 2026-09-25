@@ -3,7 +3,7 @@
 -- Mirrors the sticker_awards convention: RLS on, parents can read their own
 -- children's trophies, kid sessions can insert for their own children.
 
-create table public.trophy_awards (
+create table if not exists public.trophy_awards (
   id uuid primary key default gen_random_uuid(),
   child_id uuid not null references public.children (id) on delete cascade,
   trophy_id text not null,
@@ -13,15 +13,17 @@ create table public.trophy_awards (
 
 alter table public.trophy_awards enable row level security;
 
+drop policy if exists "parents read their children's trophies" on public.trophy_awards;
 create policy "parents read their children's trophies"
   on public.trophy_awards for select
   to authenticated
   using (child_id in (select id from public.children where parent_id = auth.uid()));
 
+drop policy if exists "kid sessions award trophies for their own children" on public.trophy_awards;
 create policy "kid sessions award trophies for their own children"
   on public.trophy_awards for insert
   to authenticated
   with check (child_id in (select id from public.children where parent_id = auth.uid()));
 
-create index trophy_awards_child_idx
+create index if not exists trophy_awards_child_idx
   on public.trophy_awards (child_id, awarded_at desc);
