@@ -37,7 +37,7 @@ export default async function ChildrenOnboardingPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <ChildForm key={children.length} onAdded={() => {}} />
+        <ChildForm key={children.length} />
 
         <div className="flex flex-col gap-4">
           <Card>

@@ -8,12 +8,11 @@ import { Button, Card, FormError, TextField } from '@/components/ui';
 
 const initialState: ActionResult = {};
 
-export default function ChildForm({ onAdded }: { onAdded: () => void }) {
+export default function ChildForm() {
   const [state, formAction, pending] = useActionState(
     async (prev: ActionResult, formData: FormData) => {
       const result = await createChild(prev, formData);
       if (!result.error) {
-        onAdded();
         formRef.current?.reset();
         setAvatarId('curio');
         setAgeBand('5-6');
