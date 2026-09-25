@@ -21,6 +21,8 @@ const QUEST_POOL: QuestDef[] = [
   { id: 'memory_game', title: 'Memory Master', detail: 'Play a round of Memory Cove', goal: 1, unit: 'round', stars: 12 },
   { id: 'pattern_game', title: 'Pattern Pro', detail: 'Play a round of Pattern Parade', goal: 1, unit: 'round', stars: 12 },
   { id: 'puzzle_game', title: 'Puzzle Solver', detail: 'Solve a Puzzle Reef puzzle', goal: 1, unit: 'puzzle', stars: 12 },
+  { id: 'word_game', title: 'Word Wizard', detail: 'Play a round of Word Builder', goal: 1, unit: 'round', stars: 12 },
+  { id: 'number_game', title: 'Number Ninja', detail: 'Play a round of Number Run', goal: 1, unit: 'round', stars: 12 },
   { id: 'perfect_3', title: 'Sharpshooter', detail: 'Get 3 answers right in a row', goal: 3, unit: 'in a row', stars: 12 },
   { id: 'pet_fed', title: 'Good Friend', detail: 'Feed your pet', goal: 1, unit: 'meal', stars: 8 },
   { id: 'story_read', title: 'Bookworm', detail: 'Read a storybook tale', goal: 1, unit: 'story', stars: 8 },

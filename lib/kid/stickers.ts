@@ -55,6 +55,13 @@ export const STICKERS: Sticker[] = [
   { id: 'pet-helper', name: 'Pet Helper', description: 'Fed your pet a yummy snack!', characterId: 'bea', colors: ['#F5A623', '#7ED6A5'] },
   { id: 'fashion-star', name: 'Fashion Star', description: 'Dressed up your avatar!', characterId: 'curio', colors: ['#FF7BAC', '#FFD93D'] },
   { id: 'night-owl', name: 'Night Owl', description: 'Read a cozy bedtime story!', characterId: 'luna', colors: ['#6C4FD8', '#5BC8E8'] },
+  // Wave 3 play & creativity
+  { id: 'word-wizard', name: 'Word Wizard', description: 'Spelled 10 magic words!', characterId: 'luna', colors: ['#8E6FC8', '#FFD166'] },
+  { id: 'number-ninja', name: 'Number Ninja', description: 'Zoomed through Number Run!', characterId: 'milo', colors: ['#3A4A5A', '#5BC8E8'] },
+  { id: 'star-gazer', name: 'Star Gazer', description: 'Breathed with the sleepy stars!', characterId: 'tuno', colors: ['#2B3A67', '#FFD93D'] },
+  { id: 'little-artist', name: 'Little Artist', description: 'Made art in the Creative Studio!', characterId: 'curio', colors: ['#FF7BAC', '#FFD93C'] },
+  { id: 'movie-star', name: 'Movie Star', description: 'Watched a Sky Cinema tale!', characterId: 'nova', colors: ['#FF6B6B', '#FFD93C'] },
+  { id: 'sweet-dreams', name: 'Sweet Dreams', description: 'Finished a cozy bedtime!', characterId: 'luna', colors: ['#6C4FD8', '#FFD93D'] },
 ];
 
 export function getSticker(id: string): Sticker | undefined {

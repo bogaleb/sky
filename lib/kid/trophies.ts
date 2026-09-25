@@ -36,6 +36,11 @@ export const TROPHIES: Trophy[] = [
   { id: 'song-first', name: 'Songbird', description: 'Sang your first songbook song!', category: 'explorer', starBonus: 10, art: 'ribbon' },
   { id: 'pattern-first', name: 'Pattern Pioneer', description: 'Played your first Pattern Parade game!', category: 'explorer', starBonus: 10, art: 'star' },
   { id: 'puzzle-first', name: 'Puzzle Pro', description: 'Solved your first Puzzle Reef puzzle!', category: 'explorer', starBonus: 10, art: 'gem' },
+  { id: 'word-first', name: 'Word Wizard', description: 'Played your first Word Builder game!', category: 'explorer', starBonus: 10, art: 'star' },
+  { id: 'number-first', name: 'Number Explorer', description: 'Played your first Number Run race!', category: 'explorer', starBonus: 10, art: 'medal' },
+  { id: 'cinema-first', name: 'Movie Star', description: 'Watched your first Story Cinema tale!', category: 'explorer', starBonus: 10, art: 'ribbon' },
+  { id: 'art-first', name: 'Little Artist', description: 'Saved your first Creative Studio artwork!', category: 'explorer', starBonus: 10, art: 'gem' },
+  { id: 'bedtime-first', name: 'Sleepy Star', description: 'Finished a cozy bedtime wind-down!', category: 'explorer', starBonus: 10, art: 'ribbon' },
   // Learner — practice and mastery
   { id: 'activities-10', name: 'Practice Pro', description: 'Finished 10 activities!', category: 'learner', starBonus: 10, art: 'medal' },
   { id: 'activities-50', name: 'Super Solver', description: 'Finished 50 activities!', category: 'learner', starBonus: 20, art: 'cup' },
@@ -75,4 +80,9 @@ export type TrophyEvent =
   | 'story_done'
   | 'song_done'
   | 'pattern_done'
-  | 'puzzle_done';
+  | 'puzzle_done'
+  | 'word_done'
+  | 'number_done'
+  | 'cinema_done'
+  | 'art_done'
+  | 'bedtime_done';

@@ -13,6 +13,11 @@ import QuestIntro from './quest-intro';
 import MemoryCove from './memory-cove';
 import PatternParade from './pattern-parade';
 import PuzzleReef from './puzzle-reef';
+import WordBuilder from './word-builder';
+import NumberRun from './number-run';
+import StoryCinema from './story-cinema';
+import CreativeStudio from './studio';
+import Bedtime from './bedtime';
 import TrophyShelf from './trophy-shelf';
 import CharacterTalk from './character-talk';
 import DressUp from './dress-up';
@@ -338,6 +343,11 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
   const [showPet, setShowPet] = useState(false);
   const [showPattern, setShowPattern] = useState(false);
   const [showPuzzle, setShowPuzzle] = useState(false);
+  const [showWords, setShowWords] = useState(false);
+  const [showNumbers, setShowNumbers] = useState(false);
+  const [showCinema, setShowCinema] = useState(false);
+  const [showStudio, setShowStudio] = useState(false);
+  const [showBedtime, setShowBedtime] = useState(false);
   const [showTrophies, setShowTrophies] = useState(false);
   const [talkWith, setTalkWith] = useState<string | null>(null);
   const resultsRef = useRef<AttemptResult[]>([]);
@@ -681,6 +691,98 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
               <span className="text-xs font-bold opacity-80">my trophy shelf</span>
             </button>
           </div>
+          <div className="mt-3 flex flex-wrap gap-2 md:gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowWords(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-grape-300 px-4 py-4 text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <rect x="6" y="26" width="10" height="10" rx="2.5" fill="#fff" opacity="0.95" />
+                <rect x="19" y="26" width="10" height="10" rx="2.5" fill="#fff" opacity="0.75" />
+                <rect x="32" y="26" width="10" height="10" rx="2.5" fill="#fff" opacity="0.95" />
+                <text x="8.5" y="34.5" fontSize="9" fontWeight="900" fill="#7C5CBF">A</text>
+                <text x="21.5" y="34.5" fontSize="9" fontWeight="900" fill="#17324F">B</text>
+                <text x="34" y="34.5" fontSize="9" fontWeight="900" fill="#7C5CBF">C</text>
+                <path d="M24 6l2.5 5 5.5.8-4 3.9 1 5.5-5-2.6-5 2.6 1-5.5-4-3.9 5.5-.8z" fill="#FFD93C" />
+              </svg>
+              <span className="text-lg font-black">Word Builder</span>
+              <span className="text-xs font-bold opacity-80">spell magic words</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowNumbers(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-mint-300 px-4 py-4 text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <rect x="4" y="34" width="40" height="5" rx="2.5" fill="#fff" opacity="0.6" />
+                <text x="8" y="26" fontSize="12" fontWeight="900" fill="#fff">3</text>
+                <text x="21" y="26" fontSize="12" fontWeight="900" fill="#fff">+</text>
+                <text x="33" y="26" fontSize="12" fontWeight="900" fill="#fff">4</text>
+                <path d="M24 2l3 6.5L34 9l-5 4.7 1.2 6.8L24 17.4l-6.2 3.1L19 13.7 14 9l7-.5z" fill="#FFD93C" />
+              </svg>
+              <span className="text-lg font-black">Number Run</span>
+              <span className="text-xs font-bold opacity-80">race with math</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowCinema(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-coral-300 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <rect x="6" y="10" width="36" height="24" rx="4" fill="#17324F" opacity="0.9" />
+                <rect x="9" y="13" width="30" height="18" rx="2" fill="#FFD93C" opacity="0.95" />
+                <path d="M21 17l8 4.5-8 4.5z" fill="#17324F" />
+                <rect x="20" y="34" width="8" height="4" rx="2" fill="#fff" opacity="0.95" />
+                <rect x="14" y="38" width="20" height="3" rx="1.5" fill="#fff" opacity="0.75" />
+              </svg>
+              <span className="text-lg font-black">Story Cinema</span>
+              <span className="text-xs font-bold opacity-90">watch cartoons</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowStudio(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-sun-300 px-4 py-4 text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <path d="M10 38c8-1 24-9 28-26l-8-3c-9 12-16 20-24 22z" fill="#FF8C42" />
+                <path d="M38 9l3-3 3 3-3 3z" fill="#17324F" />
+                <path d="M8 40l4 2-2 4-4-2z" fill="#17324F" />
+                <circle cx="16" cy="36" r="2.5" fill="#3B82F6" />
+                <circle cx="22" cy="33" r="2.5" fill="#22C55E" />
+              </svg>
+              <span className="text-lg font-black">Creative Studio</span>
+              <span className="text-xs font-bold opacity-80">draw and color</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('whoosh');
+                setShowBedtime(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-night-600 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <path d="M32 6a16 16 0 1 0 10 28A18 18 0 0 1 32 6z" fill="#FFE66D" />
+                <path d="M14 12l1.2 2.6 2.8.4-2 2 .5 2.8-2.5-1.3-2.5 1.3.5-2.8-2-2 2.8-.4z" fill="#fff" opacity="0.95" />
+                <path d="M40 30l.9 2 2.2.3-1.6 1.5.4 2.2-2-1-2 1 .4-2.2-1.6-1.5 2.2-.3z" fill="#fff" opacity="0.8" />
+              </svg>
+              <span className="text-lg font-black">Bedtime</span>
+              <span className="text-xs font-bold opacity-90">wind down</span>
+            </button>
+          </div>
           <SkyMap
             nickname={child.nickname}
             onSelectIsland={(isl) => void startIslandSession(isl)}
@@ -708,6 +810,27 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
           <PuzzleReef childId={child.id} nickname={child.nickname} onExit={() => setShowPuzzle(false)} />
         </div>
       )}
+      {showWords && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <WordBuilder childId={child.id} nickname={child.nickname} onExit={() => setShowWords(false)} />
+        </div>
+      )}
+      {showNumbers && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <NumberRun childId={child.id} nickname={child.nickname} onExit={() => setShowNumbers(false)} />
+        </div>
+      )}
+      {showCinema && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <StoryCinema childId={child.id} onExit={() => setShowCinema(false)} />
+        </div>
+      )}
+      {showStudio && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <CreativeStudio childId={child.id} nickname={child.nickname} onExit={() => setShowStudio(false)} />
+        </div>
+      )}
+      {showBedtime && <Bedtime childId={child.id} nickname={child.nickname} onExit={() => setShowBedtime(false)} />}
       {showTrophies && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
           <div className="flex justify-start p-4">
