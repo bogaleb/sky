@@ -12,9 +12,13 @@ export class SupabaseConfigurationError extends Error {
 }
 
 export function getSupabaseConfig() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-  if (!url || !publishableKey) throw new SupabaseConfigurationError();
+  if (!rawUrl || !publishableKey) throw new SupabaseConfigurationError();
+  // Normalize: the Supabase JS client appends /auth/v1, /rest/v1, etc. itself,
+  // so a copied Data API URL like https://xyz.supabase.co/rest/v1/ would break
+  // auth. Strip any path and trailing slash.
+  const url = rawUrl.split('/').slice(0, 3).join('/');
   return { url, publishableKey };
 }
 
