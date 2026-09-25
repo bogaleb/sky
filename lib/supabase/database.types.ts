@@ -275,6 +275,26 @@ export interface Database {
         Update: Partial<Database['public']['Tables']['sticker_awards']['Insert']>;
         Relationships: [];
       };
+      digest_log: {
+        Row: {
+          id: string;
+          child_id: string;
+          week_start: string;
+          summary: Json;
+          emailed_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          child_id: string;
+          week_start: string;
+          summary?: Json;
+          emailed_at?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['digest_log']['Insert']>;
+        Relationships: [];
+      };
       learning_events: {
         Row: {
           id: string;

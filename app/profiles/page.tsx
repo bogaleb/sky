@@ -61,9 +61,12 @@ export default async function ProfilesPage() {
         })}
       </div>
 
-      <div className="mt-12 flex items-center gap-4">
+      <div className="mt-12 flex flex-wrap items-center gap-4">
         <Link href="/onboarding/children">
           <Button variant="secondary">Add another child</Button>
+        </Link>
+        <Link href="/parent">
+          <Button variant="secondary">Parent zone: learning reports</Button>
         </Link>
         <form action={signOut}>
           <Button variant="ghost" type="submit">
