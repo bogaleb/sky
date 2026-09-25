@@ -74,6 +74,31 @@ describe('card payload mapping', () => {
     expect(shapeForCountLabel('birds')).toBe('bird');
   });
 
+  it('expands tap_count thing/total payloads (content-bank convention)', async () => {
+    const { countObjectsFrom } = await import('../lib/kid/card-mapping');
+    const objs = countObjectsFrom({
+      thing: 'blue paint blobs',
+      total: 3,
+      narration: 'Oh no — the Paint sprites spilled! How many blue blobs do you see?',
+    });
+    expect(objs).toHaveLength(3);
+    expect(objs[0].shape).toBe('blob');
+    expect(new Set(objs.map((o) => o.id)).size).toBe(3);
+  });
+
+  it('clamps thing/total counts to the pond maximum', async () => {
+    const { countObjectsFrom } = await import('../lib/kid/card-mapping');
+    expect(countObjectsFrom({ thing: 'stars', total: 99 })).toHaveLength(12);
+    expect(countObjectsFrom({ thing: 'stars', total: 0 })).toHaveLength(0);
+    expect(countObjectsFrom({})).toHaveLength(0);
+  });
+
+  it('maps blob labels by keyword', async () => {
+    const { shapeForCountLabel } = await import('../lib/kid/card-mapping');
+    expect(shapeForCountLabel('blue paint blobs')).toBe('blob');
+    expect(shapeForCountLabel('paint blob')).toBe('blob');
+  });
+
   it('derives trace targets from prompt text', async () => {
     const { traceTargetFrom } = await import('../lib/kid/card-mapping');
     expect(traceTargetFrom('Trace the big letter A.')).toBe('A');

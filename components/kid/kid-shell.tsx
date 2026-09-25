@@ -32,11 +32,12 @@ export default function KidShell({ children, doneCount = 0, totalSteps = 0, poin
   };
 
   return (
-    <div className="relative flex min-h-dvh flex-col overflow-hidden">
+    <div className="relative flex min-h-dvh flex-col overflow-clip">
       <SkyBackdrop />
 
-      {/* HUD — floating glass bar */}
-      <header className="relative z-20 px-3 pt-3 md:px-8 md:pt-4">
+      {/* HUD — floating glass bar. Sticky so the exit/mute controls stay
+          reachable even when game content overflows and the overlay scrolls. */}
+      <header className="sticky top-0 z-20 px-3 pt-3 md:px-8 md:pt-4">
         <div className="glass-kid mx-auto flex w-full max-w-4xl flex-wrap items-center justify-between gap-x-3 gap-y-2 rounded-full px-3 py-2 md:px-5 md:py-2.5">
           {/* Progress dots */}
           <div className="flex items-center gap-1" role="img" aria-label={`${doneCount} of ${totalSteps} activities done`}>
@@ -103,8 +104,11 @@ export default function KidShell({ children, doneCount = 0, totalSteps = 0, poin
         </div>
       </header>
 
-      {/* Stage */}
-      <main className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 pb-8 pt-2 md:px-8">
+      {/* Stage. Children get my-auto instead of justify-center on this
+          container: identical centering when content fits, but the top can
+          never be pushed above the scroll origin when it overflows
+          (the classic flexbox centering + overflow trap). */}
+      <main className="relative z-10 flex flex-1 flex-col items-center px-4 pb-8 pt-2 [&>*]:my-auto md:px-8">
         {children}
       </main>
     </div>

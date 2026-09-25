@@ -32,30 +32,51 @@
   --radius-parent-pill: 999px;
 
   /* ---- Kid world (Phase 3): vibrant, joyful, high-energy ---- */
+  --color-kid-sky-100: #e3f6fe;
+  --color-kid-sky-200: #bcebfb;
   --color-kid-sky-300: #7dd8f7;
   --color-kid-sky-400: #4cc9f0;
+  --color-kid-sky-500: #35b5e6;
   --color-kid-sky-600: #2a9fd8;
+  --color-kid-sky-700: #1c7fb8;
 
+  --color-kid-sun-200: #ffe9a8;
   --color-kid-sun-300: #ffd968;
   --color-kid-sun-400: #ffc93c;
   --color-kid-sun-500: #ffae00;
+  --color-kid-sun-600: #f29200;
+  --color-kid-sun-700: #cf7a00;
 
+  --color-kid-coral-300: #ffa89b;
   --color-kid-coral-400: #ff8a7a;
   --color-kid-coral-500: #ff6b6b;
   --color-kid-coral-600: #e14e4e;
+  --color-kid-coral-700: #c93b3b;
 
+  --color-kid-grape-300: #d3b3ff;
   --color-kid-grape-400: #b983ff;
   --color-kid-grape-500: #9b5de5;
+  --color-kid-grape-600: #8347d1;
   --color-kid-grape-700: #6d3fc0;
 
+  --color-kid-mint-200: #b0ece2;
+  --color-kid-mint-300: #7fe3d4;
   --color-kid-mint-400: #4fd8c4;
   --color-kid-mint-500: #2ec4b6;
   --color-kid-mint-600: #1da192;
+  --color-kid-mint-700: #147a6e;
 
   --color-kid-berry-400: #ff8ac2;
   --color-kid-berry-500: #f15bb5;
+  --color-kid-berry-600: #d63d9c;
 
+  --color-kid-ink-200: #b9cbdd;
+  --color-kid-ink-300: #93aec6;
+  --color-kid-ink-400: #6d8cab;
+  --color-kid-ink-500: #4a6a8a;
+  --color-kid-ink-600: #37547a;
   --color-kid-ink-700: #2b4a6f;
+  --color-kid-ink-800: #1f3a5c;
   --color-kid-ink-900: #17324f;
 
   --color-kid-night-400: #5a539e;

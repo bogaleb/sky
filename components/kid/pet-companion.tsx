@@ -33,9 +33,13 @@ function nextStageInfo(pet: Pet): string {
 }
 
 function Shell({ children, onExit }: { children: ReactNode; onExit: () => void }) {
+  // NOTE: PetCompanion always renders inside GameOverlay, so this shell must
+  // NOT use fixed positioning of its own — a second fixed overlay stacked on
+  // top of GameOverlay caused the "blurred empty screen" bug. It is a plain
+  // centered card that scrolls naturally with the overlay.
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-kid-ink-900/70 p-3 backdrop-blur-sm md:p-8">
-      <div className="animate-kid-pop-in flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-kid-card border-4 border-white/70 bg-gradient-to-b from-kid-sky-200 to-kid-sky-300 shadow-2xl">
+    <div className="flex min-h-dvh items-center justify-center p-3 md:p-8">
+      <div className="animate-kid-pop-in flex max-h-[92dvh] w-full max-w-3xl flex-col overflow-hidden rounded-kid-card border-4 border-white/70 bg-gradient-to-b from-kid-sky-200 to-kid-sky-300 shadow-2xl">
         <div className="flex items-center justify-between bg-white/70 px-6 py-4 backdrop-blur">
           <h2 className="text-2xl font-black text-kid-ink-900 md:text-3xl">Pet Companion</h2>
           <button
@@ -208,12 +212,22 @@ export default function PetCompanion({ child, onExit }: { child: SessionChild; o
   return (
     <Shell onExit={onExit}>
       {error && (
-        <div className="mb-4 rounded-kid-card border-2 border-kid-coral-500 bg-white/90 px-4 py-3 text-center text-base font-bold text-kid-ink-900">
-          {error}
+        <div className="mb-4 rounded-kid-card border-2 border-kid-coral-500 bg-white/90 px-4 py-3 text-center">
+          <p className="text-base font-bold text-kid-ink-900">{error}</p>
+          <button
+            type="button"
+            onClick={() => {
+              setError(null);
+              void load();
+            }}
+            className="mt-3 rounded-full bg-kid-sky-500 px-6 py-2.5 text-lg font-black text-white transition-transform hover:scale-105 active:scale-95"
+          >
+            Try again
+          </button>
         </div>
       )}
 
-      {step === 'loading' && (
+      {step === 'loading' && !error && (
         <p className="py-16 text-center text-xl font-black text-kid-ink-900">Loading your pet...</p>
       )}
 

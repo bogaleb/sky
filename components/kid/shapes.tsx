@@ -88,6 +88,25 @@ function Clap({ className }: { className?: string }) {
   );
 }
 
+function Blob({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 64 64" className={className} role="img" aria-label="paint blob">
+      <path
+        d="M32 8 C44 8 52 18 54 30 C56 42 48 56 34 57 C20 58 8 48 9 34 C10 20 20 8 32 8 Z"
+        fill="#4CC9F0"
+        stroke="#1D8FBF"
+        strokeWidth="2.5"
+      />
+      <ellipse cx="24" cy="24" rx="7" ry="10" fill="#8FE3FF" opacity="0.8" transform="rotate(-20 24 24)" />
+      <circle cx="26" cy="36" r="2.4" fill="#17324F" />
+      <circle cx="38" cy="36" r="2.4" fill="#17324F" />
+      <path d="M27 42 Q32 46 37 42" stroke="#17324F" strokeWidth="2.4" fill="none" strokeLinecap="round" />
+      <circle cx="52" cy="14" r="4" fill="#4CC9F0" stroke="#1D8FBF" strokeWidth="2" />
+      <circle cx="12" cy="50" r="3" fill="#4CC9F0" stroke="#1D8FBF" strokeWidth="2" />
+    </svg>
+  );
+}
+
 const SHAPES: Record<string, (props: { className?: string }) => React.JSX.Element> = {
   apple: Apple,
   star: Star,
@@ -95,6 +114,7 @@ const SHAPES: Record<string, (props: { className?: string }) => React.JSX.Elemen
   bird: Bird,
   cookie: Cookie,
   clap: Clap,
+  blob: Blob,
 };
 
 /** Render a count object by shape name; falls back to a star. */
