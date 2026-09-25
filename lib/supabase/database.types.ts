@@ -132,6 +132,160 @@ export interface Database {
         Update: Partial<Database['public']['Tables']['sessions']['Insert']>;
         Relationships: [];
       };
+      subjects: {
+        Row: {
+          code: string;
+          name: string;
+          tagline: string;
+          island_name: string;
+          host_character: string;
+          sort_order: number;
+        };
+        Insert: {
+          code: string;
+          name: string;
+          tagline: string;
+          island_name: string;
+          host_character: string;
+          sort_order: number;
+        };
+        Update: Partial<Database['public']['Tables']['subjects']['Insert']>;
+        Relationships: [];
+      };
+      skills: {
+        Row: {
+          id: string;
+          subject_code: string;
+          code: string;
+          name: string;
+          summary: string;
+          age_min: number;
+          age_max: number;
+          levels: Json;
+          sort_order: number;
+        };
+        Insert: {
+          id?: string;
+          subject_code: string;
+          code: string;
+          name: string;
+          summary: string;
+          age_min: number;
+          age_max: number;
+          levels: Json;
+          sort_order: number;
+        };
+        Update: Partial<Database['public']['Tables']['skills']['Insert']>;
+        Relationships: [];
+      };
+      skill_prerequisites: {
+        Row: {
+          skill_id: string;
+          requires_skill_id: string;
+          requires_level: number;
+        };
+        Insert: {
+          skill_id: string;
+          requires_skill_id: string;
+          requires_level: number;
+        };
+        Update: Partial<Database['public']['Tables']['skill_prerequisites']['Insert']>;
+        Relationships: [];
+      };
+      activities: {
+        Row: {
+          id: string;
+          skill_id: string;
+          level: number;
+          kind: string;
+          prompt_text: string;
+          prompt_audio: string | null;
+          card: Json;
+          answer: Json;
+          points: number;
+          min_age_band: string | null;
+          max_age_band: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          skill_id: string;
+          level: number;
+          kind: string;
+          prompt_text: string;
+          prompt_audio?: string | null;
+          card?: Json;
+          answer?: Json;
+          points?: number;
+          min_age_band?: string | null;
+          max_age_band?: string | null;
+        };
+        Update: Partial<Database['public']['Tables']['activities']['Insert']>;
+        Relationships: [];
+      };
+      skill_mastery: {
+        Row: {
+          child_id: string;
+          skill_id: string;
+          current_level: number;
+          status: 'emerging' | 'developing' | 'proficient' | 'mastered';
+          attempts: number;
+          correct: number;
+          level_attempts: number;
+          level_correct: number;
+          streak: number;
+          best_streak: number;
+          last_practiced_at: string | null;
+          next_review_at: string | null;
+          mastered_at: string | null;
+        };
+        Insert: {
+          child_id: string;
+          skill_id: string;
+          current_level?: number;
+          status?: 'emerging' | 'developing' | 'proficient' | 'mastered';
+          attempts?: number;
+          correct?: number;
+          level_attempts?: number;
+          level_correct?: number;
+          streak?: number;
+          best_streak?: number;
+          last_practiced_at?: string | null;
+          next_review_at?: string | null;
+          mastered_at?: string | null;
+        };
+        Update: Partial<Database['public']['Tables']['skill_mastery']['Insert']>;
+        Relationships: [];
+      };
+      learning_events: {
+        Row: {
+          id: string;
+          child_id: string;
+          session_id: string | null;
+          skill_id: string | null;
+          activity_id: string | null;
+          event_type: string;
+          is_correct: boolean | null;
+          latency_ms: number | null;
+          difficulty_level: number | null;
+          metadata: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          child_id: string;
+          session_id?: string | null;
+          skill_id?: string | null;
+          activity_id?: string | null;
+          event_type: string;
+          is_correct?: boolean | null;
+          latency_ms?: number | null;
+          difficulty_level?: number | null;
+          metadata?: Json;
+        };
+        Update: Partial<Database['public']['Tables']['learning_events']['Insert']>;
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;

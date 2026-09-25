@@ -173,7 +173,11 @@ begin
   -- ---- grading, per kind (answer keys never leave this function) ----
   case v_act.kind
     when 'multiple_choice', 'tap_target' then
-      v_correct := coalesce(p_answer ->> 'choice', '') = coalesce(v_act.answer ->> 'choice', chr(0));
+      -- A missing answer key is never satisfied; compare null-safely.
+      -- (Never use chr(0) as a fallback: PostgreSQL constant-folds it at plan
+      -- time and constructing \0 raises "null character not permitted".)
+      v_correct := (v_act.answer ->> 'choice') is not null
+        and coalesce(p_answer ->> 'choice', '') = (v_act.answer ->> 'choice');
     when 'tap_count' then
       v_correct := (p_answer ->> 'count')::integer = (v_act.answer ->> 'count')::integer;
     when 'sequence' then

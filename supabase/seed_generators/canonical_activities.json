@@ -1,0 +1,1793 @@
+[
+ {
+  "skill": "alphabet",
+  "level": 1,
+  "kind": "tap_target",
+  "prompt_text": "Tap the letter B.",
+  "card": {
+   "targets": [
+    {
+     "id": "B",
+     "label": "B"
+    },
+    {
+     "id": "D",
+     "label": "D"
+    },
+    {
+     "id": "P",
+     "label": "P"
+    }
+   ],
+   "narration": "Tap the letter B."
+  },
+  "answer": {
+   "choice": "B"
+  }
+ },
+ {
+  "skill": "alphabet",
+  "level": 1,
+  "kind": "tap_target",
+  "prompt_text": "Tap the letter M.",
+  "card": {
+   "targets": [
+    {
+     "id": "W",
+     "label": "W"
+    },
+    {
+     "id": "N",
+     "label": "N"
+    },
+    {
+     "id": "M",
+     "label": "M"
+    }
+   ],
+   "narration": "Tap the letter M."
+  },
+  "answer": {
+   "choice": "M"
+  }
+ },
+ {
+  "skill": "alphabet",
+  "level": 1,
+  "kind": "tap_target",
+  "prompt_text": "Tap the letter S.",
+  "card": {
+   "targets": [
+    {
+     "id": "O",
+     "label": "O"
+    },
+    {
+     "id": "C",
+     "label": "C"
+    },
+    {
+     "id": "S",
+     "label": "S"
+    }
+   ],
+   "narration": "Tap the letter S."
+  },
+  "answer": {
+   "choice": "S"
+  }
+ },
+ {
+  "skill": "alphabet",
+  "level": 1,
+  "kind": "tap_target",
+  "prompt_text": "Tap the letter R.",
+  "card": {
+   "targets": [
+    {
+     "id": "P",
+     "label": "P"
+    },
+    {
+     "id": "R",
+     "label": "R"
+    },
+    {
+     "id": "B",
+     "label": "B"
+    }
+   ],
+   "narration": "Tap the letter R."
+  },
+  "answer": {
+   "choice": "R"
+  }
+ },
+ {
+  "skill": "alphabet",
+  "level": 1,
+  "kind": "tap_target",
+  "prompt_text": "Tap the letter T.",
+  "card": {
+   "targets": [
+    {
+     "id": "E",
+     "label": "E"
+    },
+    {
+     "id": "T",
+     "label": "T"
+    },
+    {
+     "id": "F",
+     "label": "F"
+    }
+   ],
+   "narration": "Tap the letter T."
+  },
+  "answer": {
+   "choice": "T"
+  }
+ },
+ {
+  "skill": "alphabet",
+  "level": 2,
+  "kind": "multiple_choice",
+  "prompt_text": "Which letter is missing? A, B, __, D.",
+  "card": {
+   "options": [
+    {
+     "id": "c",
+     "label": "C"
+    },
+    {
+     "id": "d",
+     "label": "F"
+    },
+    {
+     "id": "a",
+     "label": "E"
+    },
+    {
+     "id": "b",
+     "label": "B"
+    }
+   ],
+   "narration": "Say the alphabet and find the missing letter."
+  },
+  "answer": {
+   "choice": "c"
+  }
+ },
+ {
+  "skill": "alphabet",
+  "level": 2,
+  "kind": "multiple_choice",
+  "prompt_text": "Which letter comes right after K?",
+  "card": {
+   "options": [
+    {
+     "id": "b",
+     "label": "L"
+    },
+    {
+     "id": "c",
+     "label": "M"
+    },
+    {
+     "id": "d",
+     "label": "K"
+    },
+    {
+     "id": "a",
+     "label": "J"
+    }
+   ],
+   "narration": "Say the alphabet around K."
+  },
+  "answer": {
+   "choice": "b"
+  }
+ },
+ {
+  "skill": "alphabet",
+  "level": 2,
+  "kind": "multiple_choice",
+  "prompt_text": "Which letter comes right before G?",
+  "card": {
+   "options": [
+    {
+     "id": "a",
+     "label": "G"
+    },
+    {
+     "id": "b",
+     "label": "H"
+    },
+    {
+     "id": "c",
+     "label": "E"
+    },
+    {
+     "id": "d",
+     "label": "F"
+    }
+   ],
+   "narration": "Say the alphabet around G."
+  },
+  "answer": {
+   "choice": "d"
+  }
+ },
+ {
+  "skill": "letter_sounds",
+  "level": 1,
+  "kind": "tap_target",
+  "prompt_text": "Which one starts with the 'buh' sound, like ball?",
+  "card": {
+   "targets": [
+    {
+     "id": "moon",
+     "label": "moon"
+    },
+    {
+     "id": "ball",
+     "label": "ball"
+    },
+    {
+     "id": "cat",
+     "label": "cat"
+    }
+   ],
+   "narration": "Which one starts with the 'buh' sound?"
+  },
+  "answer": {
+   "choice": "ball"
+  }
+ },
+ {
+  "skill": "letter_sounds",
+  "level": 1,
+  "kind": "tap_target",
+  "prompt_text": "Which one starts with the 'mmm' sound, like moon?",
+  "card": {
+   "targets": [
+    {
+     "id": "sun",
+     "label": "sun"
+    },
+    {
+     "id": "moon",
+     "label": "moon"
+    },
+    {
+     "id": "fish",
+     "label": "fish"
+    }
+   ],
+   "narration": "Which one starts with the 'mmm' sound?"
+  },
+  "answer": {
+   "choice": "moon"
+  }
+ },
+ {
+  "skill": "letter_sounds",
+  "level": 1,
+  "kind": "tap_target",
+  "prompt_text": "Which one starts with the 'tuh' sound, like tiger?",
+  "card": {
+   "targets": [
+    {
+     "id": "leaf",
+     "label": "leaf"
+    },
+    {
+     "id": "tiger",
+     "label": "tiger"
+    },
+    {
+     "id": "bear",
+     "label": "bear"
+    }
+   ],
+   "narration": "Which one starts with the 'tuh' sound?"
+  },
+  "answer": {
+   "choice": "tiger"
+  }
+ },
+ {
+  "skill": "letter_sounds",
+  "level": 1,
+  "kind": "tap_target",
+  "prompt_text": "Which one starts with the 'puh' sound, like pig?",
+  "card": {
+   "targets": [
+    {
+     "id": "nest",
+     "label": "nest"
+    },
+    {
+     "id": "pig",
+     "label": "pig"
+    },
+    {
+     "id": "frog",
+     "label": "frog"
+    }
+   ],
+   "narration": "Which one starts with the 'puh' sound?"
+  },
+  "answer": {
+   "choice": "pig"
+  }
+ },
+ {
+  "skill": "letter_sounds",
+  "level": 1,
+  "kind": "tap_target",
+  "prompt_text": "Which one starts with the 'duh' sound, like dog?",
+  "card": {
+   "targets": [
+    {
+     "id": "hat",
+     "label": "hat"
+    },
+    {
+     "id": "dog",
+     "label": "dog"
+    },
+    {
+     "id": "box",
+     "label": "box"
+    }
+   ],
+   "narration": "Which one starts with the 'duh' sound?"
+  },
+  "answer": {
+   "choice": "dog"
+  }
+ },
+ {
+  "skill": "letter_sounds",
+  "level": 2,
+  "kind": "multiple_choice",
+  "prompt_text": "Which word starts with the same sound as sun?",
+  "card": {
+   "options": [
+    {
+     "id": "c",
+     "label": "apple"
+    },
+    {
+     "id": "d",
+     "label": "zebra"
+    },
+    {
+     "id": "a",
+     "label": "moon"
+    },
+    {
+     "id": "b",
+     "label": "sandwich"
+    }
+   ],
+   "narration": "Say 'sun' slowly, then check each word."
+  },
+  "answer": {
+   "choice": "b"
+  }
+ },
+ {
+  "skill": "letter_sounds",
+  "level": 2,
+  "kind": "multiple_choice",
+  "prompt_text": "Which word starts with the same sound as cat?",
+  "card": {
+   "options": [
+    {
+     "id": "b",
+     "label": "sun"
+    },
+    {
+     "id": "c",
+     "label": "cake"
+    },
+    {
+     "id": "d",
+     "label": "ball"
+    },
+    {
+     "id": "a",
+     "label": "dog"
+    }
+   ],
+   "narration": "Say 'cat' slowly, then check each word."
+  },
+  "answer": {
+   "choice": "c"
+  }
+ },
+ {
+  "skill": "letter_sounds",
+  "level": 2,
+  "kind": "multiple_choice",
+  "prompt_text": "Which letter makes the 'mmm' sound?",
+  "card": {
+   "options": [
+    {
+     "id": "a",
+     "label": "S"
+    },
+    {
+     "id": "b",
+     "label": "M"
+    },
+    {
+     "id": "c",
+     "label": "T"
+    },
+    {
+     "id": "d",
+     "label": "B"
+    }
+   ],
+   "narration": "Hum the 'mmm' sound and pick the letter."
+  },
+  "answer": {
+   "choice": "b"
+  }
+ },
+ {
+  "skill": "blending",
+  "level": 1,
+  "kind": "multiple_choice",
+  "prompt_text": "Sound it out: c - a - t. Which word do you hear?",
+  "card": {
+   "options": [
+    {
+     "id": "d",
+     "label": "cot"
+    },
+    {
+     "id": "a",
+     "label": "cat"
+    },
+    {
+     "id": "b",
+     "label": "cut"
+    },
+    {
+     "id": "c",
+     "label": "cap"
+    }
+   ],
+   "narration": "Stretch the sounds together: ccc-aaa-ttt."
+  },
+  "answer": {
+   "choice": "a"
+  }
+ },
+ {
+  "skill": "blending",
+  "level": 1,
+  "kind": "multiple_choice",
+  "prompt_text": "Sound it out: d - o - g. Which word do you hear?",
+  "card": {
+   "options": [
+    {
+     "id": "c",
+     "label": "dog"
+    },
+    {
+     "id": "d",
+     "label": "dot"
+    },
+    {
+     "id": "a",
+     "label": "dig"
+    },
+    {
+     "id": "b",
+     "label": "dock"
+    }
+   ],
+   "narration": "Stretch the sounds together: ddd-ooo-ggg."
+  },
+  "answer": {
+   "choice": "c"
+  }
+ },
+ {
+  "skill": "blending",
+  "level": 1,
+  "kind": "multiple_choice",
+  "prompt_text": "Sound it out: s - u - n. Which word do you hear?",
+  "card": {
+   "options": [
+    {
+     "id": "b",
+     "label": "fun"
+    },
+    {
+     "id": "c",
+     "label": "sun"
+    },
+    {
+     "id": "d",
+     "label": "sin"
+    },
+    {
+     "id": "a",
+     "label": "son"
+    }
+   ],
+   "narration": "Stretch the sounds together: sss-uuu-nnn."
+  },
+  "answer": {
+   "choice": "c"
+  }
+ },
+ {
+  "skill": "blending",
+  "level": 2,
+  "kind": "sequence",
+  "prompt_text": "Put the word parts in order to build 'sunshine'.",
+  "card": {
+   "items": [
+    {
+     "id": "sun",
+     "label": "sun"
+    },
+    {
+     "id": "shine",
+     "label": "shine"
+    }
+   ],
+   "narration": "Which part comes first in 'sunshine'?"
+  },
+  "answer": {
+   "sequence": [
+    "sun",
+    "shine"
+   ]
+  }
+ },
+ {
+  "skill": "blending",
+  "level": 2,
+  "kind": "multiple_choice",
+  "prompt_text": "Sound it out: f - r - o - g. Which word do you hear?",
+  "card": {
+   "options": [
+    {
+     "id": "d",
+     "label": "from"
+    },
+    {
+     "id": "a",
+     "label": "fog"
+    },
+    {
+     "id": "b",
+     "label": "frog"
+    },
+    {
+     "id": "c",
+     "label": "flag"
+    }
+   ],
+   "narration": "Blend it slowly: fff-rrr-ooo-ggg."
+  },
+  "answer": {
+   "choice": "b"
+  }
+ },
+ {
+  "skill": "blending",
+  "level": 2,
+  "kind": "multiple_choice",
+  "prompt_text": "Sound it out: p - i - g. Which word do you hear?",
+  "card": {
+   "options": [
+    {
+     "id": "c",
+     "label": "big"
+    },
+    {
+     "id": "d",
+     "label": "wig"
+    },
+    {
+     "id": "a",
+     "label": "pig"
+    },
+    {
+     "id": "b",
+     "label": "peg"
+    }
+   ],
+   "narration": "Blend it slowly: ppp-iii-ggg."
+  },
+  "answer": {
+   "choice": "a"
+  }
+ },
+ {
+  "skill": "count",
+  "level": 1,
+  "kind": "tap_count",
+  "prompt_text": "How many apples do you see?",
+  "card": {
+   "emoji_free": true,
+   "sets": [
+    {
+     "label": "apples",
+     "count": 3
+    }
+   ],
+   "narration": "How many apples do you see?"
+  },
+  "answer": {
+   "count": 3
+  }
+ },
+ {
+  "skill": "count",
+  "level": 1,
+  "kind": "tap_count",
+  "prompt_text": "How many fish do you see?",
+  "card": {
+   "emoji_free": true,
+   "sets": [
+    {
+     "label": "fish",
+     "count": 5
+    }
+   ],
+   "narration": "How many fish do you see?"
+  },
+  "answer": {
+   "count": 5
+  }
+ },
+ {
+  "skill": "count",
+  "level": 1,
+  "kind": "tap_count",
+  "prompt_text": "How many birds do you see?",
+  "card": {
+   "emoji_free": true,
+   "sets": [
+    {
+     "label": "birds",
+     "count": 2
+    }
+   ],
+   "narration": "How many birds do you see?"
+  },
+  "answer": {
+   "count": 2
+  }
+ },
+ {
+  "skill": "count",
+  "level": 1,
+  "kind": "tap_count",
+  "prompt_text": "How many stars do you see?",
+  "card": {
+   "emoji_free": true,
+   "sets": [
+    {
+     "label": "stars",
+     "count": 4
+    }
+   ],
+   "narration": "How many stars do you see?"
+  },
+  "answer": {
+   "count": 4
+  }
+ },
+ {
+  "skill": "count",
+  "level": 2,
+  "kind": "tap_count",
+  "prompt_text": "How many frogs do you see?",
+  "card": {
+   "emoji_free": true,
+   "sets": [
+    {
+     "label": "frogs",
+     "count": 7
+    }
+   ],
+   "narration": "How many frogs do you see?"
+  },
+  "answer": {
+   "count": 7
+  }
+ },
+ {
+  "skill": "count",
+  "level": 2,
+  "kind": "tap_count",
+  "prompt_text": "How many balloons do you see?",
+  "card": {
+   "emoji_free": true,
+   "sets": [
+    {
+     "label": "balloons",
+     "count": 9
+    }
+   ],
+   "narration": "How many balloons do you see?"
+  },
+  "answer": {
+   "count": 9
+  }
+ },
+ {
+  "skill": "cardinality",
+  "level": 1,
+  "kind": "tap_count",
+  "prompt_text": "Tap each puppy as you count. How many puppies?",
+  "card": {
+   "emoji_free": true,
+   "sets": [
+    {
+     "label": "puppies",
+     "count": 6
+    }
+   ],
+   "narration": "Tap each puppy as you count. How many puppies?"
+  },
+  "answer": {
+   "count": 6
+  }
+ },
+ {
+  "skill": "cardinality",
+  "level": 1,
+  "kind": "multiple_choice",
+  "prompt_text": "Count the ducks: 1, 2, 3, 4. How many ducks is that?",
+  "card": {
+   "options": [
+    {
+     "id": "c",
+     "label": "5"
+    },
+    {
+     "id": "d",
+     "label": "2"
+    },
+    {
+     "id": "a",
+     "label": "3"
+    },
+    {
+     "id": "b",
+     "label": "4"
+    }
+   ],
+   "narration": "The last number you say tells how many."
+  },
+  "answer": {
+   "choice": "b"
+  }
+ },
+ {
+  "skill": "cardinality",
+  "level": 2,
+  "kind": "tap_count",
+  "prompt_text": "Count every turtle. How many turtles in all?",
+  "card": {
+   "emoji_free": true,
+   "sets": [
+    {
+     "label": "turtles",
+     "count": 8
+    }
+   ],
+   "narration": "Count every turtle. How many turtles in all?"
+  },
+  "answer": {
+   "count": 8
+  }
+ },
+ {
+  "skill": "cardinality",
+  "level": 2,
+  "kind": "multiple_choice",
+  "prompt_text": "Count the kites in the sky, then pick the matching number.",
+  "card": {
+   "options": [
+    {
+     "id": "a",
+     "label": "6"
+    },
+    {
+     "id": "b",
+     "label": "8"
+    },
+    {
+     "id": "c",
+     "label": "7"
+    },
+    {
+     "id": "d",
+     "label": "9"
+    }
+   ],
+   "narration": "Count the kites on the card, then pick the number."
+  },
+  "answer": {
+   "choice": "b"
+  }
+ },
+ {
+  "skill": "compare_order",
+  "level": 1,
+  "kind": "tap_target",
+  "prompt_text": "Which group has more?",
+  "card": {
+   "targets": [
+    {
+     "id": "right",
+     "label": "5 apples"
+    },
+    {
+     "id": "left",
+     "label": "3 apples"
+    }
+   ],
+   "narration": "Look at both groups and tap the one with more."
+  },
+  "answer": {
+   "choice": "right"
+  }
+ },
+ {
+  "skill": "compare_order",
+  "level": 1,
+  "kind": "tap_target",
+  "prompt_text": "Which group has fewer?",
+  "card": {
+   "targets": [
+    {
+     "id": "left",
+     "label": "2 birds"
+    },
+    {
+     "id": "right",
+     "label": "4 birds"
+    }
+   ],
+   "narration": "Look at both groups and tap the one with fewer."
+  },
+  "answer": {
+   "choice": "left"
+  }
+ },
+ {
+  "skill": "compare_order",
+  "level": 2,
+  "kind": "tap_target",
+  "prompt_text": "Which number is bigger?",
+  "card": {
+   "targets": [
+    {
+     "id": "right",
+     "label": "9"
+    },
+    {
+     "id": "left",
+     "label": "7"
+    }
+   ],
+   "narration": "Which number is bigger?"
+  },
+  "answer": {
+   "choice": "right"
+  }
+ },
+ {
+  "skill": "compare_order",
+  "level": 2,
+  "kind": "tap_target",
+  "prompt_text": "Which number is smaller?",
+  "card": {
+   "targets": [
+    {
+     "id": "left",
+     "label": "6"
+    },
+    {
+     "id": "right",
+     "label": "3"
+    }
+   ],
+   "narration": "Which number is smaller?"
+  },
+  "answer": {
+   "choice": "right"
+  }
+ },
+ {
+  "skill": "add",
+  "level": 1,
+  "kind": "multiple_choice",
+  "prompt_text": "2 apples, and 1 more apple. How many apples in all?",
+  "card": {
+   "options": [
+    {
+     "id": "d",
+     "label": "1"
+    },
+    {
+     "id": "a",
+     "label": "2"
+    },
+    {
+     "id": "b",
+     "label": "3"
+    },
+    {
+     "id": "c",
+     "label": "4"
+    }
+   ],
+   "narration": "Add them together and pick the total."
+  },
+  "answer": {
+   "choice": "b"
+  }
+ },
+ {
+  "skill": "add",
+  "level": 1,
+  "kind": "tap_count",
+  "prompt_text": "3 birds join 2 more birds. How many birds are there now?",
+  "card": {
+   "emoji_free": true,
+   "sets": [
+    {
+     "label": "birds",
+     "count": 5
+    }
+   ],
+   "narration": "3 birds join 2 more birds. How many birds are there now?"
+  },
+  "answer": {
+   "count": 5
+  }
+ },
+ {
+  "skill": "add",
+  "level": 1,
+  "kind": "multiple_choice",
+  "prompt_text": "1 fish plus 4 fish. How many fish in all?",
+  "card": {
+   "options": [
+    {
+     "id": "b",
+     "label": "6"
+    },
+    {
+     "id": "c",
+     "label": "5"
+    },
+    {
+     "id": "d",
+     "label": "3"
+    },
+    {
+     "id": "a",
+     "label": "4"
+    }
+   ],
+   "narration": "Add them together and pick the total."
+  },
+  "answer": {
+   "choice": "c"
+  }
+ },
+ {
+  "skill": "add",
+  "level": 2,
+  "kind": "multiple_choice",
+  "prompt_text": "4 + 3 = ?",
+  "card": {
+   "options": [
+    {
+     "id": "a",
+     "label": "6"
+    },
+    {
+     "id": "b",
+     "label": "7"
+    },
+    {
+     "id": "c",
+     "label": "8"
+    },
+    {
+     "id": "d",
+     "label": "5"
+    }
+   ],
+   "narration": "Add them together and pick the total."
+  },
+  "answer": {
+   "choice": "b"
+  }
+ },
+ {
+  "skill": "add",
+  "level": 2,
+  "kind": "multiple_choice",
+  "prompt_text": "5 + 5 = ?",
+  "card": {
+   "options": [
+    {
+     "id": "d",
+     "label": "8"
+    },
+    {
+     "id": "a",
+     "label": "9"
+    },
+    {
+     "id": "b",
+     "label": "11"
+    },
+    {
+     "id": "c",
+     "label": "10"
+    }
+   ],
+   "narration": "Add them together and pick the total."
+  },
+  "answer": {
+   "choice": "c"
+  }
+ },
+ {
+  "skill": "add",
+  "level": 2,
+  "kind": "tap_count",
+  "prompt_text": "6 ducks and 2 more ducks join them. How many ducks now?",
+  "card": {
+   "emoji_free": true,
+   "sets": [
+    {
+     "label": "ducks",
+     "count": 8
+    }
+   ],
+   "narration": "6 ducks and 2 more ducks join them. How many ducks now?"
+  },
+  "answer": {
+   "count": 8
+  }
+ },
+ {
+  "skill": "subtract",
+  "level": 1,
+  "kind": "multiple_choice",
+  "prompt_text": "5 apples. You eat 2. How many apples are left?",
+  "card": {
+   "options": [
+    {
+     "id": "b",
+     "label": "3"
+    },
+    {
+     "id": "c",
+     "label": "4"
+    },
+    {
+     "id": "d",
+     "label": "5"
+    },
+    {
+     "id": "a",
+     "label": "2"
+    }
+   ],
+   "narration": "Take away and pick what is left."
+  },
+  "answer": {
+   "choice": "b"
+  }
+ },
+ {
+  "skill": "subtract",
+  "level": 1,
+  "kind": "tap_count",
+  "prompt_text": "4 birds are sitting. 1 flies away. How many birds are left?",
+  "card": {
+   "emoji_free": true,
+   "sets": [
+    {
+     "label": "birds",
+     "count": 3
+    }
+   ],
+   "narration": "4 birds are sitting. 1 flies away. How many birds are left?"
+  },
+  "answer": {
+   "count": 3
+  }
+ },
+ {
+  "skill": "subtract",
+  "level": 2,
+  "kind": "multiple_choice",
+  "prompt_text": "8 - 3 = ?",
+  "card": {
+   "options": [
+    {
+     "id": "d",
+     "label": "3"
+    },
+    {
+     "id": "a",
+     "label": "4"
+    },
+    {
+     "id": "b",
+     "label": "6"
+    },
+    {
+     "id": "c",
+     "label": "5"
+    }
+   ],
+   "narration": "Take away and pick what is left."
+  },
+  "answer": {
+   "choice": "c"
+  }
+ },
+ {
+  "skill": "subtract",
+  "level": 2,
+  "kind": "multiple_choice",
+  "prompt_text": "7 - 4 = ?",
+  "card": {
+   "options": [
+    {
+     "id": "c",
+     "label": "3"
+    },
+    {
+     "id": "d",
+     "label": "5"
+    },
+    {
+     "id": "a",
+     "label": "2"
+    },
+    {
+     "id": "b",
+     "label": "4"
+    }
+   ],
+   "narration": "Take away and pick what is left."
+  },
+  "answer": {
+   "choice": "c"
+  }
+ },
+ {
+  "skill": "trace_letters",
+  "level": 1,
+  "kind": "trace",
+  "prompt_text": "Trace the big letter A.",
+  "card": {
+   "path": "M20 90 L55 10 L90 90 M33 62 L77 62",
+   "narration": "Trace the big letter A with your finger."
+  },
+  "answer": {
+   "min_coverage": 0.6
+  }
+ },
+ {
+  "skill": "trace_letters",
+  "level": 1,
+  "kind": "trace",
+  "prompt_text": "Trace the big letter B.",
+  "card": {
+   "path": "M35 10 L35 90 M35 10 L62 10 Q80 10 80 28 Q80 46 62 48 L35 48 M35 48 L64 48 Q84 48 84 70 Q84 90 62 90 L35 90",
+   "narration": "Trace the big letter B with your finger."
+  },
+  "answer": {
+   "min_coverage": 0.6
+  }
+ },
+ {
+  "skill": "trace_letters",
+  "level": 1,
+  "kind": "trace",
+  "prompt_text": "Trace the big letter C.",
+  "card": {
+   "path": "M82 28 Q60 8 36 22 Q14 36 16 60 Q18 84 42 92 Q62 98 80 84",
+   "narration": "Trace the big letter C with your finger."
+  },
+  "answer": {
+   "min_coverage": 0.6
+  }
+ },
+ {
+  "skill": "plants",
+  "level": 1,
+  "kind": "tap_target",
+  "prompt_text": "Tap the living plant.",
+  "card": {
+   "targets": [
+    {
+     "id": "rock",
+     "label": "rock"
+    },
+    {
+     "id": "car",
+     "label": "car"
+    },
+    {
+     "id": "tree",
+     "label": "tree"
+    }
+   ],
+   "narration": "Which one is alive and growing?"
+  },
+  "answer": {
+   "choice": "tree"
+  }
+ },
+ {
+  "skill": "plants",
+  "level": 1,
+  "kind": "multiple_choice",
+  "prompt_text": "What does a plant need to grow big and strong?",
+  "card": {
+   "options": [
+    {
+     "id": "b",
+     "label": "candy"
+    },
+    {
+     "id": "c",
+     "label": "a warm blanket"
+    },
+    {
+     "id": "d",
+     "label": "loud music"
+    },
+    {
+     "id": "a",
+     "label": "sunlight and water"
+    }
+   ],
+   "narration": "Think about what helps a garden grow."
+  },
+  "answer": {
+   "choice": "a"
+  }
+ },
+ {
+  "skill": "plants",
+  "level": 2,
+  "kind": "tap_target",
+  "prompt_text": "Which part of the plant drinks up water from the soil?",
+  "card": {
+   "targets": [
+    {
+     "id": "roots",
+     "label": "roots"
+    },
+    {
+     "id": "flower",
+     "label": "flower"
+    },
+    {
+     "id": "leaf",
+     "label": "leaf"
+    }
+   ],
+   "narration": "Which part hides underground and drinks water?"
+  },
+  "answer": {
+   "choice": "roots"
+  }
+ },
+ {
+  "skill": "plants",
+  "level": 2,
+  "kind": "multiple_choice",
+  "prompt_text": "What do we call a tiny baby plant that just sprouted?",
+  "card": {
+   "options": [
+    {
+     "id": "d",
+     "label": "cloud"
+    },
+    {
+     "id": "a",
+     "label": "seedling"
+    },
+    {
+     "id": "b",
+     "label": "pebble"
+    },
+    {
+     "id": "c",
+     "label": "puppy"
+    }
+   ],
+   "narration": "It just popped out of its seed."
+  },
+  "answer": {
+   "choice": "a"
+  }
+ },
+ {
+  "skill": "weather",
+  "level": 1,
+  "kind": "tap_target",
+  "prompt_text": "Tap the picture that shows rainy weather.",
+  "card": {
+   "targets": [
+    {
+     "id": "night",
+     "label": "starry night"
+    },
+    {
+     "id": "rain",
+     "label": "rainy cloud"
+    },
+    {
+     "id": "sun",
+     "label": "sunny sky"
+    }
+   ],
+   "narration": "Which sky is rainy?"
+  },
+  "answer": {
+   "choice": "rain"
+  }
+ },
+ {
+  "skill": "weather",
+  "level": 1,
+  "kind": "multiple_choice",
+  "prompt_text": "What falls from the sky when it is very, very cold?",
+  "card": {
+   "options": [
+    {
+     "id": "b",
+     "label": "leaves"
+    },
+    {
+     "id": "c",
+     "label": "feathers"
+    },
+    {
+     "id": "d",
+     "label": "marbles"
+    },
+    {
+     "id": "a",
+     "label": "snow"
+    }
+   ],
+   "narration": "Think about a freezing winter day."
+  },
+  "answer": {
+   "choice": "a"
+  }
+ },
+ {
+  "skill": "weather",
+  "level": 2,
+  "kind": "tap_target",
+  "prompt_text": "Tap the lightning bolt.",
+  "card": {
+   "targets": [
+    {
+     "id": "rainbow",
+     "label": "rainbow"
+    },
+    {
+     "id": "wind",
+     "label": "windy leaves"
+    },
+    {
+     "id": "lightning",
+     "label": "lightning bolt"
+    }
+   ],
+   "narration": "Which one flashes in a storm?"
+  },
+  "answer": {
+   "choice": "lightning"
+  }
+ },
+ {
+  "skill": "weather",
+  "level": 2,
+  "kind": "multiple_choice",
+  "prompt_text": "When does a rainbow appear in the sky?",
+  "card": {
+   "options": [
+    {
+     "id": "d",
+     "label": "when clouds turn gray"
+    },
+    {
+     "id": "a",
+     "label": "when the sun shines through rain"
+    },
+    {
+     "id": "b",
+     "label": "when it snows at night"
+    },
+    {
+     "id": "c",
+     "label": "when the wind blows hard"
+    }
+   ],
+   "narration": "Think about sunshine and rain together."
+  },
+  "answer": {
+   "choice": "a"
+  }
+ },
+ {
+  "skill": "rhythm",
+  "level": 1,
+  "kind": "sequence",
+  "prompt_text": "Copy the pattern: clap, stomp, clap.",
+  "card": {
+   "items": [
+    {
+     "id": "b1",
+     "label": "clap"
+    },
+    {
+     "id": "b2",
+     "label": "stomp"
+    },
+    {
+     "id": "b3",
+     "label": "clap"
+    }
+   ],
+   "narration": "Tap the beats in the same order you heard."
+  },
+  "answer": {
+   "sequence": [
+    "b1",
+    "b2",
+    "b3"
+   ]
+  }
+ },
+ {
+  "skill": "rhythm",
+  "level": 1,
+  "kind": "sequence",
+  "prompt_text": "Copy the pattern: tap, tap, clap.",
+  "card": {
+   "items": [
+    {
+     "id": "b1",
+     "label": "tap"
+    },
+    {
+     "id": "b2",
+     "label": "tap"
+    },
+    {
+     "id": "b3",
+     "label": "clap"
+    }
+   ],
+   "narration": "Tap the beats in the same order you heard."
+  },
+  "answer": {
+   "sequence": [
+    "b1",
+    "b2",
+    "b3"
+   ]
+  }
+ },
+ {
+  "skill": "rhythm",
+  "level": 2,
+  "kind": "sequence",
+  "prompt_text": "Copy the pattern: stomp, clap, clap, stomp.",
+  "card": {
+   "items": [
+    {
+     "id": "b1",
+     "label": "stomp"
+    },
+    {
+     "id": "b2",
+     "label": "clap"
+    },
+    {
+     "id": "b3",
+     "label": "clap"
+    },
+    {
+     "id": "b4",
+     "label": "stomp"
+    }
+   ],
+   "narration": "This one is longer. Tap the beats in order."
+  },
+  "answer": {
+   "sequence": [
+    "b1",
+    "b2",
+    "b3",
+    "b4"
+   ]
+  }
+ },
+ {
+  "skill": "rhythm",
+  "level": 2,
+  "kind": "sequence",
+  "prompt_text": "Copy the pattern: clap, snap, stomp, snap.",
+  "card": {
+   "items": [
+    {
+     "id": "b1",
+     "label": "clap"
+    },
+    {
+     "id": "b2",
+     "label": "snap"
+    },
+    {
+     "id": "b3",
+     "label": "stomp"
+    },
+    {
+     "id": "b4",
+     "label": "snap"
+    }
+   ],
+   "narration": "This one is longer. Tap the beats in order."
+  },
+  "answer": {
+   "sequence": [
+    "b1",
+    "b2",
+    "b3",
+    "b4"
+   ]
+  }
+ },
+ {
+  "skill": "emotions",
+  "level": 1,
+  "kind": "tap_target",
+  "prompt_text": "Tap the happy face.",
+  "card": {
+   "targets": [
+    {
+     "id": "sad",
+     "label": "sad face"
+    },
+    {
+     "id": "angry",
+     "label": "angry face"
+    },
+    {
+     "id": "happy",
+     "label": "happy face"
+    }
+   ],
+   "narration": "Which face looks happy?"
+  },
+  "answer": {
+   "choice": "happy"
+  }
+ },
+ {
+  "skill": "emotions",
+  "level": 1,
+  "kind": "tap_target",
+  "prompt_text": "Tap the sad face.",
+  "card": {
+   "targets": [
+    {
+     "id": "scared",
+     "label": "scared face"
+    },
+    {
+     "id": "happy",
+     "label": "happy face"
+    },
+    {
+     "id": "sad",
+     "label": "sad face"
+    }
+   ],
+   "narration": "Which face looks sad?"
+  },
+  "answer": {
+   "choice": "sad"
+  }
+ },
+ {
+  "skill": "emotions",
+  "level": 2,
+  "kind": "tap_target",
+  "prompt_text": "Tap the face that looks surprised.",
+  "card": {
+   "targets": [
+    {
+     "id": "calm",
+     "label": "calm face"
+    },
+    {
+     "id": "sad",
+     "label": "sad face"
+    },
+    {
+     "id": "surprised",
+     "label": "surprised face"
+    }
+   ],
+   "narration": "Which face looks surprised?"
+  },
+  "answer": {
+   "choice": "surprised"
+  }
+ },
+ {
+  "skill": "emotions",
+  "level": 2,
+  "kind": "tap_target",
+  "prompt_text": "Tap the face that looks calm.",
+  "card": {
+   "targets": [
+    {
+     "id": "angry",
+     "label": "angry face"
+    },
+    {
+     "id": "worried",
+     "label": "worried face"
+    },
+    {
+     "id": "calm",
+     "label": "calm face"
+    }
+   ],
+   "narration": "Which face looks calm and peaceful?"
+  },
+  "answer": {
+   "choice": "calm"
+  }
+ },
+ {
+  "skill": "breathing",
+  "level": 1,
+  "kind": "listen_repeat",
+  "prompt_text": "Let's take a slow balloon breath.",
+  "card": {
+   "text": "Pretend your belly is a balloon. Breathe in through your nose to fill it up... now breathe out through your mouth and let the air out.",
+   "narration": "Breathe along with me, then tap the button."
+  },
+  "answer": {}
+ },
+ {
+  "skill": "breathing",
+  "level": 1,
+  "kind": "listen_repeat",
+  "prompt_text": "Let's do a counting breath.",
+  "card": {
+   "text": "Breathe in... 2... 3... Now breathe out... 2... 3... Feel your belly rise and fall like gentle waves.",
+   "narration": "Breathe with me, then tap when you are done."
+  },
+  "answer": {}
+ },
+ {
+  "skill": "sequencing",
+  "level": 1,
+  "kind": "sequence",
+  "prompt_text": "Put the morning steps in order.",
+  "card": {
+   "items": [
+    {
+     "id": "wake",
+     "label": "wake up"
+    },
+    {
+     "id": "brush",
+     "label": "brush teeth"
+    },
+    {
+     "id": "dress",
+     "label": "get dressed"
+    }
+   ],
+   "narration": "What do you do first in the morning?"
+  },
+  "answer": {
+   "sequence": [
+    "wake",
+    "brush",
+    "dress"
+   ]
+  }
+ },
+ {
+  "skill": "sequencing",
+  "level": 1,
+  "kind": "sequence",
+  "prompt_text": "Put the plant-growing steps in order.",
+  "card": {
+   "items": [
+    {
+     "id": "seed",
+     "label": "plant the seed"
+    },
+    {
+     "id": "water",
+     "label": "water it"
+    },
+    {
+     "id": "sprout",
+     "label": "watch it sprout"
+    }
+   ],
+   "narration": "What happens first when you grow a plant?"
+  },
+  "answer": {
+   "sequence": [
+    "seed",
+    "water",
+    "sprout"
+   ]
+  }
+ },
+ {
+  "skill": "sequencing",
+  "level": 1,
+  "kind": "sequence",
+  "prompt_text": "Put the hand-washing steps in order.",
+  "card": {
+   "items": [
+    {
+     "id": "soap",
+     "label": "rub with soap"
+    },
+    {
+     "id": "rinse",
+     "label": "rinse with water"
+    },
+    {
+     "id": "dry",
+     "label": "dry your hands"
+    }
+   ],
+   "narration": "What do you do first when you wash your hands?"
+  },
+  "answer": {
+   "sequence": [
+    "soap",
+    "rinse",
+    "dry"
+   ]
+  }
+ }
+]

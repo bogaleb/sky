@@ -55,6 +55,7 @@ describe('migration files', () => {
       '20260924000400_learning.sql',
       '20260924000500_storage.sql',
       '20260924000600_pgcrypto_search_path.sql',
+      '20260925000100_fix_choice_grading.sql',
     ]);
   });
 });
@@ -126,7 +127,8 @@ describe('security definer RPCs', () => {
   );
 
   it('exposes exactly the intended RPC surface', () => {
-    expect(rpcNames.sort()).toEqual(
+    // A function redefined by a later migration (e.g. submit_attempt) counts once.
+    expect([...new Set(rpcNames)].sort()).toEqual(
       [
         'ensure_parent_profile',
         'get_parent_profile',

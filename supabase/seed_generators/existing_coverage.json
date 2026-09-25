@@ -1,0 +1,167 @@
+{
+ "counts": {
+  "078619ca-2b49-4d99-b9b5-10ce0430844f": {
+   "1": 5,
+   "2": 3
+  },
+  "369ce938-7168-4bb1-a65b-979288bd03e1": {
+   "1": 5,
+   "2": 3
+  },
+  "3a25318e-bfd3-4a3f-ad96-bd2d5924a48a": {
+   "1": 3,
+   "2": 3
+  },
+  "f4d12020-2c41-4faa-b5d7-a413b4357b6e": {
+   "1": 4,
+   "2": 2
+  },
+  "fa797827-b5eb-4545-9764-bc49686cee02": {
+   "1": 2,
+   "2": 2
+  },
+  "2cdfdf06-33e3-4bdb-8c7c-824e89040f19": {
+   "1": 2,
+   "2": 2
+  },
+  "9c162a26-7567-4682-bb5d-0aec8269f84a": {
+   "1": 3,
+   "2": 3
+  },
+  "89039d90-bf45-4652-93fe-4ffa92540b91": {
+   "1": 2,
+   "2": 2
+  },
+  "c213079b-8283-4f29-ac9b-31227003ccdc": {
+   "1": 2
+  },
+  "6ef5edf9-6482-4621-8668-e78f1f779780": {
+   "1": 3
+  },
+  "019d3118-4948-4f30-9180-cc6950aa3914": {
+   "1": 2,
+   "2": 2
+  },
+  "455d6518-a72b-4b56-ab3e-2d0743a21fb0": {
+   "1": 2,
+   "2": 2
+  },
+  "f116ac64-021f-4b44-a2ed-daa6d2f8d571": {
+   "1": 2,
+   "2": 2
+  },
+  "cefb72ae-efed-47a7-9ac9-0644f663a6e2": {
+   "1": 2,
+   "2": 2
+  },
+  "7706e833-1b79-4f13-8e82-f7db91e19eb2": {
+   "1": 3
+  }
+ },
+ "total": 70,
+ "by_code": {
+  "alphabet": {
+   "1": 5,
+   "2": 3
+  },
+  "letter_sounds": {
+   "1": 5,
+   "2": 3
+  },
+  "blending": {
+   "1": 3,
+   "2": 3
+  },
+  "count": {
+   "1": 4,
+   "2": 2
+  },
+  "cardinality": {
+   "1": 2,
+   "2": 2
+  },
+  "compare_order": {
+   "1": 2,
+   "2": 2
+  },
+  "add": {
+   "1": 3,
+   "2": 3
+  },
+  "subtract": {
+   "1": 2,
+   "2": 2
+  },
+  "breathing": {
+   "1": 2
+  },
+  "trace_letters": {
+   "1": 3
+  },
+  "plants": {
+   "1": 2,
+   "2": 2
+  },
+  "weather": {
+   "1": 2,
+   "2": 2
+  },
+  "rhythm": {
+   "1": 2,
+   "2": 2
+  },
+  "emotions": {
+   "1": 2,
+   "2": 2
+  },
+  "sequencing": {
+   "1": 3
+  }
+ },
+ "skills": [
+  "add",
+  "alphabet",
+  "animals_habitats",
+  "attention",
+  "blending",
+  "breathing",
+  "brush_control",
+  "build_words",
+  "calm_down",
+  "cardinality",
+  "coloring",
+  "compare_order",
+  "conditions",
+  "continents_oceans",
+  "count",
+  "cultures",
+  "dance",
+  "debugging",
+  "emotions",
+  "experiments",
+  "fractions",
+  "human_body",
+  "instruments",
+  "landmarks",
+  "letter_sounds",
+  "loops",
+  "map_skills",
+  "patterns_coding",
+  "pitch",
+  "place_value",
+  "plants",
+  "rhythm",
+  "scene_composition",
+  "sentences",
+  "sequencing",
+  "shape_drawing",
+  "shapes_patterns",
+  "sight_words",
+  "stories",
+  "subtract",
+  "trace_letters",
+  "weather",
+  "world_animals",
+  "write_sentences"
+ ]
+}
