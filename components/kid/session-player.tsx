@@ -3,12 +3,18 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { AttemptResult, PlannedStep, SessionChild } from '@/lib/kid/types';
 import { getSessionPlan, submitActivityAttempt, logLearningEvent } from '@/app/actions/learning';
-import { awardStickers, getChildStickers, awardStars } from '@/app/actions/rewards';
+import { awardStickers, getChildStickers, awardStars, getStarBalance } from '@/app/actions/rewards';
+import { checkTrophies } from '@/app/actions/trophies';
+import type { Trophy } from '@/lib/kid/trophies';
 import { getIslandProgress } from '@/app/actions/progress';
 import { getTrailState, getTrailPlan, completeTrailQuest, recordDailyActivity, bumpQuestProgress, type TrailState } from '@/app/actions/trail';
 import TrailBanner from './trail-banner';
 import QuestIntro from './quest-intro';
 import MemoryCove from './memory-cove';
+import PatternParade from './pattern-parade';
+import PuzzleReef from './puzzle-reef';
+import TrophyShelf from './trophy-shelf';
+import CharacterTalk from './character-talk';
 import DressUp from './dress-up';
 import PetCompanion from './pet-companion';
 import { PetWidget } from './pet-widget';
@@ -22,6 +28,8 @@ import type { Song } from '@/lib/kid/songs';
 import type { Story } from '@/lib/kid/stories';
 import KidShell from './kid-shell';
 import ActivityStage from './activity-stage';
+import PhaseTransition from './kid-transition';
+import { IslandIntroSkeleton } from './loading-skeleton';
 import HostCharacter, { type CharacterMood } from './host-character';
 import SkyMap from './sky-map';
 import VideoSpot from './video-spot';
@@ -30,6 +38,7 @@ import Songbook from './songbook';
 import Storybook from './storybook';
 import LibraryPicker from './library-picker';
 import { ConfettiBurst } from './celebration';
+import { TrophyCelebration } from './trophy-shelf';
 import { AVATARS } from '@/components/avatars';
 
 export interface SessionPlayerProps {
@@ -315,6 +324,7 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
   const [stickerIds, setStickerIds] = useState<string[]>([]);
   const [showStickers, setShowStickers] = useState(false);
   const [newStickers, setNewStickers] = useState<string[]>([]);
+  const [newTrophies, setNewTrophies] = useState<Trophy[]>([]);
   const [activeSong, setActiveSong] = useState<Song | null>(null);
   const [activeStory, setActiveStory] = useState<Story | null>(null);
   const [pickingLibrary, setPickingLibrary] = useState<'story' | 'song' | null>(null);
@@ -326,6 +336,10 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
   const [showMemory, setShowMemory] = useState(false);
   const [showDressUp, setShowDressUp] = useState(false);
   const [showPet, setShowPet] = useState(false);
+  const [showPattern, setShowPattern] = useState(false);
+  const [showPuzzle, setShowPuzzle] = useState(false);
+  const [showTrophies, setShowTrophies] = useState(false);
+  const [talkWith, setTalkWith] = useState<string | null>(null);
   const resultsRef = useRef<AttemptResult[]>([]);
 
   // Load island progress + sticker book + trail state whenever the map shows.
@@ -412,8 +426,37 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
           },
         }).catch(() => {});
         // Persist stars to the wallet, keep the streak, feed daily quests.
-        void awardStars(child.id, earnedCount).catch(() => {});
         void recordDailyActivity(child.id).catch(() => {});
+        // Trophies: persist stars first so lifetime-star milestones see the
+        // fresh total, then check activity-count, perfect-session, and star
+        // trophies. Best-effort; awards are idempotent.
+        void (async () => {
+          try {
+            await awardStars(child.id, earnedCount);
+            // Star Collector sticker at 100 lifetime stars (idempotent).
+            const { lifetimeEarned } = await getStarBalance(child.id);
+            if (lifetimeEarned >= 100) {
+              const freshStars = await awardStickers(child.id, ['star-100']).catch(() => [] as string[]);
+              if (freshStars.length > 0) {
+                setStickerIds((prev) => [...prev, ...freshStars.filter((f) => !prev.includes(f))]);
+              }
+            }
+            const perfect = earnedCount === activeSteps.length && activeSteps.length > 0;
+            const [activityTrophies, sessionTrophies] = await Promise.all([
+              checkTrophies(child.id, 'activity_complete'),
+              checkTrophies(child.id, 'session_complete', { perfect }),
+            ]);
+            const fresh = [...activityTrophies, ...sessionTrophies];
+            if (fresh.length > 0) {
+              setNewTrophies((prev) => [
+                ...prev,
+                ...fresh.filter((t) => !prev.some((p) => p.id === t.id)),
+              ]);
+            }
+          } catch {
+            /* trophies are enhancement-only */
+          }
+        })();
         void bumpQuestProgress(child.id, 'activities_6', activeSteps.length).catch(() => {});
         void bumpQuestProgress(child.id, 'stars_50', earnedCount).catch(() => {});
         const visitedSubject = island?.subjectCode ?? trailStop?.subjectCode;
@@ -526,6 +569,7 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
     setPoints(0);
     setStars(0);
     setNewStickers([]);
+    setNewTrophies([]);
     resultsRef.current = [];
   };
 
@@ -537,18 +581,20 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
       onExit={phase === 'playing' || phase === 'map' || phase === 'trailIntro' ? onExit : undefined}
     >
       {loadingIsland && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-kid-sky-300/60 backdrop-blur-sm">
-          <div className="animate-kid-bounce-soft rounded-kid-card bg-white px-10 py-6 text-2xl font-black text-kid-ink-900 shadow-2xl">
-            Flying to the island…
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-kid-sky-300/60 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-2xl rounded-kid-card bg-white/90 px-6 py-8 shadow-2xl">
+            <p className="mb-5 text-center text-2xl font-black text-kid-ink-900">Flying to the island…</p>
+            <IslandIntroSkeleton />
           </div>
         </div>
       )}
+      <PhaseTransition transitionKey={phase} className="flex w-full flex-col items-center">
       {phase === 'intro' && <Intro child={child} onStart={() => setPhase('map')} />}
       {phase === 'map' && (
         <div className="flex w-full flex-col items-center gap-5">
           <TrailBanner trail={trailState} onStartQuest={() => void startTrailQuest()} starting={startingQuest} />
-          {/* Sky Park: games, pets, and dress-up between quests. */}
-          <div className="flex w-full max-w-3xl items-stretch justify-center gap-3 px-4">
+          {/* Sky Park: games, pets, trophies, and dress-up between quests. */}
+          <div className="flex w-full max-w-4xl flex-wrap items-stretch justify-center gap-3 px-4">
             <PetWidget child={child} onOpen={() => setShowPet(true)} />
             <button
               type="button"
@@ -584,12 +630,63 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
               <span className="text-lg font-black">Dress Up</span>
               <span className="text-xs font-bold opacity-80">spend your stars</span>
             </button>
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowPattern(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-mint-400 px-4 py-4 text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <circle cx="10" cy="24" r="6" fill="#fff" opacity="0.95" />
+                <path d="M22 18l6 12h-12z" fill="#fff" opacity="0.75" />
+                <rect x="32" y="18" width="11" height="11" rx="2" fill="#fff" opacity="0.95" />
+                <text x="30" y="44" fontSize="10" fontWeight="900" fill="#17324F">?</text>
+              </svg>
+              <span className="text-lg font-black">Pattern Parade</span>
+              <span className="text-xs font-bold opacity-80">finish the pattern</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowPuzzle(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-sky-400 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <path d="M18 8h6v4a3 3 0 1 0 6 0V8h6v10h-4a3 3 0 1 0 0 6h4v10H18V8z" fill="#fff" opacity="0.95" transform="translate(-4 4)" />
+                <path d="M30 30h10v4h-4a3 3 0 1 0 0 6h4v2H30V30z" fill="#fff" opacity="0.6" />
+              </svg>
+              <span className="text-lg font-black">Puzzle Reef</span>
+              <span className="text-xs font-bold opacity-90">build the picture</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('fanfare');
+                setShowTrophies(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-sun-400 px-4 py-4 text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <path d="M16 8h16v12a8 8 0 0 1-16 0V8z" fill="#fff" opacity="0.95" />
+                <path d="M16 12H9a7 7 0 0 0 9 9M32 12h7a7 7 0 0 1-9 9" fill="none" stroke="#fff" strokeWidth="3.5" opacity="0.9" />
+                <rect x="22" y="28" width="4" height="7" fill="#fff" opacity="0.95" />
+                <rect x="16" y="35" width="16" height="5" rx="2.5" fill="#fff" opacity="0.95" />
+                <path d="M24 12l1.4 2.9 3.2.4-2.3 2.2.6 3.1-2.9-1.5-2.9 1.5.6-3.1-2.3-2.2 3.2-.4z" fill="#FFD93C" />
+              </svg>
+              <span className="text-lg font-black">Trophies</span>
+              <span className="text-xs font-bold opacity-80">my trophy shelf</span>
+            </button>
           </div>
           <SkyMap
             nickname={child.nickname}
             onSelectIsland={(isl) => void startIslandSession(isl)}
             onSurprise={() => void startIslandSession(null)}
             onOpenStickers={() => setShowStickers(true)}
+            onTalkToCharacter={(id) => setTalkWith(id)}
             progress={islandProgress}
             stickerCount={stickerIds.length}
             stickerTotal={STICKERS.length}
@@ -601,6 +698,35 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
           <MemoryCove child={child} onExit={() => setShowMemory(false)} />
         </div>
       )}
+      {showPattern && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <PatternParade childId={child.id} nickname={child.nickname} onExit={() => setShowPattern(false)} />
+        </div>
+      )}
+      {showPuzzle && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <PuzzleReef childId={child.id} nickname={child.nickname} onExit={() => setShowPuzzle(false)} />
+        </div>
+      )}
+      {showTrophies && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <div className="flex justify-start p-4">
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('whoosh');
+                setShowTrophies(false);
+              }}
+              className="rounded-full border-b-4 border-kid-ink-700 bg-white px-6 py-3 text-lg font-black text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
+              aria-label="Back to the map"
+            >
+              ← Back
+            </button>
+          </div>
+          <TrophyShelf childId={child.id} />
+        </div>
+      )}
+      {talkWith && <CharacterTalk characterId={talkWith} onClose={() => setTalkWith(null)} />}
       {showDressUp && <DressUp child={child} onExit={() => setShowDressUp(false)} />}
       {showPet && <PetCompanion child={child} onExit={() => setShowPet(false)} />}
       {phase === 'trailIntro' && trailStop && (
@@ -636,8 +762,11 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
           onFinish={() => {
             setActiveStory(null);
             // Finishing a story earns the Bookworm sticker + feeds the Bookworm daily quest!
+            // After 6pm local time it also earns the Night Owl bedtime-story sticker.
             void bumpQuestProgress(child.id, 'story_read', 1).catch(() => {});
-            void awardStickers(child.id, ['bookworm', 'friend-luna', 'star-reading'])
+            const storyStickers = ['bookworm', 'friend-luna', 'star-reading'];
+            if (new Date().getHours() >= 18) storyStickers.push('night-owl');
+            void awardStickers(child.id, storyStickers)
               .then((fresh) => {
                 if (fresh.length > 0) {
                   setStickerIds((prev) => [...prev, ...fresh.filter((f) => !prev.includes(f))]);
@@ -676,7 +805,7 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
         />
       )}
       {phase === 'playing' && step && (
-        <div key={step.activityId} className="relative flex w-full flex-col items-center">
+        <div key={step.activityId} className="animate-kid-view-enter relative flex w-full flex-col items-center">
           <ActivityStage
             step={step}
             onSubmit={handleSubmit}
@@ -746,7 +875,11 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
           onExit={() => setPhase('goodbye')}
         />
       )}
+      {phase === 'complete' && newTrophies.length > 0 && (
+        <TrophyCelebration trophies={newTrophies} onDone={() => setNewTrophies([])} />
+      )}
       {phase === 'goodbye' && <Goodbye child={child} onDone={onExit} />}
+      </PhaseTransition>
     </KidShell>
   );
 }

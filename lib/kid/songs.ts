@@ -12,6 +12,8 @@ export interface Song {
   title: string;
   characterId: 'riff';
   lines: SongLine[];
+  /** Energy of the song: calm for wind-down, upbeat for playtime. */
+  mood?: 'calm' | 'upbeat';
 }
 
 export const SONGS: Song[] = [
@@ -55,6 +57,104 @@ export const SONGS: Song[] = [
       { text: 'Little steps, little hops, I can do it!' },
       { text: 'Never never never give up, I will do it!' },
       { text: 'I tried again, and now I can!' },
+    ],
+  },
+  // --- Calm songs (wind-down, bedtime, quiet time) ---
+  {
+    id: 'twinkle-down-to-sleep',
+    title: 'Twinkle Down to Sleep',
+    characterId: 'riff',
+    mood: 'calm',
+    lines: [
+      { text: 'Close your eyes, the day is done,' },
+      { text: 'The sleepy moon has just begun.' },
+      { text: 'Stars are peeking, one by one,' },
+      { text: 'Dreamland waits, come join the fun.' },
+      { text: 'Twinkle down, twinkle down to sleep,' },
+      { text: 'Soft and cozy, warm and deep,' },
+      { text: 'Twinkle down, twinkle down to sleep,' },
+      { text: 'Goodnight, goodnight, my dreams to keep.' },
+    ],
+  },
+  {
+    id: 'breathe-like-tuno',
+    title: 'Breathe Like Tuno',
+    characterId: 'riff',
+    mood: 'calm',
+    lines: [
+      { text: 'Breathe in slow, like Tuno the turtle,' },
+      { text: 'Fill your belly, big and round.' },
+      { text: 'Breathe out slow, let the wiggles go,' },
+      { text: 'Feel your feet upon the ground.' },
+      { text: 'In and out, in and out,' },
+      { text: 'Calm and cozy, there is no doubt,' },
+      { text: 'In and out, in and out,' },
+      { text: 'Breathe like Tuno, calm and slow.' },
+    ],
+  },
+  {
+    id: 'rain-on-the-leaves',
+    title: 'Rain on the Leaves',
+    characterId: 'riff',
+    mood: 'calm',
+    lines: [
+      { text: 'Pitter patter, rain is falling,' },
+      { text: 'On the leaves, I hear it calling.' },
+      { text: 'Drip drop down the windowpane,' },
+      { text: 'Washing clean the dusty lane.' },
+      { text: 'Rain, rain, soft and sweet,' },
+      { text: 'Dancing down to tap my feet,' },
+      { text: 'Rain, rain, soft and sweet,' },
+      { text: 'Nature’s song is such a treat.' },
+    ],
+  },
+  // --- Upbeat songs (movement, playtime, celebrations) ---
+  {
+    id: 'stomp-like-an-elephant',
+    title: 'Stomp Like an Elephant',
+    characterId: 'riff',
+    mood: 'upbeat',
+    lines: [
+      { text: 'Stomp, stomp, stomp like Atlas the elephant,' },
+      { text: 'Big and strong and proud!' },
+      { text: 'Swing your trunk from side to side,' },
+      { text: 'And trumpet really loud!' },
+      { text: 'Stomp it, stomp it, feel the beat,' },
+      { text: 'Stomping with your happy feet,' },
+      { text: 'Stomp it, stomp it, feel the beat,' },
+      { text: 'Elephant stomp, isn’t it neat!' },
+    ],
+  },
+  {
+    id: 'wiggle-and-giggle',
+    title: 'Wiggle and Giggle',
+    characterId: 'riff',
+    mood: 'upbeat',
+    lines: [
+      { text: 'Wiggle your shoulders, wiggle your knees,' },
+      { text: 'Wiggle like jelly in the breeze!' },
+      { text: 'Shake your sillies, shake them out,' },
+      { text: 'Then giggle, giggle, twist about!' },
+      { text: 'Wiggle, giggle, wiggle, giggle,' },
+      { text: 'Silly dancing makes me jiggle,' },
+      { text: 'Wiggle, giggle, wiggle, giggle,' },
+      { text: 'Dance until your toes go tingle!' },
+    ],
+  },
+  {
+    id: 'we-are-explorers',
+    title: 'We Are Explorers',
+    characterId: 'riff',
+    mood: 'upbeat',
+    lines: [
+      { text: 'Pack your bag and grab your map,' },
+      { text: 'Put on your explorer cap!' },
+      { text: 'Over mountains, through the sky,' },
+      { text: 'Curio says, “Come on, let’s fly!”' },
+      { text: 'We are explorers, brave and true,' },
+      { text: 'There’s a whole big world for me and you,' },
+      { text: 'We are explorers, brave and true,' },
+      { text: 'Adventure’s calling me and you!' },
     ],
   },
 ];

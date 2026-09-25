@@ -62,6 +62,7 @@ describe('migration files', () => {
       '20260925000500_pets.sql',
       '20260925000600_outfits.sql',
       '20260925000700_wallet_rpc.sql',
+      '20260925000800_trophies.sql',
     ]);
   });
 });
@@ -182,6 +183,25 @@ describe('security definer RPCs', () => {
   it('the trigger helper is not client-callable', () => {
     expect(allSql).not.toMatch(/grant execute on function public\.set_updated_at/);
     expect(allSql).not.toMatch(/revoke all on function public\.set_updated_at/);
+  });
+});
+
+describe('trophy awards', () => {
+  const trophies = migrations.get('20260925000800_trophies.sql') ?? '';
+
+  it('mirrors the sticker_awards table convention', () => {
+    expect(trophies).toMatch(/create table public\.trophy_awards/);
+    expect(trophies).toMatch(/unique\s*\(\s*child_id\s*,\s*trophy_id\s*\)/);
+    expect(trophies).toMatch(
+      /alter table public\.trophy_awards enable row level security/
+    );
+    expect(trophies).toMatch(
+      /create policy[\s\S]*?for select[\s\S]*?to authenticated[\s\S]*?on public\.trophy_awards/
+    );
+    expect(trophies).toMatch(
+      /create policy[\s\S]*?for insert[\s\S]*?to authenticated[\s\S]*?on public\.trophy_awards/
+    );
+    expect(trophies).not.toMatch(/to anon/);
   });
 });
 

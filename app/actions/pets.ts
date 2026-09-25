@@ -3,7 +3,8 @@
 import { createClient } from '@/lib/supabase/server';
 import { FEED_COST, isValidPetName, stageForFeeds, type Pet, type PetSpecies, type PetStage } from '@/lib/kid/pets';
 import { bumpQuestProgress } from '@/app/actions/trail';
-import { spendStars } from '@/app/actions/rewards';
+import { spendStars, awardStickers } from '@/app/actions/rewards';
+import { checkTrophies } from '@/app/actions/trophies';
 
 async function requireChild(childId: string) {
   const supabase = await createClient();
@@ -79,6 +80,8 @@ export async function hatchPet(childId: string): Promise<Pet> {
     .select('child_id, species, name, stage, happiness, feed_count, updated_at')
     .single();
   if (error || !data) throw new Error('Could not hatch pet.');
+  void checkTrophies(childId, 'pet_hatched').catch(() => {});
+  void awardStickers(childId, ['pet-pal']).catch(() => {});
   return toPet(data as PetRow);
 }
 
@@ -125,6 +128,10 @@ export async function feedPet(childId: string): Promise<{ pet: Pet; leveledUp: b
   if (updateError || !updated) throw new Error('Could not feed pet.');
 
   await bumpQuestProgress(childId, 'pet_fed', 1).catch(() => {});
+  void awardStickers(childId, ['pet-helper']).catch(() => {});
+  if (newStage === 'grown' && (row.stage as PetStage) !== 'grown') {
+    void checkTrophies(childId, 'pet_grown').catch(() => {});
+  }
   return { pet: toPet(updated as PetRow), leveledUp };
 }
 

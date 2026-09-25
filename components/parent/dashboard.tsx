@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
   getDashboardData,
@@ -52,71 +52,189 @@ function timeAgo(iso: string): string {
   return `${days}d ago`;
 }
 
+function formatMinutes(mins: number): string {
+  if (mins < 1) return '0 min';
+  if (mins < 60) return `${mins} min`;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return m === 0 ? `${h}h` : `${h}h ${m}m`;
+}
+
+const STATUS_LABEL: Record<string, string> = {
+  emerging: 'Starting out',
+  developing: 'Developing',
+  proficient: 'Proficient',
+  mastered: 'Mastered',
+};
+
+function SkillRow({ skill }: { skill: ChildDashboard['skillMastery'][number] }) {
+  const pct = Math.round((skill.currentLevel / 5) * 100);
+  return (
+    <div className="py-3">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <p className="font-bold text-parent-ink-900">{skill.skillName}</p>
+        <div className="flex items-center gap-3 text-sm">
+          {skill.accuracyPct !== null && (
+            <span className="font-semibold text-parent-ink-600">{skill.accuracyPct}% correct</span>
+          )}
+          <span
+            className={`rounded-full px-2.5 py-0.5 text-xs font-extrabold ${
+              skill.status === 'mastered'
+                ? 'bg-parent-leaf-600/10 text-parent-leaf-600'
+                : skill.status === 'proficient'
+                  ? 'bg-parent-sky-100 text-parent-sky-700'
+                  : 'bg-parent-sun-400/15 text-parent-sun-500'
+            }`}
+          >
+            {STATUS_LABEL[skill.status] ?? skill.status}
+          </span>
+        </div>
+      </div>
+      <div className="mt-1.5 flex items-center gap-3">
+        <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-parent-sky-100">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-parent-sky-600 to-parent-sky-400 transition-all"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+        <span className="w-14 shrink-0 text-right text-sm font-bold text-parent-ink-600">
+          Lv {skill.currentLevel}/5
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function ChildReport({ child }: { child: ChildDashboard }) {
   const [digest, setDigest] = useState<WeeklyDigest | null>(null);
-  const [digestLoading, setDigestLoading] = useState(false);
 
-  const loadDigest = async () => {
-    setDigestLoading(true);
-    try {
-      setDigest(await getWeeklyDigest(child.id));
-    } catch {
-      /* keep null */
-    } finally {
-      setDigestLoading(false);
+  // Load this week's summary automatically; it is cached server-side.
+  useEffect(() => {
+    let cancelled = false;
+    getWeeklyDigest(child.id)
+      .then((d) => {
+        if (!cancelled) setDigest(d);
+      })
+      .catch(() => {
+        /* summary stays unavailable */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [child.id]);
+
+  const skillGroups = useMemo(() => {
+    const groups = new Map<string, { subjectName: string; islandName: string; skills: typeof child.skillMastery }>();
+    for (const s of child.skillMastery) {
+      const g = groups.get(s.subjectCode) ?? { subjectName: s.subjectName, islandName: s.islandName, skills: [] };
+      g.skills.push(s);
+      groups.set(s.subjectCode, g);
     }
-  };
+    return [...groups.values()];
+  }, [child.skillMastery]);
 
   return (
     <div className="mt-6">
-      {/* Stats */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <StatCard label="Flights this week" value={child.sessions7d} sub={`${child.sessions30d} in 30 days`} />
-        <StatCard label="Stars this week" value={child.stars7d} sub={`${child.points7d} points`} />
-        <StatCard label="Stickers earned" value={child.stickers} sub="in the sticker book" />
-        <StatCard
-          label="Last active"
-          value={child.lastActiveAt ? timeAgo(child.lastActiveAt) : '—'}
-          sub={child.lastActiveAt ? new Date(child.lastActiveAt).toLocaleDateString() : 'not yet'}
-        />
-      </div>
-
       {/* Weekly digest */}
-      <div className="mt-6 rounded-2xl border border-parent-sky-100 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-xl font-extrabold text-parent-sky-900">Weekly digest</h2>
-          {!digest && (
-            <button
-              type="button"
-              onClick={loadDigest}
-              disabled={digestLoading}
-              className="rounded-xl bg-parent-sky-600 px-5 py-2.5 font-bold text-white transition-all hover:bg-parent-sky-700 active:scale-95 disabled:opacity-40"
-            >
-              {digestLoading ? 'Writing…' : 'Generate this week\u2019s summary'}
-            </button>
+      <div className="rounded-2xl border border-parent-sky-100 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
+        <h2 className="text-xl font-extrabold text-parent-sky-900">Weekly digest</h2>
+        <p className="mt-1 text-sm text-parent-ink-600">
+          {child.nickname}&rsquo;s last 7 days at a glance.
+          {child.lastActiveAt && (
+            <> Last active {timeAgo(child.lastActiveAt)}.</>
+          )}
+        </p>
+        <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3">
+          <StatCard label="Activities answered" value={child.activities7d} sub={`${child.sessions7d} learning flights`} />
+          <StatCard label="Stars earned" value={child.stars7d} sub={`${child.points7d} points`} />
+          <StatCard label="Learning time" value={formatMinutes(child.timePlayedMinutes7d)} sub="estimated from flights" />
+          <StatCard
+            label="Day streak"
+            value={child.streak}
+            sub={child.longestStreak > 0 ? `best: ${child.longestStreak} days` : 'fly daily to start one'}
+          />
+          <StatCard label="Daily quests done" value={child.questsCompleted7d} sub="in the last 7 days" />
+          <StatCard label="Stickers earned" value={child.stickers} sub="in the sticker book" />
+        </div>
+
+        {child.topSkills.length > 0 && (
+          <div className="mt-4 rounded-xl bg-parent-sky-50 px-4 py-3">
+            <p className="text-sm font-extrabold text-parent-sky-900">Most practiced this week</p>
+            <p className="mt-1 text-parent-ink-600">
+              {child.topSkills
+                .map((s) => `${s.skillName} (${s.attempts} ${s.attempts === 1 ? 'try' : 'tries'})`)
+                .join(' · ')}
+            </p>
+          </div>
+        )}
+
+        <div className="mt-4 border-t border-parent-sky-100 pt-4">
+          {digest ? (
+            <div>
+              <p className="text-lg font-extrabold text-parent-ink-900">{digest.headline}</p>
+              <ul className="mt-2 space-y-1.5">
+                {digest.bullets.map((b, i) => (
+                  <li key={i} className="flex gap-2 text-parent-ink-600">
+                    <span aria-hidden="true" className="font-black text-parent-sky-600">•</span>
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p className="text-parent-ink-600">Writing this week&rsquo;s summary…</p>
           )}
         </div>
-        {digest ? (
-          <div className="mt-3">
-            <p className="text-lg font-extrabold text-parent-ink-900">{digest.headline}</p>
-            <ul className="mt-2 space-y-1.5">
-              {digest.bullets.map((b, i) => (
-                <li key={i} className="flex gap-2 text-parent-ink-600">
-                  <span aria-hidden="true" className="font-black text-parent-sky-600">•</span>
-                  <span>{b}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : (
-          <p className="mt-2 text-parent-ink-600">
-            A plain-language summary of {child.nickname}&rsquo;s week: what they mastered,
-            what they practiced, and what needs attention.
+      </div>
+
+      {/* Suggested focus */}
+      {child.focusSkills.length > 0 && (
+        <div className="mt-6 rounded-2xl border border-parent-sun-400/40 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
+          <h2 className="text-xl font-extrabold text-parent-sky-900">Suggested focus</h2>
+          <p className="mt-1 text-sm text-parent-ink-600">
+            Skills {child.nickname} practiced recently that could use a little more time.
           </p>
+          <ul className="mt-3 space-y-3">
+            {child.focusSkills.map((f) => (
+              <li key={f.skillName} className="rounded-xl bg-parent-sky-50 px-4 py-3">
+                <p className="font-extrabold text-parent-ink-900">
+                  {f.skillName} <span className="font-semibold text-parent-ink-600">· {f.subjectName}</span>
+                </p>
+                <p className="mt-1 text-parent-ink-600">{f.suggestion}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Per-skill mastery, grouped by island */}
+      <div className="mt-6 rounded-2xl border border-parent-sky-100 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
+        <h2 className="text-xl font-extrabold text-parent-sky-900">Skill mastery</h2>
+        <p className="mt-1 text-sm text-parent-ink-600">
+          Every skill {child.nickname} has attempted, grouped by island. Levels run 1–5 per skill.
+        </p>
+        {skillGroups.length === 0 ? (
+          <p className="mt-3 text-parent-ink-600">No skills attempted yet — fly to an island to begin!</p>
+        ) : (
+          <div className="mt-4 space-y-6">
+            {skillGroups.map((g) => (
+              <section key={g.subjectName} aria-label={`${g.subjectName} skills`}>
+                <div className="flex items-baseline justify-between border-b-2 border-parent-sky-100 pb-1.5">
+                  <h3 className="font-extrabold text-parent-sky-900">{g.subjectName}</h3>
+                  <p className="text-sm font-semibold text-parent-ink-400">{g.islandName}</p>
+                </div>
+                <div className="divide-y divide-parent-sky-50">
+                  {g.skills.map((s) => (
+                    <SkillRow key={s.skillId} skill={s} />
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
         )}
       </div>
 
-      {/* Subject mastery */}
+      {/* Learning by subject (overview) */}
       <div className="mt-6 rounded-2xl border border-parent-sky-100 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
         <h2 className="text-xl font-extrabold text-parent-sky-900">Learning by subject</h2>
         <p className="mt-1 text-sm text-parent-ink-600">

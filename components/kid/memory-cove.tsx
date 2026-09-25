@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { MEMORY_DECKS, getDeck, type MemoryDeck, type MemoryPair } from '@/lib/kid/memory-decks';
 import type { SessionChild } from '@/lib/kid/types';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { awardStars } from '@/app/actions/rewards';
+import { awardStars, awardStickers } from '@/app/actions/rewards';
 import { bumpQuestProgress } from '@/app/actions/trail';
 import { logLearningEvent } from '@/app/actions/learning';
 import KidShell from '@/components/kid/kid-shell';
@@ -228,6 +228,7 @@ export default function MemoryCove({ child, onExit }: MemoryCoveProps) {
         const balance = await awardStars(child.id, stars);
         setStarBalance(balance);
         await bumpQuestProgress(child.id, 'memory_game', 1);
+        await awardStickers(child.id, ['memory-master']);
         await logLearningEvent(child.id, 'milestone', {
           metadata: { kind: 'memory_cove_win', deck: wonDeck.id, moves: finalMoves },
         });

@@ -47,7 +47,7 @@ export default function DeckClient({ child, initialSteps, sessionId, onExit }: D
           <button
             type="button"
             onClick={() => void onExit()}
-            className="mt-4 rounded-full bg-kid-sky-400 px-8 py-3 text-lg font-extrabold text-white"
+            className="kid-press mt-4 rounded-full bg-kid-sky-400 px-8 py-3 text-lg font-extrabold text-white"
           >
             Back to profiles
           </button>
@@ -59,9 +59,13 @@ export default function DeckClient({ child, initialSteps, sessionId, onExit }: D
   return (
     <>
       {reloading && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-kid-sky-300/60 backdrop-blur-sm">
-          <div className="animate-kid-bounce-soft rounded-kid-card bg-white px-10 py-6 text-2xl font-black text-kid-ink-900 shadow-2xl">
-            Finding new adventures…
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-kid-sky-300/60 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-kid-card bg-white/90 px-8 py-8 shadow-2xl">
+            <p className="animate-kid-bounce-soft text-center text-2xl font-black text-kid-ink-900">
+              Finding new adventures…
+            </p>
+            <div className="kid-skeleton mt-5 h-10 w-full" style={{ borderRadius: '999px' }} aria-hidden />
+            <div className="kid-skeleton mx-auto mt-3 h-5 w-2/3" aria-hidden />
           </div>
         </div>
       )}

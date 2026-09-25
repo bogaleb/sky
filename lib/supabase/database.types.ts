@@ -275,6 +275,22 @@ export interface Database {
         Update: Partial<Database['public']['Tables']['sticker_awards']['Insert']>;
         Relationships: [];
       };
+      trophy_awards: {
+        Row: {
+          id: string;
+          child_id: string;
+          trophy_id: string;
+          awarded_at: string;
+        };
+        Insert: {
+          id?: string;
+          child_id: string;
+          trophy_id: string;
+          awarded_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['trophy_awards']['Insert']>;
+        Relationships: [];
+      };
       digest_log: {
         Row: {
           id: string;

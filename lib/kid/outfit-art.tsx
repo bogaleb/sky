@@ -299,6 +299,194 @@ function SupernovaCape({ className }: { className?: string }) {
   );
 }
 
+function WizardHat({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 96 96" className={className} role="img" aria-hidden="true" {...P}>
+      <defs>
+        <linearGradient id="wizard-hat-purple" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#9B5DE5" />
+          <stop offset="1" stopColor="#5A2EA6" />
+        </linearGradient>
+      </defs>
+      {/* tilted cone */}
+      <path
+        d="M34,28 L50,4 L62,26 Z"
+        fill="url(#wizard-hat-purple)"
+        stroke="#3A1D6E"
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+      {/* golden tip */}
+      <circle cx="50" cy="5" r="3.5" fill="#FFD968" stroke="#B57E12" strokeWidth="2" />
+      {/* wide brim */}
+      <ellipse cx="48" cy="28" rx="24" ry="6" fill="url(#wizard-hat-purple)" stroke="#3A1D6E" strokeWidth="3" />
+      {/* magic star */}
+      <path
+        d="M43,15 l1.3,2.6 2.9,0.4 -2.1,2 0.5,2.9 -2.6,-1.4 -2.6,1.4 0.5,-2.9 -2.1,-2 2.9,-0.4 Z"
+        fill="#FFE66D"
+      />
+      {/* little moon */}
+      <path d="M57,13 a5,5 0 1 0 4.2,8.8 A4,4 0 1 1 57,13 Z" fill="#FFF3C4" />
+    </svg>
+  );
+}
+
+function ChefHat({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 96 96" className={className} role="img" aria-hidden="true" {...P}>
+      {/* puffy top */}
+      <path
+        d="M32,22 C28,12 36,6 42,10 C44,4 54,4 56,10 C62,6 70,12 66,22 Z"
+        fill="#FFFFFF"
+        stroke="#8A9BB0"
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+      {/* band */}
+      <rect x="32" y="20" width="34" height="9" rx="4.5" fill="#EAF0F7" stroke="#8A9BB0" strokeWidth="3" />
+      {/* band stripes */}
+      <path d="M42,20 L42,29 M54,20 L54,29" stroke="#8A9BB0" strokeWidth="2" opacity="0.6" />
+    </svg>
+  );
+}
+
+function AstronautHelmet({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 96 96" className={className} role="img" aria-hidden="true" {...P}>
+      {/* antenna */}
+      <path d="M48,2 L48,8" fill="none" stroke="#4A5A70" strokeWidth="3" />
+      <circle cx="48" cy="4" r="3" fill="#FF6B6B" stroke="#C0392B" strokeWidth="2" />
+      {/* glass dome */}
+      <circle cx="48" cy="24" r="20" fill="#BFE9F7" opacity="0.5" />
+      <circle cx="48" cy="24" r="20" fill="none" stroke="#E8823C" strokeWidth="4" />
+      {/* orange lower rim */}
+      <path d="M28,24 a20,20 0 0 0 40,0" fill="none" stroke="#E8823C" strokeWidth="5" />
+      {/* glass shine */}
+      <path d="M36,14 a12,12 0 0 1 6,-6" fill="none" stroke="#FFFFFF" strokeWidth="3" opacity="0.9" />
+      {/* side bolts */}
+      <circle cx="29" cy="30" r="2.6" fill="#FFC93C" stroke="#B57E12" strokeWidth="1.5" />
+      <circle cx="67" cy="30" r="2.6" fill="#FFC93C" stroke="#B57E12" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+function FirefighterHelmet({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 96 96" className={className} role="img" aria-hidden="true" {...P}>
+      {/* dome */}
+      <path
+        d="M30,26 C30,12 38,6 48,6 C58,6 66,12 66,26 Z"
+        fill="#E14E4E"
+        stroke="#8E1F1F"
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+      {/* brim */}
+      <ellipse cx="48" cy="27" rx="26" ry="6" fill="#E14E4E" stroke="#8E1F1F" strokeWidth="3" />
+      {/* front shield */}
+      <path
+        d="M48,10 l5,3 -1,8 -4,3 -4,-3 -1,-8 Z"
+        fill="#FFC93C"
+        stroke="#B57E12"
+        strokeWidth="2.5"
+        strokeLinejoin="round"
+      />
+      {/* shine */}
+      <path d="M36,14 C38,10 42,8 46,8" fill="none" stroke="#FFFFFF" strokeWidth="2.5" opacity="0.7" />
+    </svg>
+  );
+}
+
+function StarGlasses({ className }: { className?: string }) {
+  const star = (cx: number, cy: number) =>
+    `M${cx},${cy - 11} l3.2,6.5 7.2,1 -5.2,5 1.2,7.1 -6.4,-3.4 -6.4,3.4 1.2,-7.1 -5.2,-5 7.2,-1 Z`;
+  return (
+    <svg viewBox="0 0 96 96" className={className} role="img" aria-hidden="true" {...P}>
+      {/* left star lens */}
+      <path d={star(37, 52)} fill="#FFE66D" stroke="#B57E12" strokeWidth="3" strokeLinejoin="round" />
+      {/* right star lens */}
+      <path d={star(59, 52)} fill="#FFE66D" stroke="#B57E12" strokeWidth="3" strokeLinejoin="round" />
+      {/* glints */}
+      <circle cx="37" cy="52" r="2" fill="#FFFFFF" />
+      <circle cx="59" cy="52" r="2" fill="#FFFFFF" />
+      {/* bridge + temples */}
+      <path d="M47,50 Q48,46 49,46 Q50,46 51,50" fill="none" stroke="#B57E12" strokeWidth="3" />
+      <path d="M27,50 L17,46" fill="none" stroke="#B57E12" strokeWidth="3" />
+      <path d="M69,50 L79,46" fill="none" stroke="#B57E12" strokeWidth="3" />
+    </svg>
+  );
+}
+
+function SuperheroMask({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 96 96" className={className} role="img" aria-hidden="true" {...P}>
+      {/* mask band */}
+      <path
+        d="M20,48 C30,42 42,42 48,48 C54,42 66,42 76,48 L72,60 C64,55 56,55 48,60 C40,55 32,55 24,60 Z"
+        fill="#E14E4E"
+        stroke="#8E1F1F"
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+      {/* eye holes */}
+      <ellipse cx="37" cy="52" rx="6" ry="4.5" fill="#FFFFFF" />
+      <ellipse cx="59" cy="52" rx="6" ry="4.5" fill="#FFFFFF" />
+      {/* lightning emblem */}
+      <path
+        d="M50,42 l-4,8 3,0 -2,6 6,-9 -3,0 3,-5 Z"
+        fill="#FFC93C"
+        stroke="#B57E12"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      {/* tie straps */}
+      <path d="M20,48 L12,44" fill="none" stroke="#8E1F1F" strokeWidth="3" />
+      <path d="M76,48 L84,44" fill="none" stroke="#8E1F1F" strokeWidth="3" />
+    </svg>
+  );
+}
+
+function FrogBackpack({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 96 96" className={className} role="img" aria-hidden="true" {...P}>
+      {/* shoulder straps */}
+      <path d="M34,58 C30,70 30,80 32,92" fill="none" stroke="#7A4E2D" strokeWidth="5" />
+      <path d="M62,58 C66,70 66,80 64,92" fill="none" stroke="#7A4E2D" strokeWidth="5" />
+      {/* backpack body at the side */}
+      <rect x="66" y="62" width="20" height="24" rx="8" fill="#3FBE72" stroke="#1F7A45" strokeWidth="3" />
+      {/* frog head peeking out */}
+      <circle cx="76" cy="60" r="9" fill="#3FBE72" stroke="#1F7A45" strokeWidth="3" />
+      {/* frog eyes */}
+      <circle cx="72" cy="52" r="4" fill="#FFFFFF" stroke="#1F7A45" strokeWidth="2" />
+      <circle cx="80" cy="52" r="4" fill="#FFFFFF" stroke="#1F7A45" strokeWidth="2" />
+      <circle cx="72" cy="52" r="1.8" fill="#17324F" />
+      <circle cx="80" cy="52" r="1.8" fill="#17324F" />
+      {/* smile */}
+      <path d="M71,62 Q76,66 81,62" fill="none" stroke="#1F7A45" strokeWidth="2" />
+      {/* pocket */}
+      <rect x="69" y="72" width="14" height="10" rx="5" fill="#2E9E5B" stroke="#1F7A45" strokeWidth="2" />
+    </svg>
+  );
+}
+
+function PartyBalloon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 96 96" className={className} role="img" aria-hidden="true" {...P}>
+      {/* string */}
+      <path d="M78,60 C76,72 80,82 76,94" fill="none" stroke="#8A9BB0" strokeWidth="2.5" />
+      {/* balloon */}
+      <ellipse cx="78" cy="42" rx="13" ry="16" fill="#FF7BAC" stroke="#C2437F" strokeWidth="3" />
+      {/* knot */}
+      <path d="M78,58 l-3,4 6,0 Z" fill="#C2437F" />
+      {/* shine */}
+      <ellipse cx="73" cy="35" rx="3.5" ry="6" fill="#FFFFFF" opacity="0.6" />
+      {/* dots */}
+      <circle cx="80" cy="40" r="2" fill="#FFFFFF" opacity="0.8" />
+      <circle cx="75" cy="48" r="2" fill="#FFFFFF" opacity="0.8" />
+    </svg>
+  );
+}
+
 const ART: Record<string, (props: { className?: string }) => React.JSX.Element> = {
   'explorer-hat': ExplorerHat,
   'sleepy-nightcap': SleepyNightcap,
@@ -310,6 +498,14 @@ const ART: Record<string, (props: { className?: string }) => React.JSX.Element> 
   'butterfly-wings': ButterflyWings,
   'star-crown': StarCrown,
   'supernova-cape': SupernovaCape,
+  'wizard-hat': WizardHat,
+  'chef-hat': ChefHat,
+  'astronaut-helmet': AstronautHelmet,
+  'firefighter-helmet': FirefighterHelmet,
+  'star-glasses': StarGlasses,
+  'superhero-mask': SuperheroMask,
+  'frog-backpack': FrogBackpack,
+  'party-balloon': PartyBalloon,
 };
 
 /** Render an outfit's SVG overlay. Same 96x96 viewBox as the avatars — stack absolutely on top. */

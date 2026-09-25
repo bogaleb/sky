@@ -41,6 +41,20 @@ export const STICKERS: Sticker[] = [
   { id: 'sky-captain', name: 'Sky Captain', description: 'Visited every island in the sky!', characterId: 'curio', colors: ['#5BC8E8', '#FFD93D'] },
   { id: 'super-learner', name: 'Super Learner', description: 'Earned 100 points in one day!', characterId: 'nova', colors: ['#FFD93D', '#FF6B6B'] },
   { id: 'comeback-kid', name: 'Comeback Star', description: 'Came back to learn another day!', characterId: 'tuno', colors: ['#7ED6A5', '#5BC8E8'] },
+  // Adventure milestones (Trail, quests, streaks)
+  { id: 'trail-blazer', name: 'Trailblazer', description: 'Finished an Adventure Trail quest!', characterId: 'curio', colors: ['#FF9A3D', '#9B7EDE'] },
+  { id: 'quest-hero', name: 'Quest Hero', description: 'Finished a daily quest!', characterId: 'nova', colors: ['#FFB84D', '#9B7EDE'] },
+  { id: 'streak-3', name: 'Three-Day Star', description: 'Learned 3 days in a row!', characterId: 'tuno', colors: ['#7ED6A5', '#FFD93D'] },
+  { id: 'streak-7', name: 'Week Warrior', description: 'Learned 7 days in a row!', characterId: 'tuno', colors: ['#3FA97C', '#FFD93D'] },
+  { id: 'star-100', name: 'Star Collector', description: 'Earned 100 stars!', characterId: 'milo', colors: ['#5BC8E8', '#FFC93C'] },
+  // Play & creativity
+  { id: 'memory-master', name: 'Memory Master', description: 'Won a Memory Cove game!', characterId: 'luna', colors: ['#9B7EDE', '#FF7BAC'] },
+  { id: 'pattern-pro', name: 'Pattern Pro', description: 'Finished a Pattern Parade!', characterId: 'milo', colors: ['#5BC8E8', '#FF7BAC'] },
+  { id: 'puzzle-pro', name: 'Puzzle Pro', description: 'Solved a Puzzle Reef puzzle!', characterId: 'atlas', colors: ['#8FB8DE', '#FFD93D'] },
+  { id: 'pet-pal', name: 'Pet Pal', description: 'Hatched a pet friend!', characterId: 'bea', colors: ['#FFD93D', '#7ED6A5'] },
+  { id: 'pet-helper', name: 'Pet Helper', description: 'Fed your pet a yummy snack!', characterId: 'bea', colors: ['#F5A623', '#7ED6A5'] },
+  { id: 'fashion-star', name: 'Fashion Star', description: 'Dressed up your avatar!', characterId: 'curio', colors: ['#FF7BAC', '#FFD93D'] },
+  { id: 'night-owl', name: 'Night Owl', description: 'Read a cozy bedtime story!', characterId: 'luna', colors: ['#6C4FD8', '#5BC8E8'] },
 ];
 
 export function getSticker(id: string): Sticker | undefined {

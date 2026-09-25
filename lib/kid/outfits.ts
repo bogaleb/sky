@@ -85,6 +85,62 @@ export const OUTFITS: Outfit[] = [
     slot: 'extra',
     blurb: 'A hero cape that sparkles like the stars.',
   },
+  {
+    id: 'wizard-hat',
+    name: 'Wizard Hat',
+    cost: 25,
+    slot: 'hat',
+    blurb: 'A pointy hat for magical learning spells!',
+  },
+  {
+    id: 'chef-hat',
+    name: 'Chef Hat',
+    cost: 20,
+    slot: 'hat',
+    blurb: 'Cook up something yummy in the Sky kitchen!',
+  },
+  {
+    id: 'astronaut-helmet',
+    name: 'Astronaut Helmet',
+    cost: 45,
+    slot: 'hat',
+    blurb: 'Blast off to the stars and beyond!',
+  },
+  {
+    id: 'firefighter-helmet',
+    name: 'Firefighter Helmet',
+    cost: 30,
+    slot: 'hat',
+    blurb: 'Brave helpers save the day!',
+  },
+  {
+    id: 'star-glasses',
+    name: 'Starry Glasses',
+    cost: 30,
+    slot: 'glasses',
+    blurb: 'See stars wherever you go!',
+  },
+  {
+    id: 'superhero-mask',
+    name: 'Hero Mask',
+    cost: 35,
+    slot: 'glasses',
+    blurb: 'A secret mask for everyday heroes!',
+  },
+  {
+    id: 'frog-backpack',
+    name: 'Froggy Backpack',
+    cost: 40,
+    slot: 'extra',
+    blurb: 'Hop along with a froggy friend on your back!',
+  },
+  {
+    id: 'party-balloon',
+    name: 'Party Balloon',
+    cost: 25,
+    slot: 'extra',
+    blurb: 'A floaty balloon for celebration days!',
+  },
 ];
 
 export function getOutfit(id: string): Outfit | undefined {

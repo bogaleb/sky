@@ -4,6 +4,18 @@ import { createClient } from '@/lib/supabase/server';
 import { getSessionPlan, logLearningEvent } from '@/app/actions/learning';
 import { getTrailStop, TRAIL_LENGTH, questNumber, chapterName } from '@/lib/kid/trail';
 import { dailyQuests, getQuestDef, questDateKey, type QuestDef } from '@/lib/kid/quests';
+import { checkTrophies } from '@/app/actions/trophies';
+import { awardStickers } from '@/app/actions/rewards';
+import type { Trophy, TrophyEvent } from '@/lib/kid/trophies';
+
+/** Daily quest ids that mark a first-time game experience for trophies. */
+const QUEST_GAME_TROPHY_EVENT: Record<string, TrophyEvent> = {
+  memory_game: 'memory_done',
+  story_read: 'story_done',
+  song_sung: 'song_done',
+  pattern_game: 'pattern_done',
+  puzzle_game: 'puzzle_done',
+};
 
 async function requireChild(childId: string) {
   const supabase = await createClient();
@@ -121,6 +133,15 @@ export async function bumpQuestProgress(
     await supabase.rpc('award_stars', { p_child_id: childId, p_amount: def.stars });
   }
 
+  if (newlyCompleted) {
+    // Trophy checks are best-effort: a missed check is retried on the next
+    // completion because awards are idempotent.
+    void checkTrophies(childId, 'quest_done').catch(() => {});
+    void awardStickers(childId, ['quest-hero']).catch(() => {});
+    const gameEvent = QUEST_GAME_TROPHY_EVENT[questId];
+    if (gameEvent) void checkTrophies(childId, gameEvent).catch(() => {});
+  }
+
   return { completed: newlyCompleted, stars: newlyCompleted ? def.stars : 0 };
 }
 
@@ -128,7 +149,7 @@ export async function bumpQuestProgress(
 // Daily activity: streak maintenance. Called when a session completes.
 // ---------------------------------------------------------------------------
 
-export async function recordDailyActivity(childId: string): Promise<{ streak: number; isNewDay: boolean }> {
+export async function recordDailyActivity(childId: string): Promise<{ streak: number; isNewDay: boolean; newTrophies: Trophy[] }> {
   const supabase = await requireChild(childId);
   const today = questDateKey();
   const yesterday = questDateKey(new Date(Date.now() - 24 * 60 * 60 * 1000));
@@ -140,7 +161,7 @@ export async function recordDailyActivity(childId: string): Promise<{ streak: nu
     .maybeSingle();
 
   if (row?.last_active_date === today) {
-    return { streak: row.current_streak, isNewDay: false };
+    return { streak: row.current_streak, isNewDay: false, newTrophies: [] };
   }
   const continued = row?.last_active_date === yesterday;
   const current = continued ? (row?.current_streak ?? 0) + 1 : 1;
@@ -150,7 +171,13 @@ export async function recordDailyActivity(childId: string): Promise<{ streak: nu
     { child_id: childId, current_streak: current, longest_streak: longest, last_active_date: today },
     { onConflict: 'child_id' }
   );
-  return { streak: current, isNewDay: true };
+  const newTrophies = await checkTrophies(childId, 'streak_day').catch(() => [] as Trophy[]);
+  // Streak stickers are idempotent — safe to attempt on every new day.
+  const streakStickers = ['comeback-kid'];
+  if (current === 3) streakStickers.push('streak-3');
+  if (current === 7) streakStickers.push('streak-7');
+  void awardStickers(childId, streakStickers).catch(() => {});
+  return { streak: current, isNewDay: true, newTrophies };
 }
 
 // ---------------------------------------------------------------------------
@@ -184,8 +211,14 @@ export async function completeTrailQuest(
     { onConflict: 'child_id' }
   );
 
+  // Crossing into a new chapter = the finished chapter is complete.
+  if (getTrailStop(nextPosition).chapter !== getTrailStop(position).chapter) {
+    void checkTrophies(childId, 'trail_chapter').catch(() => {});
+  }
+
   const { streak } = await recordDailyActivity(childId);
   await bumpQuestProgress(childId, 'trail_quest', 1);
+  void awardStickers(childId, ['trail-blazer']).catch(() => {});
 
   await logLearningEvent(childId, 'milestone', {
     metadata: {

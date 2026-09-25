@@ -2,7 +2,8 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { getOutfit, OUTFITS, slotMates, type OutfitState } from '@/lib/kid/outfits';
-import { spendStars, getStarBalance } from './rewards';
+import { spendStars, getStarBalance, awardStickers } from './rewards';
+import { checkTrophies } from '@/app/actions/trophies';
 
 async function requireChild(childId: string) {
   const supabase = await createClient();
@@ -73,7 +74,8 @@ export async function unlockOutfit(childId: string, outfitId: string): Promise<n
     .maybeSingle();
 
   let balance = (await getStarBalance(childId)).balance;
-  if (!existing?.unlocked) {
+  const isNewUnlock = !existing?.unlocked;
+  if (isNewUnlock) {
     const ok = await spendStars(childId, outfit.cost);
     if (!ok) throw new Error('Not enough stars.');
     balance = (await getStarBalance(childId)).balance;
@@ -86,6 +88,11 @@ export async function unlockOutfit(childId: string, outfitId: string): Promise<n
       { onConflict: 'child_id,outfit_id' },
     );
   if (upsertError) throw new Error('Could not unlock outfit.');
+
+  if (isNewUnlock) {
+    void checkTrophies(childId, 'outfit_bought').catch(() => {});
+    void awardStickers(childId, ['fashion-star']).catch(() => {});
+  }
 
   // One outfit per slot: unequip the others in this slot.
   const mates = slotMates(outfitId);

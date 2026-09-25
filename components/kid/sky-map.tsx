@@ -2,6 +2,7 @@
 
 import { ISLANDS, type Island } from '@/lib/kid/islands';
 import { getCharacter } from '@/lib/kid/characters';
+import { CHATTER } from '@/lib/kid/char-chatter';
 import { AVATARS } from '@/components/avatars';
 import { playSfx, speakAs } from '@/lib/kid/audio';
 /** Decorative motif drawn on each island. */
@@ -178,6 +179,7 @@ export default function SkyMap({
   onSelectIsland,
   onSurprise,
   onOpenStickers,
+  onTalkToCharacter,
   progress,
   stickerCount,
   stickerTotal,
@@ -186,6 +188,7 @@ export default function SkyMap({
   onSelectIsland: (island: Island) => void;
   onSurprise: () => void;
   onOpenStickers?: () => void;
+  onTalkToCharacter?: (characterId: string) => void;
   progress?: Record<string, { mastered: number; total: number }>;
   stickerCount?: number;
   stickerTotal?: number;
@@ -249,6 +252,37 @@ export default function SkyMap({
           />
         ))}
       </div>
+
+      {onTalkToCharacter && (
+        <div className="mt-8 flex w-full max-w-4xl flex-col items-center">
+          <p className="text-xl font-black text-kid-ink-900 md:text-2xl">Say hello to a friend!</p>
+          <p className="mt-1 text-sm font-bold text-kid-ink-700">Tap a friend to hear a joke, a fun fact, or a cheer.</p>
+          <div className="mt-3 flex w-full flex-wrap items-start justify-center gap-3">
+            {Object.keys(CHATTER).map((characterId, i) => {
+              const character = getCharacter(characterId);
+              const Avatar = (AVATARS[characterId] ?? AVATARS.curio).Component;
+              return (
+                <button
+                  key={characterId}
+                  type="button"
+                  onClick={() => {
+                    playSfx('pop');
+                    onTalkToCharacter(characterId);
+                  }}
+                  className="animate-kid-rise group flex w-20 flex-col items-center gap-1 rounded-kid-card bg-white/70 px-2 py-3 shadow-md transition-transform hover:scale-105 active:scale-95 md:w-24"
+                  style={{ animationDelay: `${i * 0.05}s` }}
+                  aria-label={`Talk to ${character.name}`}
+                >
+                  <div className="animate-kid-bob" style={{ animationDelay: `${i * 0.35}s` }}>
+                    <Avatar className="h-12 w-12 drop-shadow-[0_6px_10px_rgba(23,50,79,0.3)] transition-transform duration-300 group-hover:scale-110 md:h-14 md:w-14" />
+                  </div>
+                  <span className="text-xs font-black text-kid-ink-900 md:text-sm">{character.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
