@@ -63,6 +63,8 @@ describe('migration files', () => {
       '20260925000600_outfits.sql',
       '20260925000700_wallet_rpc.sql',
       '20260925000800_trophies.sql',
+      '20260925000900_parent_goals.sql',
+      '20260925001000_collections.sql',
     ]);
   });
 });

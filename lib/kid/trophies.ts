@@ -45,6 +45,11 @@ export const TROPHIES: Trophy[] = [
   { id: 'geography-first', name: 'Globe Explorer', description: 'Played your first Atlas World Tour game!', category: 'explorer', starBonus: 10, art: 'gem' },
   { id: 'rhythm-first', name: 'Rhythm Rookie', description: 'Played your first Rhythm Studio tune!', category: 'explorer', starBonus: 10, art: 'ribbon' },
   { id: 'science-first', name: 'Young Scientist', description: 'Ran your first Science Lab experiment!', category: 'explorer', starBonus: 10, art: 'medal' },
+  { id: 'coding-first', name: 'Code Captain', description: 'Guided Milo through the Coding Cove!', category: 'explorer', starBonus: 15, art: 'gem' },
+  { id: 'phonics-first', name: 'Sound Sleuth', description: 'Blended your first word in Phonics Fun!', category: 'explorer', starBonus: 10, art: 'star' },
+  { id: 'welcome-first', name: 'Sky Newcomer', description: 'Finished the Welcome Quest!', category: 'explorer', starBonus: 10, art: 'star' },
+  { id: 'goal-first', name: 'Goal Getter', description: 'Smashed your weekly learning goal!', category: 'explorer', starBonus: 15, art: 'cup' },
+  { id: 'collector-first', name: 'Curious Collector', description: 'Filled your animal book!', category: 'explorer', starBonus: 25, art: 'crown' },
   // Learner — practice and mastery
   { id: 'activities-10', name: 'Practice Pro', description: 'Finished 10 activities!', category: 'learner', starBonus: 10, art: 'medal' },
   { id: 'activities-50', name: 'Super Solver', description: 'Finished 50 activities!', category: 'learner', starBonus: 20, art: 'cup' },
@@ -93,4 +98,9 @@ export type TrophyEvent =
   | 'writing_done'
   | 'geography_done'
   | 'rhythm_done'
-  | 'science_done';
+  | 'science_done'
+  | 'coding_done'
+  | 'phonics_done'
+  | 'onboarding_done'
+  | 'goal_done'
+  | 'collection_done';

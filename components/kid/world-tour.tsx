@@ -17,6 +17,7 @@ import { awardStars, awardStickers } from '@/app/actions/rewards';
 import { bumpQuestProgress } from '@/app/actions/trail';
 import { checkTrophies } from '@/app/actions/trophies';
 import { logLearningEvent } from '@/app/actions/learning';
+import { unlockItem } from '@/app/actions/collections';
 import KidShell from '@/components/kid/kid-shell';
 import HostCharacter from '@/components/kid/host-character';
 
@@ -648,11 +649,15 @@ export default function WorldTour({ childId, nickname = 'friend', onExit }: Worl
         const balance = await awardStars(childId, stars);
         setStarBalance(balance);
         await bumpQuestProgress(childId, 'geography_game', 1);
-        // 'globe-trotter' sticker def lands in integration; unknown ids are filtered.
         await awardStickers(childId, ['globe-trotter']);
-        // 'geography_done' trophy def lands in integration; the cast keeps this compiling now.
-        // Best-effort: unknown events are safely ignored by checkTrophies.
         void checkTrophies(childId, 'geography_done').catch(() => {});
+        // Unlock every animal met on the tour into the child's animal book.
+        const seen = new Set<string>();
+        for (let i = 0; i < ROUNDS_PER_GAME; i += 1) {
+          const r = generateRound(MODES[i % MODES.length], gameSeed + i * 7919);
+          if (r.mode === 'animal' && r.animalId) seen.add(r.animalId);
+        }
+        await Promise.all([...seen].map((id) => unlockItem(childId, 'animals', id).catch(() => {})));
         await logLearningEvent(childId, 'milestone', {
           metadata: { kind: 'world_tour_win', stars, attempts: finalAttempts },
         });
@@ -660,7 +665,7 @@ export default function WorldTour({ childId, nickname = 'friend', onExit }: Worl
         /* progress logging is best-effort; the celebration still stands */
       }
     },
-    [childId, nickname]
+    [childId, nickname, gameSeed]
   );
 
   const choose = useCallback(

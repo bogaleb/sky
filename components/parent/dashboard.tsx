@@ -10,6 +10,9 @@ import {
 } from '@/app/actions/dashboard';
 import { AVATARS } from '@/components/avatars';
 import PinGate from './pin-gate';
+import WeeklyGoals from './weekly-goals';
+import Certificate from './certificate';
+import { getTrophies } from '@/app/actions/trophies';
 
 function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
   return (
@@ -105,6 +108,21 @@ function SkillRow({ skill }: { skill: ChildDashboard['skillMastery'][number] }) 
   );
 }
 
+function CelebrateCertificate({ child }: { child: ChildDashboard }) {
+  const [trophyCount, setTrophyCount] = useState(0);
+  useEffect(() => {
+    getTrophies(child.id)
+      .then((t) => setTrophyCount(t.length))
+      .catch(() => {});
+  }, [child.id]);
+  return (
+    <Certificate
+      nickname={child.nickname}
+      stats={{ stars: child.stars7d, trophies: trophyCount, activities: child.activities7d }}
+    />
+  );
+}
+
 function ChildReport({ child }: { child: ChildDashboard }) {
   const [digest, setDigest] = useState<WeeklyDigest | null>(null);
 
@@ -184,6 +202,20 @@ function ChildReport({ child }: { child: ChildDashboard }) {
           ) : (
             <p className="text-parent-ink-600">Writing this week&rsquo;s summary…</p>
           )}
+        </div>
+      </div>
+
+      {/* Weekly goals + celebrate */}
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <WeeklyGoals childId={child.id} />
+        <div className="rounded-2xl border border-parent-sky-100 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
+          <h2 className="text-xl font-extrabold text-parent-sky-900">Celebrate</h2>
+          <p className="mt-1 text-sm text-parent-ink-600">
+            Print a certificate for {child.nickname}&rsquo;s week of learning.
+          </p>
+          <div className="mt-4">
+            <CelebrateCertificate child={child} />
+          </div>
         </div>
       </div>
 

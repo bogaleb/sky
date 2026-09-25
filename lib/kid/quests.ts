@@ -27,6 +27,8 @@ const QUEST_POOL: QuestDef[] = [
   { id: 'geography_game', title: 'World Explorer', detail: 'Play a round of Atlas World Tour', goal: 1, unit: 'round', stars: 12 },
   { id: 'rhythm_game', title: 'Beat Master', detail: 'Play a tune in the Rhythm Studio', goal: 1, unit: 'tune', stars: 12 },
   { id: 'science_game', title: 'Young Scientist', detail: 'Run experiments in the Science Lab', goal: 1, unit: 'session', stars: 12 },
+  { id: 'coding_game', title: 'Code Captain', detail: 'Guide Milo through a maze in the Coding Cove', goal: 1, unit: 'session', stars: 12 },
+  { id: 'phonics_game', title: 'Sound Sleuth', detail: 'Blend words in Phonics Fun', goal: 1, unit: 'session', stars: 12 },
   { id: 'perfect_3', title: 'Sharpshooter', detail: 'Get 3 answers right in a row', goal: 3, unit: 'in a row', stars: 12 },
   { id: 'pet_fed', title: 'Good Friend', detail: 'Feed your pet', goal: 1, unit: 'meal', stars: 8 },
   { id: 'story_read', title: 'Bookworm', detail: 'Read a storybook tale', goal: 1, unit: 'story', stars: 8 },

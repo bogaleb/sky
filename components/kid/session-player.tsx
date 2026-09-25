@@ -22,6 +22,15 @@ import LetterLab from './letter-lab';
 import WorldTour from './world-tour';
 import RhythmStudio from './rhythm-studio';
 import ScienceLab from './science-lab';
+import CodingCove from './coding-cove';
+import PhonicsFun from './phonics-fun';
+import Encyclopedia from './encyclopedia';
+import WelcomeQuest from './welcome-quest';
+import GoalMeter from './goal-meter';
+import SeasonalDecor from './seasonal-decor';
+import DailyGift from './daily-gift';
+import OfflineBanner from './offline-banner';
+import { loadPlacement } from '@/lib/kid/placement';
 import UpNext from './up-next';
 import TrophyShelf from './trophy-shelf';
 import CharacterTalk from './character-talk';
@@ -357,6 +366,10 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
   const [showGeography, setShowGeography] = useState(false);
   const [showRhythm, setShowRhythm] = useState(false);
   const [showScience, setShowScience] = useState(false);
+  const [showCoding, setShowCoding] = useState(false);
+  const [showPhonics, setShowPhonics] = useState(false);
+  const [showEncyclopedia, setShowEncyclopedia] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
   const [showTrophies, setShowTrophies] = useState(false);
   const [talkWith, setTalkWith] = useState<string | null>(null);
   const resultsRef = useRef<AttemptResult[]>([]);
@@ -377,6 +390,12 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
     void getTrailState(child.id)
       .then(setTrailState)
       .catch(() => {});
+    // Welcome Quest: first-ever run gets the magical onboarding.
+    try {
+      if (!loadPlacement(child.id)) setShowWelcome(true);
+    } catch {
+      /* corrupted placement data — skip the quest */
+    }
   }, [phase, child.id]);
 
   const activeSteps = islandSteps ?? steps;
@@ -610,7 +629,9 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
       <PhaseTransition transitionKey={phase} className="flex w-full flex-col items-center">
       {phase === 'intro' && <Intro child={child} onStart={() => setPhase('map')} />}
       {phase === 'map' && (
-        <div className="flex w-full flex-col items-center gap-5">
+        <div className="relative flex w-full flex-col items-center gap-5">
+          <SeasonalDecor />
+          <OfflineBanner />
           <TrailBanner trail={trailState} onStartQuest={() => void startTrailQuest()} starting={startingQuest} />
           {/* Sky Park: games, pets, trophies, and dress-up between quests. */}
           <div className="flex w-full max-w-4xl flex-wrap items-stretch justify-center gap-3 px-4">
@@ -861,6 +882,61 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
               <span className="text-xs font-bold opacity-90">try experiments</span>
             </button>
           </div>
+          <div className="mt-3 flex flex-wrap gap-2 md:gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowCoding(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-night-500 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <rect x="8" y="10" width="32" height="28" rx="6" fill="#fff" opacity="0.95" />
+                <path d="M17 20l-5 4 5 4" fill="none" stroke="#17324F" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M31 20l5 4-5 4" fill="none" stroke="#17324F" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+                <rect x="14" y="40" width="20" height="4" rx="2" fill="#fff" opacity="0.7" />
+              </svg>
+              <span className="text-lg font-black">Coding Cove</span>
+              <span className="text-xs font-bold opacity-90">guide Milo home</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowPhonics(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-coral-400 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <rect x="6" y="14" width="15" height="15" rx="3" fill="#fff" opacity="0.95" />
+                <rect x="27" y="14" width="15" height="15" rx="3" fill="#fff" opacity="0.7" />
+                <text x="9.5" y="26.5" fontSize="11" fontWeight="900" fill="#D64545">sh</text>
+                <text x="31" y="26.5" fontSize="11" fontWeight="900" fill="#17324F">op</text>
+                <path d="M14 34q4 4 8 0M26 34q4 4 8 0" stroke="#fff" strokeWidth="2.5" fill="none" strokeLinecap="round" opacity="0.9" />
+              </svg>
+              <span className="text-lg font-black">Phonics Fun</span>
+              <span className="text-xs font-bold opacity-90">blend the sounds</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowEncyclopedia(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-mint-500 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <path d="M8 12q8-3 16 0v24q-8-3-16 0z" fill="#fff" opacity="0.95" />
+                <path d="M40 12q-8-3-16 0v24q8-3 16 0z" fill="#fff" opacity="0.7" />
+                <circle cx="24" cy="22" r="6" fill="#22C55E" />
+                <circle cx="22" cy="20" r="2" fill="#17324F" />
+                <path d="M20 26q4 3 8 0" stroke="#17324F" strokeWidth="2" fill="none" strokeLinecap="round" />
+              </svg>
+              <span className="text-lg font-black">Animal Book</span>
+              <span className="text-xs font-bold opacity-90">collect critters</span>
+            </button>
+          </div>
           <UpNext
             childId={child.id}
             onPracticeIsland={(islandId) => {
@@ -869,6 +945,10 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
             }}
             onStartTrail={() => void startTrailQuest()}
           />
+          <div className="flex w-full max-w-4xl flex-wrap items-stretch justify-center gap-3 px-4">
+            <GoalMeter childId={child.id} />
+            <DailyGift childId={child.id} nickname={child.nickname} />
+          </div>
           <SkyMap
             nickname={child.nickname}
             onSelectIsland={(isl) => void startIslandSession(isl)}
@@ -936,6 +1016,24 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
         <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
           <ScienceLab childId={child.id} nickname={child.nickname} onExit={() => setShowScience(false)} />
         </div>
+      )}
+      {showCoding && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <CodingCove childId={child.id} nickname={child.nickname} onExit={() => setShowCoding(false)} />
+        </div>
+      )}
+      {showPhonics && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <PhonicsFun childId={child.id} nickname={child.nickname} onExit={() => setShowPhonics(false)} />
+        </div>
+      )}
+      {showEncyclopedia && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <Encyclopedia childId={child.id} onExit={() => setShowEncyclopedia(false)} />
+        </div>
+      )}
+      {showWelcome && (
+        <WelcomeQuest childId={child.id} nickname={child.nickname} onDone={() => setShowWelcome(false)} />
       )}
       {showTrophies && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">

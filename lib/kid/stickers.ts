@@ -67,6 +67,12 @@ export const STICKERS: Sticker[] = [
   { id: 'globe-trotter', name: 'Globe Trotter', description: 'Explored the wide world!', characterId: 'atlas', colors: ['#8FB8DE', '#7ED6A5'] },
   { id: 'beat-master', name: 'Beat Master', description: 'Played the sky drums!', characterId: 'riff', colors: ['#FF7BAC', '#FFD93C'] },
   { id: 'jr-scientist', name: 'Junior Scientist', description: 'Ran a real experiment!', characterId: 'bea', colors: ['#7ED6A5', '#5BC8E8'] },
+  // Wave 5 onboarding & new play
+  { id: 'brave-beginner', name: 'Brave Beginner', description: 'Started your Sky adventure!', characterId: 'curio', colors: ['#FF9A3D', '#FFD93C'] },
+  { id: 'goal-getter', name: 'Goal Getter', description: 'Smashed your weekly goal!', characterId: 'nova', colors: ['#FFB84D', '#FF8C42'] },
+  { id: 'code-captain', name: 'Code Captain', description: "Programmed Milo's path!", characterId: 'milo', colors: ['#5BC8E8', '#9B7EDE'] },
+  { id: 'curious-collector', name: 'Curious Collector', description: 'Filled your animal book!', characterId: 'bea', colors: ['#7ED6A5', '#FFD93C'] },
+  { id: 'sound-sleuth', name: 'Sound Sleuth', description: 'Blended your first word!', characterId: 'luna', colors: ['#9B7EDE', '#5BC8E8'] },
 ];
 
 export function getSticker(id: string): Sticker | undefined {

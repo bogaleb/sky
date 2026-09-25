@@ -241,6 +241,21 @@ export async function checkTrophies(
     case 'science_done':
       await grant('science-first');
       break;
+    case 'coding_done':
+      await grant('coding-first');
+      break;
+    case 'phonics_done':
+      await grant('phonics-first');
+      break;
+    case 'onboarding_done':
+      await grant('welcome-first');
+      break;
+    case 'goal_done':
+      await grant('goal-first');
+      break;
+    case 'collection_done':
+      await grant('collector-first');
+      break;
     default: {
       // Unknown events are ignored so new gameplay can fire freely.
       const _exhaustive: never = event;

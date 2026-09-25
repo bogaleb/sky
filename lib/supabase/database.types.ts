@@ -291,6 +291,40 @@ export interface Database {
         Update: Partial<Database['public']['Tables']['trophy_awards']['Insert']>;
         Relationships: [];
       };
+      collection_items: {
+        Row: {
+          child_id: string;
+          collection_id: string;
+          item_id: string;
+          found_at: string;
+        };
+        Insert: {
+          child_id: string;
+          collection_id: string;
+          item_id: string;
+          found_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['collection_items']['Insert']>;
+        Relationships: [];
+      };
+      parent_goals: {
+        Row: {
+          child_id: string;
+          week_start: string;
+          target: number;
+          celebrated: boolean;
+          created_at: string;
+        };
+        Insert: {
+          child_id: string;
+          week_start: string;
+          target?: number;
+          celebrated?: boolean;
+          created_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['parent_goals']['Insert']>;
+        Relationships: [];
+      };
       digest_log: {
         Row: {
           id: string;
