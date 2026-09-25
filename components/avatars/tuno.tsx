@@ -12,6 +12,7 @@ export default function Tuno({ className }: { className?: string }) {
           <stop offset="1" stopColor="#5C844C" />
         </linearGradient>
       </defs>
+      <g className="avatar-bob">
       {/* pastel thought cloud resting above head */}
       <g fill="#EDF6FB" stroke="#A9C6D8" strokeWidth="2.5">
         <circle cx="36" cy="16" r="7" />
@@ -28,11 +29,14 @@ export default function Tuno({ className }: { className?: string }) {
         <path d="M33,78 l5.2,3 l0,6 l-5.2,3 l-5.2,-3 l0,-6 Z" />
         <path d="M63,78 l5.2,3 l0,6 l-5.2,3 l-5.2,-3 l0,-6 Z" />
       </g>
+      <g className="avatar-tilt">
       {/* head */}
       <path d="M31,52 C31,40 39,34 48,34 C57,34 65,40 65,52 C65,64 57,72 48,72 C39,72 31,64 31,52 Z" fill="url(#tuno-skin)" stroke="#5F7F52" strokeWidth="3" />
       {/* half-moon gentle eyes */}
+      <g className="avatar-blink">
       <path d="M37,52 Q42,57 47,52" fill="none" stroke="#3E5233" strokeWidth="3" />
       <path d="M49,52 Q54,57 59,52" fill="none" stroke="#3E5233" strokeWidth="3" />
+      </g>
       {/* soft blush */}
       <circle cx="37" cy="60" r="3" fill="#F0A080" opacity="0.6" />
       <circle cx="59" cy="60" r="3" fill="#F0A080" opacity="0.6" />
@@ -40,6 +44,8 @@ export default function Tuno({ className }: { className?: string }) {
       <circle cx="45" cy="60" r="1.4" fill="#3E5233" />
       <circle cx="51" cy="60" r="1.4" fill="#3E5233" />
       <path d="M43,64 Q48,67 53,64" fill="none" stroke="#3E5233" strokeWidth="2.5" />
+      </g>
+      </g>
     </svg>
   );
 }

@@ -8,11 +8,13 @@ export default function Nova({ className }: { className?: string }) {
           <stop offset="1" stopColor="#9E6736" />
         </linearGradient>
       </defs>
+      <g className="avatar-bob">
       {/* shirt + backpack straps */}
       <path d="M24,96 C24,84 36,78 48,78 C60,78 72,84 72,96 Z" fill="#2FA39A" stroke="#1E7A74" strokeWidth="3" />
       <path d="M34,78 L30,96" fill="none" stroke="#8A5A2B" strokeWidth="7" />
       <path d="M62,78 L66,96" fill="none" stroke="#8A5A2B" strokeWidth="7" />
       <rect x="43" y="66" width="10" height="12" rx="4" fill="#9E6736" />
+      <g className="avatar-tilt">
       {/* short curly hair */}
       <g fill="#2B1D12" stroke="#1A1009" strokeWidth="2.5">
         <circle cx="30" cy="36" r="7" />
@@ -34,12 +36,14 @@ export default function Nova({ className }: { className?: string }) {
       <circle cx="35.5" cy="38.5" r="1.4" fill="#FFFFFF" />
       <circle cx="57.5" cy="38.5" r="1.4" fill="#FFFFFF" />
       {/* big curious eyes */}
+      <g className="avatar-blink">
       <ellipse cx="38" cy="58" rx="4.5" ry="5.2" fill="#FFFFFF" stroke="#7C4E26" strokeWidth="2.5" />
       <ellipse cx="58" cy="58" rx="4.5" ry="5.2" fill="#FFFFFF" stroke="#7C4E26" strokeWidth="2.5" />
       <circle cx="38" cy="59" r="2.4" fill="#2B1D12" />
       <circle cx="58" cy="59" r="2.4" fill="#2B1D12" />
       <circle cx="38.9" cy="58" r="1" fill="#FFFFFF" />
       <circle cx="58.9" cy="58" r="1" fill="#FFFFFF" />
+      </g>
       {/* brows */}
       <path d="M33,50 Q38,48 43,50" fill="none" stroke="#2B1D12" strokeWidth="2.5" />
       <path d="M53,50 Q58,48 63,50" fill="none" stroke="#2B1D12" strokeWidth="2.5" />
@@ -51,6 +55,8 @@ export default function Nova({ className }: { className?: string }) {
       <path d="M38,65.5 Q48,76 58,65.5 Q48,69.5 38,65.5 Z" fill="#7A3B2E" />
       <rect x="42.5" y="66" width="4.5" height="4" rx="1" fill="#FFFFFF" />
       <rect x="49.5" y="66" width="4.5" height="4" rx="1" fill="#FFFFFF" />
+      </g>
+      </g>
     </svg>
   );
 }

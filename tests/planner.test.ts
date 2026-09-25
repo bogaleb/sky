@@ -255,4 +255,18 @@ describe('planSession', () => {
     const addPicks = plan.activities.filter((p) => p.activity.skillId === 'skill-add');
     expect(addPicks).toEqual([]);
   });
+
+  it('plans only within the requested subject when subjectCode is set', () => {
+    const plan = planSession(baseInput(), { sessionLength: 6, subjectCode: 'reading' });
+    expect(plan.activities.length).toBeGreaterThan(0);
+    const skillIds = new Set(plan.activities.map((p) => p.activity.skillId));
+    // Only the reading skill exists in fixtures.
+    expect(skillIds).toEqual(new Set(['skill-alphabet']));
+  });
+
+  it('returns an empty plan with a note for an unknown subjectCode', () => {
+    const plan = planSession(baseInput(), { sessionLength: 6, subjectCode: 'nope' });
+    expect(plan.activities).toEqual([]);
+    expect(plan.notes.length).toBeGreaterThan(0);
+  });
 });

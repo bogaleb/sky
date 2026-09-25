@@ -12,22 +12,26 @@ export default function Riff({ className }: { className?: string }) {
           <stop offset="1" stopColor="#B9A4E4" />
         </linearGradient>
       </defs>
+      <g className="avatar-bob">
+      {/* shoulders */}
+      <path d="M24,96 C24,84 36,78 48,78 C60,78 72,84 72,96 Z" fill="#B9A8E0" stroke="#8A74B8" strokeWidth="3" />
+      <g className="avatar-tilt">
       {/* long upright ears with lavender inner ear */}
       <ellipse cx="36" cy="19" rx="8" ry="16" fill="url(#riff-fur)" stroke="#D9C6A8" strokeWidth="3" />
       <ellipse cx="60" cy="19" rx="8" ry="16" fill="url(#riff-fur)" stroke="#D9C6A8" strokeWidth="3" />
       <ellipse cx="36" cy="20" rx="4" ry="11" fill="url(#riff-ear)" />
       <ellipse cx="60" cy="20" rx="4" ry="11" fill="url(#riff-ear)" />
-      {/* shoulders */}
-      <path d="M24,96 C24,84 36,78 48,78 C60,78 72,84 72,96 Z" fill="#B9A8E0" stroke="#8A74B8" strokeWidth="3" />
       {/* head */}
       <path d="M28,54 C28,42 37,36 48,36 C59,36 68,42 68,54 C68,66 59,74 48,74 C37,74 28,66 28,54 Z" fill="url(#riff-fur)" stroke="#D9C6A8" strokeWidth="3" />
       {/* joyful eyes */}
+      <g className="avatar-blink">
       <ellipse cx="39" cy="53" rx="4.5" ry="5.5" fill="#FFFFFF" stroke="#D9C6A8" strokeWidth="2.5" />
       <ellipse cx="57" cy="53" rx="4.5" ry="5.5" fill="#FFFFFF" stroke="#D9C6A8" strokeWidth="2.5" />
       <circle cx="40" cy="54" r="2.4" fill="#3A2A1A" />
       <circle cx="58" cy="54" r="2.4" fill="#3A2A1A" />
       <circle cx="40.9" cy="53" r="1" fill="#FFFFFF" />
       <circle cx="58.9" cy="53" r="1" fill="#FFFFFF" />
+      </g>
       {/* blush */}
       <circle cx="33" cy="60" r="3" fill="#F0A080" opacity="0.6" />
       <circle cx="63" cy="60" r="3" fill="#F0A080" opacity="0.6" />
@@ -40,10 +44,12 @@ export default function Riff({ className }: { className?: string }) {
         <path d="M31.8,65 L31.8,54" fill="none" stroke="#7C5CBF" strokeWidth="2.5" />
         <path d="M31.8,54 Q37,55 35.5,60" fill="none" stroke="#7C5CBF" strokeWidth="2.5" />
       </g>
+      </g>
       {/* bow tie */}
       <path d="M48,79 L36,73 L36,85 Z" fill="#E86A6A" stroke="#B34A4A" strokeWidth="2.5" />
       <path d="M48,79 L60,73 L60,85 Z" fill="#E86A6A" stroke="#B34A4A" strokeWidth="2.5" />
       <circle cx="48" cy="79" r="3.5" fill="#D95F5F" stroke="#B34A4A" strokeWidth="2" />
+      </g>
     </svg>
   );
 }

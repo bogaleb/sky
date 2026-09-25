@@ -199,6 +199,8 @@ function pickConfidence(
 
 export interface PlanOptions {
   sessionLength?: number;
+  /** When set, plan only activities from this subject (island visit). */
+  subjectCode?: string;
 }
 
 export function planSession(input: PlannerInput, options: PlanOptions = {}): SessionPlan {
@@ -207,7 +209,11 @@ export function planSession(input: PlannerInput, options: PlanOptions = {}): Ses
   const { now } = input;
 
   const pool = input.activities.filter((a) => activityFitsAge(a, input.childAgeBand));
-  const skills = availableSkills(input.skills, input.mastery, input.prerequisites);
+  let skills = availableSkills(input.skills, input.mastery, input.prerequisites);
+  if (options.subjectCode) {
+    skills = skills.filter((s) => s.subjectCode === options.subjectCode);
+    notes.push(`Island visit: ${options.subjectCode}.`);
+  }
   if (skills.length === 0 || pool.length === 0) {
     return {
       activities: [],

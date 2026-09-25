@@ -1,5 +1,7 @@
 'use client';
 
+import { getCharacter } from './characters';
+
 /**
  * Kid audio engine: spoken narration (for non-readers) and synthesized
  * sound effects via Web Audio. No audio files needed; everything is
@@ -38,14 +40,23 @@ export function setMuted(muted: boolean): void {
 
 /** Speak narration aloud for non-readers. Kid-friendly pitch and pace. */
 export function speak(text: string): void {
+  speakAs('curio', text);
+}
+
+/**
+ * Speak as a specific character — each cast member gets a distinct
+ * voice (pitch/rate profile) so children can tell them apart.
+ */
+export function speakAs(characterId: string, text: string): void {
   if (typeof window === 'undefined' || isMuted()) return;
   try {
+    const character = getCharacter(characterId);
     const synth = window.speechSynthesis;
     if (!synth) return;
     synth.cancel();
     const utter = new SpeechSynthesisUtterance(text);
-    utter.rate = 0.92;
-    utter.pitch = 1.15;
+    utter.rate = character.voice.rate;
+    utter.pitch = character.voice.pitch;
     utter.volume = 1;
     // Prefer a warm English voice when available.
     const voices = synth.getVoices();
@@ -156,5 +167,51 @@ export function unlockAudio(): void {
     window.speechSynthesis?.getVoices();
   } catch {
     /* noop */
+  }
+}
+
+let musicTimer: ReturnType<typeof setInterval> | null = null;
+
+/**
+ * Start a soft looping music bed (gentle music-box waltz) under videos.
+ * This gives our silent generated clips a warm cinematic feel.
+ */
+export function startMusicBed(): void {
+  if (isMuted() || musicTimer) return;
+  const ac = ctx();
+  if (!ac) return;
+  // Music-box waltz in C major, soft triangle tones.
+  const melody = [
+    523.25, 587.33, 659.25, 783.99, 659.25, 587.33,
+    523.25, 440.0, 523.25, 659.25, 587.33, 523.25,
+  ];
+  let i = 0;
+  const playNote = () => {
+    if (isMuted()) {
+      stopMusicBed();
+      return;
+    }
+    const a = ctx();
+    if (!a) return;
+    try {
+      tone(a, { freq: melody[i % melody.length], time: 0, dur: 0.9, type: 'triangle', gain: 0.05 });
+      // Soft bass note on the downbeat.
+      if (i % 3 === 0) {
+        tone(a, { freq: melody[i % melody.length] / 4, time: 0, dur: 1.1, type: 'sine', gain: 0.06 });
+      }
+    } catch {
+      /* noop */
+    }
+    i++;
+  };
+  playNote();
+  musicTimer = setInterval(playNote, 620);
+}
+
+/** Stop the music bed. */
+export function stopMusicBed(): void {
+  if (musicTimer) {
+    clearInterval(musicTimer);
+    musicTimer = null;
   }
 }

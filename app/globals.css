@@ -131,6 +131,10 @@
     0%, 100% { transform: rotate(-2.5deg); }
     50% { transform: rotate(2.5deg); }
   }
+  @keyframes kid-blink {
+    0%, 91%, 100% { transform: scaleY(1); }
+    94.5% { transform: scaleY(0.08); }
+  }
 }
 
 html {
@@ -148,4 +152,119 @@ body {
   outline: 3px solid var(--color-parent-sky-600);
   outline-offset: 2px;
   border-radius: 6px;
+}
+
+/* ---- Avatar animation hooks ----
+   Applied as <g> wrappers inside the avatar SVGs (components/avatars/).
+   transform-box: fill-box keeps SVG group transforms anchored to the part. */
+.avatar-bob {
+  animation: kid-bob 3.4s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.avatar-tilt {
+  transform-box: fill-box;
+  transform-origin: center 75%;
+}
+.avatar-tilt.avatar-happy {
+  animation: kid-wiggle 0.6s ease-in-out;
+}
+.avatar-blink {
+  animation: kid-blink 4.6s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .avatar-bob,
+  .avatar-blink {
+    animation: none;
+  }
+}
+
+/* ---- VideoSpot: cinematic video moments with layered sound ---- */
+.kid-video-spot {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.kid-video-spot__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.kid-video-spot__caption {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  max-width: 92%;
+  background: rgba(20, 32, 52, 0.72);
+  backdrop-filter: blur(6px);
+  border-radius: 16px;
+  padding: 8px 16px;
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  pointer-events: none;
+}
+.kid-video-spot__caption-name {
+  font-weight: 900;
+  font-size: 15px;
+  white-space: nowrap;
+}
+.kid-video-spot__caption-text {
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.35;
+}
+.kid-video-spot__replay-voice {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 44px;
+  height: 44px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--color-kid-ink-800);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(23, 50, 79, 0.3);
+  transition: transform 0.15s ease;
+}
+.kid-video-spot__replay-voice:hover {
+  transform: scale(1.1);
+}
+.kid-video-spot__replay-voice:active {
+  transform: scale(0.94);
+}
+
+/* ---- Sky map island cards ---- */
+.kid-island-card {
+  border-radius: 28px;
+  padding: 10px 8px 14px;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(8px);
+  border: 3px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 12px 28px rgba(23, 50, 79, 0.16);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+.kid-island-card:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 20px 40px rgba(23, 50, 79, 0.24);
+}
+.kid-island-card:active {
+  transform: translateY(-2px) scale(0.98);
+}
+.kid-island-card:focus-visible {
+  outline: 4px solid var(--color-kid-sun-400);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .kid-island-card:hover {
+    transform: none;
+  }
 }

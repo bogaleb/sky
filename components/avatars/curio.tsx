@@ -12,10 +12,12 @@ export default function Curio({ className }: { className?: string }) {
           <stop offset="1" stopColor="#2A365E" />
         </linearGradient>
       </defs>
+      <g className="avatar-bob">
       {/* jacket shoulders */}
       <path d="M22,96 C22,82 34,76 48,76 C62,76 74,82 74,96 Z" fill="#33415F" stroke="#232C46" strokeWidth="3" />
       <circle cx="48" cy="84" r="2.3" fill="#F2C14E" />
       <circle cx="48" cy="91" r="2.3" fill="#F2C14E" />
+      <g className="avatar-tilt">
       {/* tall triangular ears */}
       <path d="M30,38 L33,10 L56,30 Z" fill="url(#curio-fur)" stroke="#B25D18" strokeWidth="3" />
       <path d="M66,38 L63,10 L40,30 Z" fill="url(#curio-fur)" stroke="#B25D18" strokeWidth="3" />
@@ -31,12 +33,14 @@ export default function Curio({ className }: { className?: string }) {
       <path d="M43,53 Q48,50.5 53,53 Q52,57.5 48,57.5 Q44,57.5 43,53 Z" fill="#6B3A1A" />
       <path d="M48,57.5 Q48,61 43,61 M48,57.5 Q48,61 53,61" fill="none" stroke="#6B3A1A" strokeWidth="2.5" />
       {/* kind, confident eyes */}
+      <g className="avatar-blink">
       <ellipse cx="38" cy="43" rx="5" ry="5.6" fill="#FFFFFF" stroke="#B25D18" strokeWidth="2.5" />
       <ellipse cx="58" cy="43" rx="5" ry="5.6" fill="#FFFFFF" stroke="#B25D18" strokeWidth="2.5" />
       <circle cx="39" cy="44" r="2.6" fill="#3A2410" />
       <circle cx="57" cy="44" r="2.6" fill="#3A2410" />
       <circle cx="39.8" cy="43" r="1" fill="#FFFFFF" />
       <circle cx="57.8" cy="43" r="1" fill="#FFFFFF" />
+      </g>
       <path d="M31,34 L44,36" fill="none" stroke="#7A4212" strokeWidth="3" />
       <path d="M65,34 L52,36" fill="none" stroke="#7A4212" strokeWidth="3" />
       {/* navy captain's hat */}
@@ -46,6 +50,8 @@ export default function Curio({ className }: { className?: string }) {
       <g fill="none" stroke="#F2C14E" strokeWidth="2">
         <circle cx="48" cy="18.5" r="2.2" />
         <path d="M48,20.7 L48,27 M44.5,22.5 L51.5,22.5 M44.5,24.5 Q48,28 51.5,24.5" />
+      </g>
+      </g>
       </g>
     </svg>
   );
