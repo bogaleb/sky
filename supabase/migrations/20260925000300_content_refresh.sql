@@ -1,0 +1,4412 @@
+-- Sky Phase 3 content refresh (2026-09-25).
+-- Replaces the Phase 1/2 worksheet-style activity bank with the
+-- story-driven Phase 3 bank. learning_events.activity_id is
+-- ON DELETE SET NULL, so history keeps skill_id + metadata.
+-- Idempotent: safe to re-run.
+
+BEGIN;
+
+-- 1. Remove the old bank.
+DELETE FROM public.activities;
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Welcome to the Floating Library! Luna''s star-books glow with letters. Can you tap the star-book with the letter B?', '{"targets": [{"id": "o1", "label": "D"}, {"id": "o3", "label": "A"}, {"id": "o0", "label": "B"}, {"id": "o2", "label": "P"}], "narration": "Welcome to the Floating Library! Tap the star-book with the letter B."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'alphabet'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Welcome to the Floating Library! Luna''s star-books glow with letters. Can you tap the star-book with the letter B?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Pip the mouse is learning his letters. His name starts with P. Which of these letters is P?', '{"options": [{"id": "o1", "label": "B"}, {"id": "o0", "label": "P"}, {"id": "o2", "label": "D"}, {"id": "o3", "label": "Q"}], "narration": "Pip the mouse is learning his letters. His name starts with P. Which of these letters is P?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'alphabet'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip the mouse is learning his letters. His name starts with P. Which of these letters is P?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'Hoot the owlet stacked glowing letter blocks on the rug. How many letter blocks do you see?', '{"thing": "letter blocks", "total": 4, "narration": "Hoot the owlet stacked glowing letter blocks on the rug. How many letter blocks do you see?"}'::jsonb, '{"count": 4}'::jsonb, 10, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'alphabet'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot the owlet stacked glowing letter blocks on the rug. How many letter blocks do you see?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'trace', 'Luna is writing Pip a welcome note. Trace the big letter P to start his name.', '{"trace": "P", "narration": "Luna is writing Pip a welcome note. Trace the big letter P to start his name."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 10, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'alphabet'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Luna is writing Pip a welcome note. Trace the big letter P to start his name.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'Oh my! The Tumble Wind scattered Luna''s star-books. She shelved L, then M. Put these back in ABC order.', '{"items": [{"id": "s2", "label": "N"}, {"id": "s0", "label": "L"}, {"id": "s1", "label": "M"}, {"id": "s3", "label": "O"}], "narration": "Oh my! The Tumble Wind scattered Luna''s star-books. She shelved L, then M. Put these back in ABC order."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'alphabet'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Oh my! The Tumble Wind scattered Luna''s star-books. She shelved L, then M. Put these back in ABC order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Pip was shelving books: A, B... then a gust took the next one! Which letter goes after B?', '{"options": [{"id": "o3", "label": "E"}, {"id": "o1", "label": "D"}, {"id": "o0", "label": "C"}, {"id": "o2", "label": "A"}], "narration": "Pip was shelving books: A, B... then a gust took the next one! Which letter goes after B?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'alphabet'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip was shelving books: A, B... then a gust took the next one! Which letter goes after B?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'The Tumble Wind blew a book right off the shelf! Find the star-book with the letter S, hiding among the clouds.', '{"targets": [{"id": "o2", "label": "C"}, {"id": "o3", "label": "G"}, {"id": "o1", "label": "Z"}, {"id": "o0", "label": "S"}], "narration": "Find the star-book with the letter S, hiding among the clouds."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'alphabet'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The Tumble Wind blew a book right off the shelf! Find the star-book with the letter S, hiding among the clouds.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'listen_repeat', 'Hoot is singing the ABCs and got stuck at K. Sing the next letters with him, nice and clear.', '{"script": "L, M, N, O, P", "narration": "Hoot is singing the ABCs and got stuck at K. Sing the next letters with him, nice and clear."}'::jsonb, '{}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'alphabet'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot is singing the ABCs and got stuck at K. Sing the next letters with him, nice and clear.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Pip''s cheese label letters slid all around: C, H, E, E, S, E. Which word do they spell?', '{"options": [{"id": "o2", "label": "chease"}, {"id": "o0", "label": "cheese"}, {"id": "o3", "label": "chese"}, {"id": "o1", "label": "cheeses"}], "narration": "Pip''s cheese label letters slid all around: C, H, E, E, S, E. Which word do they spell?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'alphabet'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip''s cheese label letters slid all around: C, H, E, E, S, E. Which word do they spell?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sequence', 'Pip''s cheese jars lost their ABC labels. Help him shelve the letters in ABC order.', '{"items": [{"id": "s4", "label": "S"}, {"id": "s3", "label": "H"}, {"id": "s2", "label": "E"}, {"id": "s1", "label": "E"}, {"id": "s0", "label": "C"}], "narration": "Pip''s cheese jars lost their ABC labels. Help him shelve the letters in ABC order."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3", "s4"]}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'alphabet'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip''s cheese jars lost their ABC labels. Help him shelve the letters in ABC order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'trace', 'Hoot wants a name card for his nest. Trace the letter H to start his name.', '{"trace": "H", "narration": "Hoot wants a name card for his nest. Trace the letter H to start his name."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'alphabet'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot wants a name card for his nest. Trace the letter H to start his name.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_target', 'Luna''s midnight storybook is marked with the letter M. Tap the star-book with the letter M.', '{"targets": [{"id": "o2", "label": "W"}, {"id": "o0", "label": "M"}, {"id": "o1", "label": "N"}, {"id": "o3", "label": "H"}], "narration": "Tap the star-book with the letter M."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'alphabet'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Luna''s midnight storybook is marked with the letter M. Tap the star-book with the letter M.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Oh my! The Repair Shop shelf reads A, B, C, D, F. One letter vanished overnight. Which one?', '{"options": [{"id": "o2", "label": "C"}, {"id": "o3", "label": "I"}, {"id": "o0", "label": "E"}, {"id": "o1", "label": "G"}], "narration": "Oh my! The Repair Shop shelf reads A, B, C, D, F. One letter vanished overnight. Which one?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'alphabet'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Oh my! The Repair Shop shelf reads A, B, C, D, F. One letter vanished overnight. Which one?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_target', 'The missing letter left a trail of sparkles behind the ink pots! Tap the glowing letter hiding there.', '{"targets": [{"id": "o2", "label": "B"}, {"id": "o0", "label": "E"}, {"id": "o1", "label": "F"}, {"id": "o3", "label": "G"}], "narration": "Tap the glowing letter hiding behind the ink pots."}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'alphabet'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The missing letter left a trail of sparkles behind the ink pots! Tap the glowing letter hiding there.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'The repair owls found the lost letters scattered: Q, R, S, T, U. Line them up in ABC order.', '{"items": [{"id": "s3", "label": "T"}, {"id": "s2", "label": "S"}, {"id": "s1", "label": "R"}, {"id": "s4", "label": "U"}, {"id": "s0", "label": "Q"}], "narration": "The repair owls found the lost letters scattered: Q, R, S, T, U. Line them up in ABC order."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3", "s4"]}'::jsonb, 20, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'alphabet'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The repair owls found the lost letters scattered: Q, R, S, T, U. Line them up in ABC order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'listen_repeat', 'The shop bell rings when letters are named in order. Say these with Luna, slowly: P, Q, R, S.', '{"script": "P, Q, R, S", "narration": "The shop bell rings when letters are named in order. Say these with Luna, slowly: P, Q, R, S."}'::jsonb, '{}'::jsonb, 20, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'alphabet'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The shop bell rings when letters are named in order. Say these with Luna, slowly: P, Q, R, S.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'You are the Master Librarian now! Teach Hoot the whole alphabet, nice and clear, from A to Z.', '{"script": "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z", "narration": "You are the Master Librarian now! Teach Hoot the whole alphabet, nice and clear, from A to Z."}'::jsonb, '{}'::jsonb, 25, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'alphabet'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'You are the Master Librarian now! Teach Hoot the whole alphabet, nice and clear, from A to Z.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Hoot asks a tricky one: what is the very last letter of the alphabet?', '{"options": [{"id": "o2", "label": "X"}, {"id": "o0", "label": "Z"}, {"id": "o3", "label": "A"}, {"id": "o1", "label": "Y"}], "narration": "Hoot asks a tricky one: what is the very last letter of the alphabet?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'alphabet'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot asks a tricky one: what is the very last letter of the alphabet?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_count', 'Luna lined up her fanciest star-books for your graduation. Count them all!', '{"thing": "star-books", "total": 7, "narration": "Luna lined up her fanciest star-books for your graduation. Count them all!"}'::jsonb, '{"count": 7}'::jsonb, 25, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'alphabet'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Luna lined up her fanciest star-books for your graduation. Count them all!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'trace', 'Sign the Master Librarian scroll! Trace the fancy letter Z, the last letter, for the last step.', '{"trace": "Z", "narration": "Sign the Master Librarian scroll! Trace the fancy letter Z, the last letter, for the last step."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 25, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'alphabet'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sign the Master Librarian scroll! Trace the fancy letter Z, the last letter, for the last step.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Luna is teaching Hoot beginning sounds. Tap the thing that starts with ''mmm'', like moon.', '{"targets": [{"id": "o0", "label": "moon"}, {"id": "o2", "label": "tiger"}, {"id": "o1", "label": "sun"}, {"id": "o3", "label": "fish"}], "narration": "Tap the thing that starts with ''mmm'', like moon."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'letter_sounds'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Luna is teaching Hoot beginning sounds. Tap the thing that starts with ''mmm'', like moon.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Pip packed a picnic. Which snack starts with ''sss'', like sun?', '{"options": [{"id": "o0", "label": "sandwich"}, {"id": "o2", "label": "apple"}, {"id": "o3", "label": "milk"}, {"id": "o1", "label": "cheese"}], "narration": "Pip packed a picnic. Which snack starts with ''sss'', like sun?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'letter_sounds'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip packed a picnic. Which snack starts with ''sss'', like sun?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'Hoot loves the ''tuh'' sound. Say it with him, slow and strong: tuh-tuh-tiger.', '{"script": "tuh, tuh, tiger", "narration": "Hoot loves the ''tuh'' sound. Say it with him, slow and strong: tuh-tuh-tiger."}'::jsonb, '{}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'letter_sounds'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot loves the ''tuh'' sound. Say it with him, slow and strong: tuh-tuh-tiger.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'Luna''s pantry shelf holds treats that start with ''buh''. Count how many ''buh'' treats you see.', '{"thing": "''buh'' treats", "total": 3, "narration": "Luna''s pantry shelf holds treats that start with ''buh''. Count how many ''buh'' treats you see."}'::jsonb, '{"count": 3}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'letter_sounds'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Luna''s pantry shelf holds treats that start with ''buh''. Count how many ''buh'' treats you see.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Oh no! Pip''s cheese labels lost their first sounds. Which word starts with ''buh'', like ball?', '{"options": [{"id": "o3", "label": "yogurt"}, {"id": "o0", "label": "bread"}, {"id": "o1", "label": "cheese"}, {"id": "o2", "label": "crackers"}], "narration": "Oh no! Pip''s cheese labels lost their first sounds. Which word starts with ''buh'', like ball?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'letter_sounds'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Oh no! Pip''s cheese labels lost their first sounds. Which word starts with ''buh'', like ball?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'Hoot hid three picture cards under the cushions. Tap the one that starts with ''fff'', like fish.', '{"targets": [{"id": "o1", "label": "leaf"}, {"id": "o3", "label": "star"}, {"id": "o2", "label": "nest"}, {"id": "o0", "label": "feather"}], "narration": "Tap the picture card that starts with ''fff'', like fish."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'letter_sounds'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot hid three picture cards under the cushions. Tap the one that starts with ''fff'', like fish.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sort', 'The pantry jars tumbled everywhere! Sort the treats: which start with ''mmm'', and which with ''sss''?', '{"items": [{"id": "g0i2", "label": "moon cake", "group": "Starts with mmm"}, {"id": "g1i2", "label": "salad", "group": "Starts with sss"}, {"id": "g1i0", "label": "soup", "group": "Starts with sss"}, {"id": "g0i0", "label": "muffin", "group": "Starts with mmm"}, {"id": "g0i1", "label": "milk", "group": "Starts with mmm"}, {"id": "g1i1", "label": "sandwich", "group": "Starts with sss"}], "groups": [{"id": "g0", "label": "Starts with mmm"}, {"id": "g1", "label": "Starts with sss"}], "narration": "The pantry jars tumbled everywhere! Sort the treats: which start with ''mmm'', and which with ''sss''?"}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'letter_sounds'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The pantry jars tumbled everywhere! Sort the treats: which start with ''mmm'', and which with ''sss''?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'listen_repeat', 'The star-books hum when you say their sound. Say ''duh-duh-dog'' with Luna.', '{"script": "duh, duh, dog", "narration": "The star-books hum when you say their sound. Say ''duh-duh-dog'' with Luna."}'::jsonb, '{}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'letter_sounds'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The star-books hum when you say their sound. Say ''duh-duh-dog'' with Luna.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Pip is stuck on his nest-school homework. Which word has the ''a'' sound, like cat?', '{"options": [{"id": "o3", "label": "cup"}, {"id": "o1", "label": "bed"}, {"id": "o0", "label": "hat"}, {"id": "o2", "label": "pig"}], "narration": "Pip is stuck on his nest-school homework. Which word has the ''a'' sound, like cat?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'letter_sounds'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip is stuck on his nest-school homework. Which word has the ''a'' sound, like cat?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_target', 'Hoot points at pictures, unsure. Tap the picture with the ''e'' sound, like bed.', '{"targets": [{"id": "o1", "label": "pin"}, {"id": "o0", "label": "pen"}, {"id": "o3", "label": "pot"}, {"id": "o2", "label": "pan"}], "narration": "Tap the picture with the ''e'' sound, like bed."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'letter_sounds'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot points at pictures, unsure. Tap the picture with the ''e'' sound, like bed.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'listen_repeat', 'Pip keeps mixing up his middle sounds. Say the middle sound of ''pig'' with him: iii.', '{"script": "p-i-g, pig. The middle sound is iii.", "narration": "Pip keeps mixing up his middle sounds. Say the middle sound of ''pig'' with him: iii."}'::jsonb, '{}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'letter_sounds'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip keeps mixing up his middle sounds. Say the middle sound of ''pig'' with him: iii.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sort', 'Help Pip sort his word cards for nest school: short ''a'' words and short ''o'' words.', '{"items": [{"id": "g1i2", "label": "fox", "group": "Short o, like hot"}, {"id": "g0i1", "label": "map", "group": "Short a, like cat"}, {"id": "g1i1", "label": "box", "group": "Short o, like hot"}, {"id": "g1i0", "label": "pot", "group": "Short o, like hot"}, {"id": "g0i0", "label": "hat", "group": "Short a, like cat"}, {"id": "g0i2", "label": "pan", "group": "Short a, like cat"}], "groups": [{"id": "g0", "label": "Short a, like cat"}, {"id": "g1", "label": "Short o, like hot"}], "narration": "Help Pip sort his word cards for nest school: short ''a'' words and short ''o'' words."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'letter_sounds'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Help Pip sort his word cards for nest school: short ''a'' words and short ''o'' words.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Mystery! The Sound Thief stole a first sound. ''_un'' shines in the sky. Which word was it?', '{"options": [{"id": "o0", "label": "sun"}, {"id": "o3", "label": "fun"}, {"id": "o2", "label": "run"}, {"id": "o1", "label": "bun"}], "narration": "Mystery! The Sound Thief stole a first sound. ''_un'' shines in the sky. Which word was it?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'letter_sounds'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Mystery! The Sound Thief stole a first sound. ''_un'' shines in the sky. Which word was it?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_target', 'The thief dropped a sound clue: ''sss''. Tap the picture whose name starts with that stolen sound.', '{"targets": [{"id": "o0", "label": "seal"}, {"id": "o1", "label": "moon"}, {"id": "o2", "label": "leaf"}, {"id": "o3", "label": "tent"}], "narration": "Tap the picture whose name starts with ''sss''."}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'letter_sounds'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The thief dropped a sound clue: ''sss''. Tap the picture whose name starts with that stolen sound.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Hoot found the thief''s note: ''I love _ish!'' It swims. Which word did the thief write?', '{"options": [{"id": "o1", "label": "dish"}, {"id": "o0", "label": "fish"}, {"id": "o2", "label": "wish"}, {"id": "o3", "label": "squish"}], "narration": "Hoot found the thief''s note: ''I love _ish!'' It swims. Which word did the thief write?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'letter_sounds'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot found the thief''s note: ''I love _ish!'' It swims. Which word did the thief write?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'listen_repeat', 'The thief returns stolen sounds when you name them. Say ''lll-leaf'' three times, like Luna.', '{"script": "lll, lll, lll, leaf", "narration": "The thief returns stolen sounds when you name them. Say ''lll-leaf'' three times, like Luna."}'::jsonb, '{}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'letter_sounds'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The thief returns stolen sounds when you name them. Say ''lll-leaf'' three times, like Luna.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Master challenge! Pip''s favorite food starts with two letters that make one sound: ''cheese''. Which two?', '{"options": [{"id": "o0", "label": "ch"}, {"id": "o2", "label": "c"}, {"id": "o3", "label": "th"}, {"id": "o1", "label": "sh"}], "narration": "Master challenge! Pip''s favorite food starts with two letters that make one sound: ''cheese''. Which two?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'letter_sounds'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Master challenge! Pip''s favorite food starts with two letters that make one sound: ''cheese''. Which two?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_target', 'The last star-book only opens for the ''sh'' sound. Tap the picture that starts with ''sh''.', '{"targets": [{"id": "o2", "label": "thin"}, {"id": "o1", "label": "chip"}, {"id": "o3", "label": "zip"}, {"id": "o0", "label": "ship"}], "narration": "Tap the picture that starts with ''sh''."}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'letter_sounds'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The last star-book only opens for the ''sh'' sound. Tap the picture that starts with ''sh''.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'You are the Sound Keeper now! Teach Hoot the quiet library sound: ''shhh'', like in ''ship''.', '{"script": "shhh. sh, sh, ship.", "narration": "You are the Sound Keeper now! Teach Hoot the quiet library sound: ''shhh'', like in ''ship''."}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'letter_sounds'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'You are the Sound Keeper now! Teach Hoot the quiet library sound: ''shhh'', like in ''ship''.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sort', 'Sort the digraph cards for the graduation shelf: ''sh'' words and ''ch'' words.', '{"items": [{"id": "g0i1", "label": "fish", "group": "sh, like ship"}, {"id": "g1i2", "label": "chick", "group": "ch, like cheese"}, {"id": "g0i2", "label": "shop", "group": "sh, like ship"}, {"id": "g0i0", "label": "ship", "group": "sh, like ship"}, {"id": "g1i0", "label": "chat", "group": "ch, like cheese"}, {"id": "g1i1", "label": "chips", "group": "ch, like cheese"}], "groups": [{"id": "g0", "label": "sh, like ship"}, {"id": "g1", "label": "ch, like cheese"}], "narration": "Sort the digraph cards for the graduation shelf: ''sh'' words and ''ch'' words."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'letter_sounds'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sort the digraph cards for the graduation shelf: ''sh'' words and ''ch'' words.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'Luna found two little words stuck together: ''cow'' and ''boy''. Say them fast with her: cowboy!', '{"script": "cow... boy... cowboy!", "narration": "Luna found two little words stuck together: ''cow'' and ''boy''. Say them fast with her: cowboy!"}'::jsonb, '{}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'blending'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Luna found two little words stuck together: ''cow'' and ''boy''. Say them fast with her: cowboy!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Pip glued two words together: ''pan'' and ''cake''. What new word did he make?', '{"options": [{"id": "o2", "label": "pancakes"}, {"id": "o0", "label": "pancake"}, {"id": "o3", "label": "cake"}, {"id": "o1", "label": "cupcake"}], "narration": "Pip glued two words together: ''pan'' and ''cake''. What new word did he make?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'blending'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip glued two words together: ''pan'' and ''cake''. What new word did he make?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Hoot mixed up his toy labels. Tap the picture of the ''toothbrush'': ''tooth'' and ''brush''.', '{"targets": [{"id": "o3", "label": "paintbrush"}, {"id": "o0", "label": "toothbrush"}, {"id": "o2", "label": "toothpaste"}, {"id": "o1", "label": "hairbrush"}], "narration": "Tap the picture of the toothbrush."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'blending'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot mixed up his toy labels. Tap the picture of the ''toothbrush'': ''tooth'' and ''brush''.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'Luna claps the parts of ''cowboy'': cow... boy. How many claps did you hear?', '{"thing": "word parts", "total": 2, "narration": "Luna claps the parts of ''cowboy'': cow... boy. How many claps did you hear?"}'::jsonb, '{"count": 2}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'blending'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Luna claps the parts of ''cowboy'': cow... boy. How many claps did you hear?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'listen_repeat', 'Hoot is learning to stretch words. Stretch it with him, slowly: ccc-aaa-tuh... cat!', '{"script": "c-a-t, cat!", "narration": "Hoot is learning to stretch words. Stretch it with him, slowly: ccc-aaa-tuh... cat!"}'::jsonb, '{}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'blending'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot is learning to stretch words. Stretch it with him, slowly: ccc-aaa-tuh... cat!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Pip sounded out ''mmm-aaa-puh''. Which word did he read?', '{"options": [{"id": "o1", "label": "mop"}, {"id": "o0", "label": "map"}, {"id": "o2", "label": "cap"}, {"id": "o3", "label": "nap"}], "narration": "Pip sounded out ''mmm-aaa-puh''. Which word did he read?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'blending'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip sounded out ''mmm-aaa-puh''. Which word did he read?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'Luna stretched a word: ''hhh-aaa-tuh''. Tap the picture she named.', '{"targets": [{"id": "o1", "label": "hot"}, {"id": "o0", "label": "hat"}, {"id": "o2", "label": "cat"}, {"id": "o3", "label": "mat"}], "narration": "Tap the picture Luna named: hhh-aaa-tuh."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'blending'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Luna stretched a word: ''hhh-aaa-tuh''. Tap the picture she named.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sort', 'Help Hoot sort his sound cards: stretchy words and stuck-together words.', '{"items": [{"id": "g0i1", "label": "sun", "group": "Stretchy words"}, {"id": "g1i0", "label": "cowboy", "group": "Stuck-together words"}, {"id": "g1i2", "label": "toothbrush", "group": "Stuck-together words"}, {"id": "g1i1", "label": "pancake", "group": "Stuck-together words"}, {"id": "g0i2", "label": "pig", "group": "Stretchy words"}, {"id": "g0i0", "label": "cat", "group": "Stretchy words"}], "groups": [{"id": "g0", "label": "Stretchy words"}, {"id": "g1", "label": "Stuck-together words"}], "narration": "Help Hoot sort his sound cards: stretchy words and stuck-together words."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'blending'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Help Hoot sort his sound cards: stretchy words and stuck-together words.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Hoot is stuck on a bedtime word: ''sss-uuu-nnn''. Help him. Which word?', '{"options": [{"id": "o2", "label": "bun"}, {"id": "o1", "label": "fun"}, {"id": "o0", "label": "sun"}, {"id": "o3", "label": "run"}], "narration": "Hoot is stuck on a bedtime word: ''sss-uuu-nnn''. Help him. Which word?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'blending'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot is stuck on a bedtime word: ''sss-uuu-nnn''. Help him. Which word?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'listen_repeat', 'Pip wants to read his cheese label: ''ch-eee-se''. Say it slowly, then fast, with Pip.', '{"script": "ch-ee-se... cheese!", "narration": "Pip wants to read his cheese label: ''ch-eee-se''. Say it slowly, then fast, with Pip."}'::jsonb, '{}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'blending'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip wants to read his cheese label: ''ch-eee-se''. Say it slowly, then fast, with Pip.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_target', 'Hoot stretched ''fff-iii-sssh''. Tap the picture of what he said.', '{"targets": [{"id": "o1", "label": "dish"}, {"id": "o3", "label": "ship"}, {"id": "o2", "label": "fin"}, {"id": "o0", "label": "fish"}], "narration": "Tap the picture of what Hoot said: fff-iii-sssh."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'blending'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot stretched ''fff-iii-sssh''. Tap the picture of what he said.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_count', 'Luna claps the parts of ''bedtime'': bed... time. How many parts?', '{"thing": "word parts", "total": 2, "narration": "Luna claps the parts of ''bedtime'': bed... time. How many parts?"}'::jsonb, '{"count": 2}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'blending'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Luna claps the parts of ''bedtime'': bed... time. How many parts?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'The Tumble Wind jumbled Hoot''s story word into pieces: ''ter'', ''but'', ''fly''. Put them in order.', '{"items": [{"id": "s1", "label": "ter"}, {"id": "s2", "label": "fly"}, {"id": "s0", "label": "but"}], "narration": "The Tumble Wind jumbled Hoot''s story word into pieces: ''ter'', ''but'', ''fly''. Put them in order."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'blending'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The Tumble Wind jumbled Hoot''s story word into pieces: ''ter'', ''but'', ''fly''. Put them in order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'A jumbled word tumbled out of a star-book: ''win-dow''. Put the parts together. Which word?', '{"options": [{"id": "o2", "label": "door"}, {"id": "o0", "label": "window"}, {"id": "o3", "label": "wind"}, {"id": "o1", "label": "windmill"}], "narration": "A jumbled word tumbled out of a star-book: ''win-dow''. Put the parts together. Which word?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'blending'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'A jumbled word tumbled out of a star-book: ''win-dow''. Put the parts together. Which word?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_target', 'The wind hid the word ''table'' in pieces: ''ta'' and ''ble''. Tap the picture it names.', '{"targets": [{"id": "o3", "label": "tent"}, {"id": "o2", "label": "taco"}, {"id": "o0", "label": "table"}, {"id": "o1", "label": "cable"}], "narration": "Tap the picture the word names: ta-ble."}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'blending'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The wind hid the word ''table'' in pieces: ''ta'' and ''ble''. Tap the picture it names.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'listen_repeat', 'Say the wind-scattered word slowly, then fast, to calm it down: ''ap-ple''.', '{"script": "ap-ple... apple!", "narration": "Say the wind-scattered word slowly, then fast, to calm it down: ''ap-ple''."}'::jsonb, '{}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'blending'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Say the wind-scattered word slowly, then fast, to calm it down: ''ap-ple''.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'Master Reader challenge! Clap and say the big word with Luna: ''el-e-phant''.', '{"script": "el-e-phant... elephant!", "narration": "Master Reader challenge! Clap and say the big word with Luna: ''el-e-phant''."}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'blending'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Master Reader challenge! Clap and say the big word with Luna: ''el-e-phant''.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'Line up the word parts to unlock the Master Library: ''e'', ''el'', ''phant''.', '{"items": [{"id": "s2", "label": "phant"}, {"id": "s1", "label": "e"}, {"id": "s0", "label": "el"}], "narration": "Line up the word parts to unlock the Master Library: ''e'', ''el'', ''phant''."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'blending'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Line up the word parts to unlock the Master Library: ''e'', ''el'', ''phant''.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Hoot found three flying words. Which one has the MOST parts?', '{"options": [{"id": "o2", "label": "wing"}, {"id": "o1", "label": "pilot"}, {"id": "o3", "label": "cloud"}, {"id": "o0", "label": "helicopter"}], "narration": "Hoot found three flying words. Which one has the MOST parts?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'blending'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot found three flying words. Which one has the MOST parts?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_count', 'Clap the parts of the parade word ''watermelon'': wa-ter-mel-on. How many parts?', '{"thing": "word parts", "total": 4, "narration": "Clap the parts of the parade word ''watermelon'': wa-ter-mel-on. How many parts?"}'::jsonb, '{"count": 4}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'blending'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Clap the parts of the parade word ''watermelon'': wa-ter-mel-on. How many parts?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Pip''s first star-book cover is full of words. Tap the word ''the''.', '{"targets": [{"id": "o3", "label": "there"}, {"id": "o1", "label": "then"}, {"id": "o2", "label": "they"}, {"id": "o0", "label": "the"}], "narration": "Tap the word ''the''."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sight_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip''s first star-book cover is full of words. Tap the word ''the''.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Hoot''s bedtime page reads: ''I see ___ moon.'' Which word fits?', '{"options": [{"id": "o0", "label": "the"}, {"id": "o3", "label": "to"}, {"id": "o1", "label": "a"}, {"id": "o2", "label": "and"}], "narration": "Hoot''s bedtime page reads: ''I see ___ moon.'' Which word fits?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sight_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot''s bedtime page reads: ''I see ___ moon.'' Which word fits?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'Count how many times you see the word ''and'' in Luna''s line: ''Pip and Hoot and Luna''.', '{"thing": "times the word ''and'' appears", "total": 2, "narration": "Count how many times you see the word ''and'' in Luna''s line: ''Pip and Hoot and Luna''."}'::jsonb, '{"count": 2}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sight_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Count how many times you see the word ''and'' in Luna''s line: ''Pip and Hoot and Luna''.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'trace', 'Luna is writing the most important word: ''I''. Trace the tall letter I.', '{"trace": "I", "narration": "Luna is writing the most important word: ''I''. Trace the tall letter I."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sight_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Luna is writing the most important word: ''I''. Trace the tall letter I.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Pip''s note says: ''You ___ kind.'' Which word fits?', '{"options": [{"id": "o0", "label": "are"}, {"id": "o2", "label": "be"}, {"id": "o3", "label": "was"}, {"id": "o1", "label": "is"}], "narration": "Pip''s note says: ''You ___ kind.'' Which word fits?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sight_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip''s note says: ''You ___ kind.'' Which word fits?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'Hoot''s story page is full of tricky words. Tap the word ''that''.', '{"targets": [{"id": "o3", "label": "what"}, {"id": "o2", "label": "this"}, {"id": "o0", "label": "that"}, {"id": "o1", "label": "than"}], "narration": "Tap the word ''that''."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sight_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot''s story page is full of tricky words. Tap the word ''that''.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sort', 'Help Pip sort his word cards: words he knows by heart, and words he is still learning.', '{"items": [{"id": "g0i1", "label": "the", "group": "Knows by heart"}, {"id": "g1i1", "label": "could", "group": "Still learning"}, {"id": "g1i2", "label": "would", "group": "Still learning"}, {"id": "g0i0", "label": "I", "group": "Knows by heart"}, {"id": "g1i0", "label": "said", "group": "Still learning"}, {"id": "g0i2", "label": "and", "group": "Knows by heart"}], "groups": [{"id": "g0", "label": "Knows by heart"}, {"id": "g1", "label": "Still learning"}], "narration": "Help Pip sort his word cards: words he knows by heart, and words he is still learning."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sight_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Help Pip sort his word cards: words he knows by heart, and words he is still learning.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'listen_repeat', 'Read Hoot''s line with Luna, smooth like a storyteller: ''I see you.''', '{"script": "I see you.", "narration": "Read Hoot''s line with Luna, smooth like a storyteller: ''I see you.''"}'::jsonb, '{}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sight_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Read Hoot''s line with Luna, smooth like a storyteller: ''I see you.''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sequence', 'Pip''s cheese label words fell off! Put them in order: ''the'', ''cheese'', ''is'', ''here''.', '{"items": [{"id": "s0", "label": "the"}, {"id": "s2", "label": "is"}, {"id": "s1", "label": "cheese"}, {"id": "s3", "label": "here"}], "narration": "Pip''s cheese label words fell off! Put them in order: ''the'', ''cheese'', ''is'', ''here''."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sight_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip''s cheese label words fell off! Put them in order: ''the'', ''cheese'', ''is'', ''here''.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Pip''s label says: ''This cheese is ___ Pip.'' Which word finishes it?', '{"options": [{"id": "o3", "label": "of"}, {"id": "o1", "label": "from"}, {"id": "o2", "label": "four"}, {"id": "o0", "label": "for"}], "narration": "Pip''s label says: ''This cheese is ___ Pip.'' Which word finishes it?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sight_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip''s label says: ''This cheese is ___ Pip.'' Which word finishes it?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_target', 'Hoot hid Pip''s labels around the library. Tap the label that says ''said''.', '{"targets": [{"id": "o2", "label": "says"}, {"id": "o1", "label": "sad"}, {"id": "o0", "label": "said"}, {"id": "o3", "label": "sand"}], "narration": "Tap the label that says ''said''."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sight_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot hid Pip''s labels around the library. Tap the label that says ''said''.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Pip wants to thank you in writing. Which sentence is right?', '{"options": [{"id": "o1", "label": "I like your."}, {"id": "o3", "label": "I likes you."}, {"id": "o0", "label": "I like you."}, {"id": "o2", "label": "Me like you."}], "narration": "Pip wants to thank you in writing. Which sentence is right?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sight_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip wants to thank you in writing. Which sentence is right?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'The Story Repair Shop has a broken sentence: ''moon'', ''the'', ''is'', ''up''. Fix it!', '{"items": [{"id": "s1", "label": "moon"}, {"id": "s3", "label": "up"}, {"id": "s0", "label": "the"}, {"id": "s2", "label": "is"}], "narration": "The Story Repair Shop has a broken sentence: ''moon'', ''the'', ''is'', ''up''. Fix it!"}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'sight_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The Story Repair Shop has a broken sentence: ''moon'', ''the'', ''is'', ''up''. Fix it!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'A smudged note says: ''___ found the book.'' Which word makes sense?', '{"options": [{"id": "o0", "label": "They"}, {"id": "o3", "label": "Those"}, {"id": "o1", "label": "Them"}, {"id": "o2", "label": "Their"}], "narration": "A smudged note says: ''___ found the book.'' Which word makes sense?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'sight_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'A smudged note says: ''___ found the book.'' Which word makes sense?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_target', 'The repair owls need the word ''because'' for a tricky sentence. Tap it.', '{"targets": [{"id": "o3", "label": "between"}, {"id": "o0", "label": "because"}, {"id": "o1", "label": "become"}, {"id": "o2", "label": "before"}], "narration": "Tap the word ''because''."}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'sight_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The repair owls need the word ''because'' for a tricky sentence. Tap it.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sort', 'Sort the repair words: naming words and action words.', '{"items": [{"id": "g1i0", "label": "runs", "group": "Action words"}, {"id": "g0i2", "label": "book", "group": "Naming words"}, {"id": "g0i0", "label": "moon", "group": "Naming words"}, {"id": "g0i1", "label": "Pip", "group": "Naming words"}, {"id": "g1i2", "label": "eats", "group": "Action words"}, {"id": "g1i1", "label": "reads", "group": "Action words"}], "groups": [{"id": "g0", "label": "Naming words"}, {"id": "g1", "label": "Action words"}], "narration": "Sort the repair words: naming words and action words."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'sight_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sort the repair words: naming words and action words.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'Master Reader! Read Luna''s line like a brave hero: ''We will find the star-book!''', '{"script": "We will find the star-book!", "narration": "Master Reader! Read Luna''s line like a brave hero: ''We will find the star-book!''"}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'sight_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Master Reader! Read Luna''s line like a brave hero: ''We will find the star-book!''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Hoot is reading fast! Which sentence did he read correctly?', '{"options": [{"id": "o0", "label": "They went to the big library."}, {"id": "o1", "label": "They goed to the big library."}, {"id": "o2", "label": "They went to the big libary."}, {"id": "o3", "label": "They went to big library."}], "narration": "Hoot is reading fast! Which sentence did he read correctly?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'sight_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot is reading fast! Which sentence did he read correctly?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_count', 'How many words are in Luna''s celebration line: ''You are a star reader now''?', '{"thing": "words", "total": 6, "narration": "How many words are in Luna''s celebration line: ''You are a star reader now''?"}'::jsonb, '{"count": 6}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'sight_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'How many words are in Luna''s celebration line: ''You are a star reader now''?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_target', 'For your graduation, tap the LONGEST word on the Master Reader scroll.', '{"targets": [{"id": "o2", "label": "book"}, {"id": "o1", "label": "star"}, {"id": "o3", "label": "read"}, {"id": "o0", "label": "celebration"}], "narration": "Tap the longest word on the Master Reader scroll."}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'sight_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'For your graduation, tap the LONGEST word on the Master Reader scroll.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Every story starts somewhere! Tap the FIRST word of Luna''s line: ''Hoot loves shiny stars''.', '{"targets": [{"id": "o1", "label": "loves"}, {"id": "o0", "label": "Hoot"}, {"id": "o2", "label": "shiny"}, {"id": "o3", "label": "stars"}], "narration": "Tap the first word of the line: Hoot loves shiny stars."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Every story starts somewhere! Tap the FIRST word of Luna''s line: ''Hoot loves shiny stars''.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Pip is learning to read like Luna. Which way do the words go?', '{"options": [{"id": "o1", "label": "right to left"}, {"id": "o0", "label": "left to right"}, {"id": "o2", "label": "top to bottom"}, {"id": "o3", "label": "in circles"}], "narration": "Pip is learning to read like Luna. Which way do the words go?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip is learning to read like Luna. Which way do the words go?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'trace', 'Reading is a journey! Trace the reading path under the words, from left to right.', '{"trace": "left-to-right arrow", "narration": "Reading is a journey! Trace the reading path under the words, from left to right."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Reading is a journey! Trace the reading path under the words, from left to right.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'How many words are in Pip''s sign: ''Pip loves cheese''?', '{"thing": "words", "total": 3, "narration": "How many words are in Pip''s sign: ''Pip loves cheese''?"}'::jsonb, '{"count": 3}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'How many words are in Pip''s sign: ''Pip loves cheese''?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Hoot wrote three signs for his nest. Which one is written the right way?', '{"options": [{"id": "o3", "label": "pip naps"}, {"id": "o1", "label": "pip naps."}, {"id": "o0", "label": "Pip naps."}, {"id": "o2", "label": "Pip naps"}], "narration": "Hoot wrote three signs for his nest. Which one is written the right way?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot wrote three signs for his nest. Which one is written the right way?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'Tap the capital letter that starts the sentence: ''Hoot is sleepy.''', '{"targets": [{"id": "o2", "label": "o"}, {"id": "o1", "label": "h"}, {"id": "o0", "label": "H"}, {"id": "o3", "label": "e"}], "narration": "Tap the capital letter that starts the sentence."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Tap the capital letter that starts the sentence: ''Hoot is sleepy.''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sort', 'Help Hoot tidy the sentence shelf: beginnings and endings.', '{"items": [{"id": "g0i2", "label": "Hoot", "group": "Sentence beginnings"}, {"id": "g0i1", "label": "Pip", "group": "Sentence beginnings"}, {"id": "g0i0", "label": "The moon", "group": "Sentence beginnings"}, {"id": "g1i2", "label": "reads.", "group": "Sentence endings"}, {"id": "g1i1", "label": "naps.", "group": "Sentence endings"}, {"id": "g1i0", "label": "is round.", "group": "Sentence endings"}], "groups": [{"id": "g0", "label": "Sentence beginnings"}, {"id": "g1", "label": "Sentence endings"}], "narration": "Help Hoot tidy the sentence shelf: beginnings and endings."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Help Hoot tidy the sentence shelf: beginnings and endings.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'listen_repeat', 'Read with a full-stop voice, strong at the end: ''The star-book glows.''', '{"script": "The star-book glows.", "narration": "Read with a full-stop voice, strong at the end: ''The star-book glows.''"}'::jsonb, '{}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Read with a full-stop voice, strong at the end: ''The star-book glows.''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sequence', 'Hoot''s bedtime words are mixed up: ''stars'', ''Hoot'', ''counts''. Line them up to make a sentence.', '{"items": [{"id": "s2", "label": "stars"}, {"id": "s0", "label": "Hoot"}, {"id": "s1", "label": "counts"}], "narration": "Hoot''s bedtime words are mixed up: ''stars'', ''Hoot'', ''counts''. Line them up to make a sentence."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot''s bedtime words are mixed up: ''stars'', ''Hoot'', ''counts''. Line them up to make a sentence.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Pip wrote a thank-you note: ''thank you for the cheese''. Which version is right?', '{"options": [{"id": "o3", "label": "thank you for the Cheese."}, {"id": "o2", "label": "Thank you for the cheese"}, {"id": "o1", "label": "thank you for the cheese."}, {"id": "o0", "label": "Thank you for the cheese."}], "narration": "Pip wrote a thank-you note: ''thank you for the cheese''. Which version is right?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip wrote a thank-you note: ''thank you for the cheese''. Which version is right?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_target', 'Tap the word that needs a capital letter: ''pip found a star-book.''', '{"targets": [{"id": "o2", "label": "a"}, {"id": "o3", "label": "star-book"}, {"id": "o1", "label": "found"}, {"id": "o0", "label": "pip"}], "narration": "Tap the word that needs a capital letter."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Tap the word that needs a capital letter: ''pip found a star-book.''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'trace', 'Underline Hoot''s whole sentence with your finger, left to right, to tuck it into bed.', '{"trace": "sentence underline", "narration": "Underline Hoot''s whole sentence with your finger, left to right, to tuck it into bed."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Underline Hoot''s whole sentence with your finger, left to right, to tuck it into bed.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'The mystery pages blew everywhere! Put the story in order: ''Hoot woke up.'', ''He found a glowing book.'', ''He read all night.''', '{"items": [{"id": "s2", "label": "He read all night."}, {"id": "s1", "label": "He found a glowing book."}, {"id": "s0", "label": "Hoot woke up."}], "narration": "The mystery pages blew everywhere! Put the story in order: ''Hoot woke up.'', ''He found a glowing book.'', ''He read all night.''"}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The mystery pages blew everywhere! Put the story in order: ''Hoot woke up.'', ''He found a glowing book.'', ''He read all night.''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Detective time! Which sentence tells what happened FIRST?', '{"options": [{"id": "o3", "label": "Pip went home."}, {"id": "o0", "label": "Pip heard a noise."}, {"id": "o1", "label": "Pip found the book."}, {"id": "o2", "label": "Pip read the book."}], "narration": "Detective time! Which sentence tells what happened FIRST?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Detective time! Which sentence tells what happened FIRST?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sort', 'Sort the clues: things Pip SAW and things Pip HEARD.', '{"items": [{"id": "g0i1", "label": "an open window", "group": "Pip saw"}, {"id": "g1i1", "label": "pages turning", "group": "Pip heard"}, {"id": "g1i2", "label": "a hoot", "group": "Pip heard"}, {"id": "g1i0", "label": "a giggle", "group": "Pip heard"}, {"id": "g0i0", "label": "a glowing book", "group": "Pip saw"}, {"id": "g0i2", "label": "a feather", "group": "Pip saw"}], "groups": [{"id": "g0", "label": "Pip saw"}, {"id": "g1", "label": "Pip heard"}], "narration": "Sort the clues: things Pip SAW and things Pip HEARD."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sort the clues: things Pip SAW and things Pip HEARD.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'listen_repeat', 'Read the mystery line like a detective: ''Someone moved my star-book!''', '{"script": "Someone moved my star-book!", "narration": "Read the mystery line like a detective: ''Someone moved my star-book!''"}'::jsonb, '{}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Read the mystery line like a detective: ''Someone moved my star-book!''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'Master Reader! Read Luna''s line like you are amazed: ''The library is flying!''', '{"script": "The library is flying!", "narration": "Master Reader! Read Luna''s line like you are amazed: ''The library is flying!''"}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Master Reader! Read Luna''s line like you are amazed: ''The library is flying!''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Luna wrote the same line two ways. Which one sounds excited?', '{"options": [{"id": "o2", "label": "hoot found the treasure!"}, {"id": "o3", "label": "Hoot found the treasure?"}, {"id": "o0", "label": "Hoot found the treasure!"}, {"id": "o1", "label": "Hoot found the treasure."}], "narration": "Luna wrote the same line two ways. Which one sounds excited?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Luna wrote the same line two ways. Which one sounds excited?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_count', 'Clap the words in the cheering line: ''Hip hip hooray for Hoot''.', '{"thing": "words", "total": 5, "narration": "Clap the words in the cheering line: ''Hip hip hooray for Hoot''."}'::jsonb, '{"count": 5}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Clap the words in the cheering line: ''Hip hip hooray for Hoot''.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_target', 'Tap the sentence that asks a question.', '{"targets": [{"id": "o2", "label": "I love my book!"}, {"id": "o1", "label": "My book is here."}, {"id": "o3", "label": "my book is lost."}, {"id": "o0", "label": "Where is my book?"}], "narration": "Tap the sentence that asks a question."}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Tap the sentence that asks a question.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Luna just read about Pip''s picnic. Tap what Pip ate at the picnic.', '{"targets": [{"id": "o2", "label": "grapes"}, {"id": "o1", "label": "cake"}, {"id": "o0", "label": "cheese"}, {"id": "o3", "label": "soup"}], "narration": "Tap what Pip ate at the picnic."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'stories'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Luna just read about Pip''s picnic. Tap what Pip ate at the picnic.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'In the picnic story, who loves cheese more than anything?', '{"options": [{"id": "o3", "label": "the wind"}, {"id": "o0", "label": "Pip"}, {"id": "o1", "label": "Hoot"}, {"id": "o2", "label": "Luna"}], "narration": "In the picnic story, who loves cheese more than anything?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'stories'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'In the picnic story, who loves cheese more than anything?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'How many friends shared the picnic: Pip, Hoot, and Luna?', '{"thing": "friends", "total": 3, "narration": "How many friends shared the picnic: Pip, Hoot, and Luna?"}'::jsonb, '{"count": 3}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'stories'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'How many friends shared the picnic: Pip, Hoot, and Luna?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'Tell Luna your favorite part of the picnic story.', '{"script": "My favorite part was...", "narration": "Tell Luna your favorite part of the picnic story."}'::jsonb, '{}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'stories'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Tell Luna your favorite part of the picnic story.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'Put Pip''s adventure in order: ''Pip woke up.'', ''Pip packed cheese.'', ''Pip shared with Hoot.''', '{"items": [{"id": "s1", "label": "Pip packed cheese."}, {"id": "s0", "label": "Pip woke up."}, {"id": "s2", "label": "Pip shared with Hoot."}], "narration": "Put Pip''s adventure in order: ''Pip woke up.'', ''Pip packed cheese.'', ''Pip shared with Hoot.''"}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'stories'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Put Pip''s adventure in order: ''Pip woke up.'', ''Pip packed cheese.'', ''Pip shared with Hoot.''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'What happened in the MIDDLE of Pip''s adventure?', '{"options": [{"id": "o0", "label": "Pip packed cheese."}, {"id": "o3", "label": "Pip went to sleep."}, {"id": "o1", "label": "Pip woke up."}, {"id": "o2", "label": "Pip shared with Hoot."}], "narration": "What happened in the MIDDLE of Pip''s adventure?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'stories'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'What happened in the MIDDLE of Pip''s adventure?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'Tap the picture that shows the END of the story.', '{"targets": [{"id": "o1", "label": "Pip waking up"}, {"id": "o3", "label": "Luna shelving books"}, {"id": "o2", "label": "Pip packing cheese"}, {"id": "o0", "label": "friends sharing cheese"}], "narration": "Tap the picture that shows the end of the story: friends sharing cheese."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'stories'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Tap the picture that shows the END of the story.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sort', 'Help Hoot sort the story bits: how it STARTED and how it ENDED.', '{"items": [{"id": "g1i0", "label": "friends shared", "group": "How it ended"}, {"id": "g1i1", "label": "everyone yawned", "group": "How it ended"}, {"id": "g0i1", "label": "the sun rose", "group": "How it started"}, {"id": "g0i0", "label": "Pip woke up", "group": "How it started"}], "groups": [{"id": "g0", "label": "How it started"}, {"id": "g1", "label": "How it ended"}], "narration": "Help Hoot sort the story bits: how it STARTED and how it ENDED."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1"], "g1": ["g1i0", "g1i1"]}}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'stories'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Help Hoot sort the story bits: how it STARTED and how it ENDED.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Hoot forgot why Pip was sad. Why was Pip sad in the story?', '{"options": [{"id": "o1", "label": "Hoot ate all the cheese."}, {"id": "o2", "label": "The wind took the blanket."}, {"id": "o3", "label": "Luna closed the library."}, {"id": "o0", "label": "His cheese rolled down the hill."}], "narration": "Hoot forgot why Pip was sad. Why was Pip sad in the story?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'stories'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot forgot why Pip was sad. Why was Pip sad in the story?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'listen_repeat', 'Pip cannot remember the story! Retell it for him in your own words.', '{"script": "First... then... last...", "narration": "Pip cannot remember the story! Retell it for him in your own words."}'::jsonb, '{}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'stories'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip cannot remember the story! Retell it for him in your own words.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_target', 'Tap who helped Pip when his cheese rolled away.', '{"targets": [{"id": "o0", "label": "Hoot"}, {"id": "o1", "label": "Pip"}, {"id": "o2", "label": "Luna"}, {"id": "o3", "label": "the wind"}], "narration": "Tap who helped Pip when his cheese rolled away."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'stories'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Tap who helped Pip when his cheese rolled away.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_count', 'How many cheeses did Pip pack: one for him, one for Hoot, one for Luna?', '{"thing": "cheeses", "total": 3, "narration": "How many cheeses did Pip pack: one for him, one for Hoot, one for Luna?"}'::jsonb, '{"count": 3}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'stories'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'How many cheeses did Pip pack: one for him, one for Hoot, one for Luna?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Oh no! The story''s ending blew away. Which ending fits best?', '{"options": [{"id": "o1", "label": "Pip kept it all for himself."}, {"id": "o3", "label": "The picnic never happened."}, {"id": "o0", "label": "They shared the cheese and watched the stars."}, {"id": "o2", "label": "They left without eating."}], "narration": "Oh no! The story''s ending blew away. Which ending fits best?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'stories'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Oh no! The story''s ending blew away. Which ending fits best?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'Rebuild the mystery tale: ''A note appeared.'', ''The ink was fresh.'', ''Hoot giggled behind the shelf.''', '{"items": [{"id": "s2", "label": "Hoot giggled behind the shelf."}, {"id": "s1", "label": "The ink was fresh."}, {"id": "s0", "label": "A note appeared."}], "narration": "Rebuild the mystery tale: ''A note appeared.'', ''The ink was fresh.'', ''Hoot giggled behind the shelf.''"}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'stories'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Rebuild the mystery tale: ''A note appeared.'', ''The ink was fresh.'', ''Hoot giggled behind the shelf.''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sort', 'Sort the clues: clues that MATTER and red herrings.', '{"items": [{"id": "g0i1", "label": "a giggle", "group": "Clues that matter"}, {"id": "g0i0", "label": "fresh ink", "group": "Clues that matter"}, {"id": "g0i2", "label": "crumbs", "group": "Clues that matter"}, {"id": "g1i2", "label": "cold soup", "group": "Red herrings"}, {"id": "g1i1", "label": "a loud bell", "group": "Red herrings"}, {"id": "g1i0", "label": "a cloudy sky", "group": "Red herrings"}], "groups": [{"id": "g0", "label": "Clues that matter"}, {"id": "g1", "label": "Red herrings"}], "narration": "Sort the clues: clues that MATTER and red herrings."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'stories'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sort the clues: clues that MATTER and red herrings.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'listen_repeat', 'Tell the mystery ending in your spookiest storyteller voice.', '{"script": "And then... the pages turned themselves!", "narration": "Tell the mystery ending in your spookiest storyteller voice."}'::jsonb, '{}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'stories'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Tell the mystery ending in your spookiest storyteller voice.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'Master Storyteller! Retell Pip''s whole cheese adventure, beginning to end.', '{"script": "Once upon a time...", "narration": "Master Storyteller! Retell Pip''s whole cheese adventure, beginning to end."}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'stories'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Master Storyteller! Retell Pip''s whole cheese adventure, beginning to end.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'What is the lesson of Pip''s cheese adventure?', '{"options": [{"id": "o3", "label": "Cheese is only for mice."}, {"id": "o2", "label": "Adventures are too messy."}, {"id": "o0", "label": "Sharing makes everything better."}, {"id": "o1", "label": "Keep everything for yourself."}], "narration": "What is the lesson of Pip''s cheese adventure?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'stories'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'What is the lesson of Pip''s cheese adventure?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'Line up the four chapters: ''The Picnic Plan'', ''The Rolling Cheese'', ''The Great Share'', ''Stars and Yawns''.', '{"items": [{"id": "s3", "label": "Stars and Yawns"}, {"id": "s1", "label": "The Rolling Cheese"}, {"id": "s0", "label": "The Picnic Plan"}, {"id": "s2", "label": "The Great Share"}], "narration": "Line up the four chapters: ''The Picnic Plan'', ''The Rolling Cheese'', ''The Great Share'', ''Stars and Yawns''."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'stories'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Line up the four chapters: ''The Picnic Plan'', ''The Rolling Cheese'', ''The Great Share'', ''Stars and Yawns''.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'trace', 'Draw the story path: from Pip''s house, over the hill, to the picnic blanket.', '{"trace": "story path", "narration": "Draw the story path: from Pip''s house, over the hill, to the picnic blanket."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'stories'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Draw the story path: from Pip''s house, over the hill, to the picnic blanket.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'trace', 'Ahoy, storyteller! Welcome to Inkwell Isle! The sea is wavy today — trace the wavy line with your finger!', '{"trace": "a wavy line", "narration": "Ahoy, storyteller! Welcome to Inkwell Isle! The sea is wavy today — trace the wavy line with your finger!"}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 10, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'trace_letters'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Ahoy, storyteller! Welcome to Inkwell Isle! The sea is wavy today — trace the wavy line with your finger!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'trace', 'Look! Quill drew the sun in the sand. Can you trace the big round circle to finish his sunrise?', '{"trace": "a big round circle", "narration": "Look! Quill drew the sun in the sand. Can you trace the big round circle to finish his sunrise?"}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 10, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'trace_letters'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Look! Quill drew the sun in the sand. Can you trace the big round circle to finish his sunrise?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Quill hid the letter C somewhere on our treasure map. Can you spot it and tap it?', '{"targets": [{"id": "o2", "label": "G"}, {"id": "o1", "label": "O"}, {"id": "o3", "label": "E"}, {"id": "o0", "label": "C"}], "narration": "Four letters are hiding on the map: O, C, G, and E. Tap the letter C."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'trace_letters'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill hid the letter C somewhere on our treasure map. Can you spot it and tap it?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'Silly sprites! They spilled ink dots all over the Captain''s Log. Can you count the ink dots for me?', '{"thing": "ink dots", "total": 5, "narration": "Silly sprites! They spilled ink dots all over the Captain''s Log. Can you count the ink dots for me?"}'::jsonb, '{"count": 5}'::jsonb, 10, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'trace_letters'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Silly sprites! They spilled ink dots all over the Captain''s Log. Can you count the ink dots for me?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'trace', 'Ahoy! The sprites nibbled the M off our signpost! Quill needs it back — trace the BIG letter M!', '{"trace": "uppercase M", "narration": "Ahoy! The sprites nibbled the M off our signpost! Quill needs it back — trace the BIG letter M!"}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'trace_letters'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Ahoy! The sprites nibbled the M off our signpost! Quill needs it back — trace the BIG letter M!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'trace', 'Those hungry sprites struck again! The B is gone from BOTTLE BAY. Trace a bold B to fix the sign!', '{"trace": "uppercase B", "narration": "Those hungry sprites struck again! The B is gone from BOTTLE BAY. Trace a bold B to fix the sign!"}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'trace_letters'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Those hungry sprites struck again! The B is gone from BOTTLE BAY. Trace a bold B to fix the sign!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Pip''s cheese sign says CHE_SE now — the sprites ate a letter! Which letter is missing?', '{"options": [{"id": "o1", "label": "A"}, {"id": "o3", "label": "O"}, {"id": "o0", "label": "E"}, {"id": "o2", "label": "I"}], "narration": "The sign says C H blank S E. Which letter is missing: E, A, I, or O?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'trace_letters'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip''s cheese sign says CHE_SE now — the sprites ate a letter! Which letter is missing?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'Quill''s letter flags got all tangled! Put the letters in ABC order to fix them!', '{"items": [{"id": "s2", "label": "C"}, {"id": "s1", "label": "B"}, {"id": "s0", "label": "A"}], "narration": "Quill''s letter flags got all tangled! Put the letters in ABC order to fix them!"}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'trace_letters'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill''s letter flags got all tangled! Put the letters in ABC order to fix them!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'trace', 'Pip the mouse wants a note that says ''soup''! Can you trace the little letter s to start his word?', '{"trace": "the letter s", "narration": "Pip the mouse wants a note that says ''soup''! Can you trace the little letter s to start his word?"}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'trace_letters'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip the mouse wants a note that says ''soup''! Can you trace the little letter s to start his word?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'trace', 'Wren needs a message before she flies! Trace the letter e so Quill can finish writing ''hello''.', '{"trace": "the letter e", "narration": "Wren needs a message before she flies! Trace the letter e so Quill can finish writing ''hello''."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'trace_letters'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren needs a message before she flies! Trace the letter e so Quill can finish writing ''hello''.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'The sprites mixed up the letters on Pip''s note! Which one is the letter b?', '{"options": [{"id": "o3", "label": "q"}, {"id": "o1", "label": "d"}, {"id": "o2", "label": "p"}, {"id": "o0", "label": "b"}], "narration": "Four letters on the note: d, b, p, and q. Which one is the letter b?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'trace_letters'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The sprites mixed up the letters on Pip''s note! Which one is the letter b?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_target', 'Quill dropped his tiny letters in an ink puddle! Can you tap the little letter a hiding in the ink?', '{"targets": [{"id": "o1", "label": "e"}, {"id": "o2", "label": "o"}, {"id": "o3", "label": "c"}, {"id": "o0", "label": "a"}], "narration": "Four letters in the ink puddle: e, a, o, and c. Tap the little letter a."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'trace_letters'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill dropped his tiny letters in an ink puddle! Can you tap the little letter a hiding in the ink?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'trace', 'A mystery bottle washed ashore — but the S on its seal is smudged! Trace the twisty S to open it!', '{"trace": "uppercase S", "narration": "A mystery bottle washed ashore — but the S on its seal is smudged! Trace the twisty S to open it!"}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 20, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'trace_letters'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'A mystery bottle washed ashore — but the S on its seal is smudged! Trace the twisty S to open it!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'trace', 'The mystery note has a zigzag word! Trace the buzzy letter z to read the secret clue!', '{"trace": "the letter z", "narration": "The mystery note has a zigzag word! Trace the buzzy letter z to read the secret clue!"}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 20, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'trace_letters'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The mystery note has a zigzag word! Trace the buzzy letter z to read the secret clue!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sort', 'The sprites dumped ALL the letters in one inky pile! Can you sort the BIG letters from the little letters?', '{"items": [{"id": "g1i2", "label": "c", "group": "little letters"}, {"id": "g0i1", "label": "B", "group": "BIG letters"}, {"id": "g1i0", "label": "a", "group": "little letters"}, {"id": "g0i0", "label": "A", "group": "BIG letters"}, {"id": "g0i2", "label": "C", "group": "BIG letters"}, {"id": "g1i1", "label": "b", "group": "little letters"}], "groups": [{"id": "g0", "label": "BIG letters"}, {"id": "g1", "label": "little letters"}], "narration": "The sprites dumped ALL the letters in one inky pile! Can you sort the BIG letters from the little letters?"}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 20, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'trace_letters'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The sprites dumped ALL the letters in one inky pile! Can you sort the BIG letters from the little letters?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'listen_repeat', 'Quill squawks letter names to scare the sprites away! Squawk the letter B with him — loud and proud!', '{"script": "B", "narration": "Quill squawks letter names to scare the sprites away! Squawk the letter B with him — loud and proud!"}'::jsonb, '{}'::jsonb, 20, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'trace_letters'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill squawks letter names to scare the sprites away! Squawk the letter B with him — loud and proud!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'trace', 'Master quest, storyteller! The whole WELCOME sign faded in the sun! Trace the word SUN to bring it back!', '{"trace": "the word SUN", "narration": "Master quest, storyteller! The whole WELCOME sign faded in the sun! Trace the word SUN to bring it back!"}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 25, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'trace_letters'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Master quest, storyteller! The whole WELCOME sign faded in the sun! Trace the word SUN to bring it back!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'trace', 'The sprites ate the word SHIP right off our sail! Trace it smoothly, all in one go, Captain!', '{"trace": "the word SHIP", "narration": "The sprites ate the word SHIP right off our sail! Trace it smoothly, all in one go, Captain!"}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 25, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'trace_letters'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The sprites ate the word SHIP right off our sail! Trace it smoothly, all in one go, Captain!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Quill traced a word in the sand, but a wave washed half away! Which word was it?', '{"options": [{"id": "o3", "label": "SHEEP"}, {"id": "o2", "label": "CHIP"}, {"id": "o1", "label": "SHOP"}, {"id": "o0", "label": "SHIP"}], "narration": "Was the washed-away word SHIP, SHOP, CHIP, or SHEEP?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'trace_letters'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill traced a word in the sand, but a wave washed half away! Which word was it?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_target', 'Three bottles washed up on the beach! Tap the bottle with the word SUN.', '{"targets": [{"id": "o2", "label": "FUN"}, {"id": "o1", "label": "RUN"}, {"id": "o3", "label": "MUD"}, {"id": "o0", "label": "SUN"}], "narration": "Three bottles say RUN, SUN, and FUN. Tap the bottle that says SUN."}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'trace_letters'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Three bottles washed up on the beach! Tap the bottle with the word SUN.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'sequence', 'Ahoy, storyteller! Quill wants to label his pet crab! Put the letters in order to build the word CAT.', '{"items": [{"id": "s1", "label": "A"}, {"id": "s2", "label": "T"}, {"id": "s0", "label": "C"}], "narration": "Ahoy, storyteller! Quill wants to label his pet crab! Put the letters in order to build the word CAT."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'build_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Ahoy, storyteller! Quill wants to label his pet crab! Put the letters in order to build the word CAT.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'sequence', 'The sun is shining on Inkwell Isle! Build the word SUN so Quill can write it in the Captain''s Log.', '{"items": [{"id": "s1", "label": "U"}, {"id": "s0", "label": "S"}, {"id": "s2", "label": "N"}], "narration": "The sun is shining on Inkwell Isle! Build the word SUN so Quill can write it in the Captain''s Log."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'build_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The sun is shining on Inkwell Isle! Build the word SUN so Quill can write it in the Captain''s Log.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Pip''s cheese sign says CHE_SE — a sprite took a bite! Which letter is missing?', '{"options": [{"id": "o1", "label": "A"}, {"id": "o3", "label": "O"}, {"id": "o2", "label": "I"}, {"id": "o0", "label": "E"}], "narration": "The sign says C H blank S E. Which letter is missing: E, A, I, or O?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'build_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip''s cheese sign says CHE_SE — a sprite took a bite! Which letter is missing?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Quill is writing the word MAP but dropped a letter! Tap the letter that finishes M_P.', '{"targets": [{"id": "o1", "label": "E"}, {"id": "o0", "label": "A"}, {"id": "o2", "label": "I"}, {"id": "o3", "label": "O"}], "narration": "The word is M blank P. Tap the letter that finishes it: A, E, I, or O?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'build_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill is writing the word MAP but dropped a letter! Tap the letter that finishes M_P.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'The sprites stole the SH off our sail! Put the letters in order to rebuild the word SHIP.', '{"items": [{"id": "s0", "label": "S"}, {"id": "s2", "label": "I"}, {"id": "s1", "label": "H"}, {"id": "s3", "label": "P"}], "narration": "The sprites stole the SH off our sail! Put the letters in order to rebuild the word SHIP."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'build_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The sprites stole the SH off our sail! Put the letters in order to rebuild the word SHIP.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Quill''s note says _IP — the beginning blew away! Which letters start the word SHIP?', '{"options": [{"id": "o3", "label": "TH"}, {"id": "o0", "label": "SH"}, {"id": "o1", "label": "CH"}, {"id": "o2", "label": "WH"}], "narration": "The note says blank I P. Which letters start the word: SH, CH, WH, or TH?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'build_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill''s note says _IP — the beginning blew away! Which letters start the word SHIP?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'Three message flags are flapping! Tap the flag that says FISH.', '{"targets": [{"id": "o1", "label": "DISH"}, {"id": "o3", "label": "FIST"}, {"id": "o0", "label": "FISH"}, {"id": "o2", "label": "WISH"}], "narration": "Three flags say DISH, FISH, and WISH. Tap the flag that says FISH."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'build_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Three message flags are flapping! Tap the flag that says FISH.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sort', 'The sprites mixed SHIP''s letters with extras! Sort the letters that spell SHIP from the extra letters.', '{"items": [{"id": "g1i0", "label": "A", "group": "extra letters"}, {"id": "g1i2", "label": "E", "group": "extra letters"}, {"id": "g0i2", "label": "I", "group": "SHIP letters"}, {"id": "g0i3", "label": "P", "group": "SHIP letters"}, {"id": "g0i1", "label": "H", "group": "SHIP letters"}, {"id": "g1i1", "label": "T", "group": "extra letters"}, {"id": "g0i0", "label": "S", "group": "SHIP letters"}], "groups": [{"id": "g0", "label": "SHIP letters"}, {"id": "g1", "label": "extra letters"}], "narration": "The sprites mixed SHIP''s letters with extras! Sort the letters that spell SHIP from the extra letters."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2", "g0i3"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'build_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The sprites mixed SHIP''s letters with extras! Sort the letters that spell SHIP from the extra letters.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sequence', 'Wren spotted a whale from the sky! Help Quill build the word WHALE for the Captain''s Log.', '{"items": [{"id": "s1", "label": "H"}, {"id": "s2", "label": "A"}, {"id": "s0", "label": "W"}, {"id": "s3", "label": "L"}, {"id": "s4", "label": "E"}], "narration": "Wren spotted a whale from the sky! Help Quill build the word WHALE for the Captain''s Log."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3", "s4"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'build_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren spotted a whale from the sky! Help Quill build the word WHALE for the Captain''s Log.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Pip''s new sign says THU_B — a sprite is sitting on a letter! Which letter is missing?', '{"options": [{"id": "o0", "label": "M"}, {"id": "o1", "label": "N"}, {"id": "o2", "label": "B"}, {"id": "o3", "label": "P"}], "narration": "The sign says T H U blank. Which letter is missing: M, N, B, or P?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'build_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip''s new sign says THU_B — a sprite is sitting on a letter! Which letter is missing?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'listen_repeat', 'Quill is dictating a pirate message! Say the word WHALE with him — stretch it out nice and long!', '{"script": "whale", "narration": "Quill is dictating a pirate message! Say the word WHALE with him — stretch it out nice and long!"}'::jsonb, '{}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'build_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill is dictating a pirate message! Say the word WHALE with him — stretch it out nice and long!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_count', 'Quill wants to count before he writes! How many letters are in the word WHALE? Count them with him!', '{"thing": "letters", "total": 5, "narration": "Quill wants to count before he writes! How many letters are in the word WHALE? Count them with him!"}'::jsonb, '{"count": 5}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'build_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill wants to count before he writes! How many letters are in the word WHALE? Count them with him!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'A mystery bottle holds jumbled letters! Put them in order to read the secret word.', '{"items": [{"id": "s1", "label": "T"}, {"id": "s0", "label": "S"}, {"id": "s2", "label": "A"}, {"id": "s3", "label": "R"}], "narration": "A mystery bottle holds jumbled letters! Put them in order to read the secret word."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'build_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'A mystery bottle holds jumbled letters! Put them in order to read the secret word.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'The letters T, R, A, P washed up on deck. Which word did the waves spell?', '{"options": [{"id": "o2", "label": "RAPT"}, {"id": "o1", "label": "PART"}, {"id": "o3", "label": "TARP"}, {"id": "o0", "label": "TRAP"}], "narration": "The letters are T, R, A, P. Which word do they spell: TRAP, PART, RAPT, or TARP?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'build_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The letters T, R, A, P washed up on deck. Which word did the waves spell?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sort', 'Quill dropped two words'' letters in the ink! Sort the letters into CAT and DOG.', '{"items": [{"id": "g1i0", "label": "D", "group": "DOG letters"}, {"id": "g0i0", "label": "C", "group": "CAT letters"}, {"id": "g1i1", "label": "O", "group": "DOG letters"}, {"id": "g1i2", "label": "G", "group": "DOG letters"}, {"id": "g0i2", "label": "T", "group": "CAT letters"}, {"id": "g0i1", "label": "A", "group": "CAT letters"}], "groups": [{"id": "g0", "label": "CAT letters"}, {"id": "g1", "label": "DOG letters"}], "narration": "Quill dropped two words'' letters in the ink! Sort the letters into CAT and DOG."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'build_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill dropped two words'' letters in the ink! Sort the letters into CAT and DOG.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'listen_repeat', 'The mystery sender left a voice note! Listen close, then say the secret word with Quill: STAR.', '{"script": "star", "narration": "The mystery sender left a voice note! Listen close, then say the secret word with Quill: STAR."}'::jsonb, '{}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'build_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The mystery sender left a voice note! Listen close, then say the secret word with Quill: STAR.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'Master quest! A tiger is painted on our new sail! Build the big word TIGER all by yourself!', '{"items": [{"id": "s4", "label": "R"}, {"id": "s3", "label": "E"}, {"id": "s1", "label": "I"}, {"id": "s0", "label": "T"}, {"id": "s2", "label": "G"}], "narration": "Master quest! A tiger is painted on our new sail! Build the big word TIGER all by yourself!"}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3", "s4"]}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'build_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Master quest! A tiger is painted on our new sail! Build the big word TIGER all by yourself!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'The word BUTTERFLY lost its first part in a storm! Which part is missing?', '{"options": [{"id": "o3", "label": "BETTER"}, {"id": "o2", "label": "BATTER"}, {"id": "o1", "label": "BITTER"}, {"id": "o0", "label": "BUTTER"}], "narration": "The word is blank FLY. Which part is missing: BUTTER, BITTER, BATTER, or BETTER?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'build_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The word BUTTERFLY lost its first part in a storm! Which part is missing?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'Quill is writing the Captain''s Log in his LOUDEST voice! Say the big word BUTTERFLY with him!', '{"script": "butterfly", "narration": "Quill is writing the Captain''s Log in his LOUDEST voice! Say the big word BUTTERFLY with him!"}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'build_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill is writing the Captain''s Log in his LOUDEST voice! Say the big word BUTTERFLY with him!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_target', 'Three sails are up on the ship! Tap the sail that says TIGER.', '{"targets": [{"id": "o2", "label": "TIGGER"}, {"id": "o3", "label": "TIMER"}, {"id": "o0", "label": "TIGER"}, {"id": "o1", "label": "LIGER"}], "narration": "Three sails say LIGER, TIGER, and TIMER. Tap the sail that says TIGER."}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'build_words'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Three sails are up on the ship! Tap the sail that says TIGER.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'sequence', 'Ahoy, storyteller! Quill wants to introduce himself! Put the words in order: I — am — Quill.', '{"items": [{"id": "s2", "label": "Quill."}, {"id": "s1", "label": "am"}, {"id": "s0", "label": "I"}], "narration": "Ahoy, storyteller! Quill wants to introduce himself! Put the words in order: I — am — Quill."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'write_sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Ahoy, storyteller! Quill wants to introduce himself! Put the words in order: I — am — Quill.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'sequence', 'Now say it like a pirate captain! Put the words in order to write: I am brave.', '{"items": [{"id": "s1", "label": "am"}, {"id": "s0", "label": "I"}, {"id": "s2", "label": "brave."}], "narration": "Now say it like a pirate captain! Put the words in order to write: I am brave."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'write_sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Now say it like a pirate captain! Put the words in order to write: I am brave.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Quill wrote some notes, but the sprites shuffled the words! Which sentence is written the right way?', '{"options": [{"id": "o0", "label": "I am Quill."}, {"id": "o2", "label": "I am Quill"}, {"id": "o3", "label": "i am quill."}, {"id": "o1", "label": "Am I Quill."}], "narration": "Which sentence is written the right way: I am Quill. Am I Quill. I am Quill. or i am quill.?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'write_sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill wrote some notes, but the sprites shuffled the words! Which sentence is written the right way?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'Quill is practicing his introduction! Say it with him, loud and proud: I am Quill!', '{"script": "I am Quill!", "narration": "Quill is practicing his introduction! Say it with him, loud and proud: I am Quill!"}'::jsonb, '{}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'write_sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill is practicing his introduction! Say it with him, loud and proud: I am Quill!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'The sprites nibbled the capital off Quill''s note! Which sentence is written correctly?', '{"options": [{"id": "o1", "label": "sam is brave."}, {"id": "o3", "label": "SAM IS BRAVE."}, {"id": "o0", "label": "Sam is brave."}, {"id": "o2", "label": "Sam is brave"}], "narration": "Which sentence is written correctly: Sam is brave. sam is brave. Sam is brave. or SAM IS BRAVE.?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'write_sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The sprites nibbled the capital off Quill''s note! Which sentence is written correctly?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'Pip is SO hungry! Put the words in order so Quill can write: Pip likes cheese.', '{"items": [{"id": "s2", "label": "cheese."}, {"id": "s0", "label": "Pip"}, {"id": "s1", "label": "likes"}], "narration": "Pip is SO hungry! Put the words in order so Quill can write: Pip likes cheese."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'write_sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip is SO hungry! Put the words in order so Quill can write: Pip likes cheese.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'Uh oh — one word lost its capital letter! Which word should start BIG?', '{"targets": [{"id": "o2", "label": "brave"}, {"id": "o3", "label": "fun"}, {"id": "o1", "label": "is"}, {"id": "o0", "label": "sam"}], "narration": "The sentence is: sam is brave and fun. Which word should start with a big letter: sam, is, brave, or fun?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'write_sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Uh oh — one word lost its capital letter! Which word should start BIG?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'listen_repeat', 'Quill is reading the Captain''s Log out loud! Read this line with him: Sam is brave.', '{"script": "Sam is brave.", "narration": "Quill is reading the Captain''s Log out loud! Read this line with him: Sam is brave."}'::jsonb, '{}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'write_sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill is reading the Captain''s Log out loud! Read this line with him: Sam is brave.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sequence', 'Wren the traveling bird is leaving! Put the words in order to write her a goodbye note.', '{"items": [{"id": "s2", "label": "far."}, {"id": "s1", "label": "flies"}, {"id": "s0", "label": "Wren"}], "narration": "Wren the traveling bird is leaving! Put the words in order to write her a goodbye note."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'write_sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren the traveling bird is leaving! Put the words in order to write her a goodbye note.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Pip asked for a thank-you note! Which one is written correctly?', '{"options": [{"id": "o1", "label": "thank you, Pip."}, {"id": "o0", "label": "Thank you, Pip."}, {"id": "o2", "label": "Thank you, Pip"}, {"id": "o3", "label": "Thank you pip."}], "narration": "Which note is written correctly: Thank you, Pip. thank you, Pip. Thank you, Pip. or Thank you pip.?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'write_sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip asked for a thank-you note! Which one is written correctly?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sort', 'The sprites mixed up Quill''s word cards! Sort the words that START a sentence from the middle words.', '{"items": [{"id": "g0i1", "label": "Pip", "group": "Start words"}, {"id": "g1i0", "label": "is", "group": "Middle words"}, {"id": "g1i2", "label": "flies", "group": "Middle words"}, {"id": "g0i2", "label": "Wren", "group": "Start words"}, {"id": "g1i1", "label": "likes", "group": "Middle words"}, {"id": "g0i0", "label": "Sam", "group": "Start words"}], "groups": [{"id": "g0", "label": "Start words"}, {"id": "g1", "label": "Middle words"}], "narration": "The sprites mixed up Quill''s word cards! Sort the words that START a sentence from the middle words."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'write_sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The sprites mixed up Quill''s word cards! Sort the words that START a sentence from the middle words.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'listen_repeat', 'Pip LOVES your note! Read it to him with Quill: Thank you, Pip!', '{"script": "Thank you, Pip!", "narration": "Pip LOVES your note! Read it to him with Quill: Thank you, Pip!"}'::jsonb, '{}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'write_sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip LOVES your note! Read it to him with Quill: Thank you, Pip!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'A mysterious page fell out of the Captain''s Log! Put the words in order to read the clue.', '{"items": [{"id": "s3", "label": "old."}, {"id": "s2", "label": "is"}, {"id": "s1", "label": "map"}, {"id": "s0", "label": "The"}], "narration": "A mysterious page fell out of the Captain''s Log! Put the words in order to read the clue."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'write_sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'A mysterious page fell out of the Captain''s Log! Put the words in order to read the clue.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Two log entries — but one is a sprite trick! Which entry is written correctly?', '{"options": [{"id": "o2", "label": "We found gold"}, {"id": "o0", "label": "We found gold."}, {"id": "o3", "label": "We found Gold."}, {"id": "o1", "label": "we found gold."}], "narration": "Which entry is written correctly: We found gold. we found gold. We found gold. or We found Gold.?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'write_sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Two log entries — but one is a sprite trick! Which entry is written correctly?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_count', 'Quill''s secret message is hiding something! Count the words in his clue: We found gold.', '{"thing": "words", "total": 3, "narration": "Quill''s secret message is hiding something! Count the words in his clue: We found gold."}'::jsonb, '{"count": 3}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'write_sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill''s secret message is hiding something! Count the words in his clue: We found gold.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'listen_repeat', 'Shout the secret clue with Quill so the whole crew can hear: We found gold!', '{"script": "We found gold!", "narration": "Shout the secret clue with Quill so the whole crew can hear: We found gold!"}'::jsonb, '{}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'write_sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Shout the secret clue with Quill so the whole crew can hear: We found gold!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'Master quest, storyteller! Write the Captain''s Log entry yourself! Put the words in order.', '{"items": [{"id": "s0", "label": "The"}, {"id": "s2", "label": "is"}, {"id": "s1", "label": "crew"}, {"id": "s4", "label": "best."}, {"id": "s3", "label": "the"}], "narration": "Master quest, storyteller! Write the Captain''s Log entry yourself! Put the words in order."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3", "s4"]}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'write_sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Master quest, storyteller! Write the Captain''s Log entry yourself! Put the words in order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Which message is ready to send to Wren in her bottle?', '{"options": [{"id": "o3", "label": "You fly far, Wren"}, {"id": "o2", "label": "You fly far, wren."}, {"id": "o0", "label": "You fly far, Wren."}, {"id": "o1", "label": "you fly far, Wren."}], "narration": "Which message is ready to send: You fly far, Wren. you fly far, Wren. You fly far, wren. or You fly far, Wren.?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'write_sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Which message is ready to send to Wren in her bottle?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'Read your finished log entry out loud, Captain! The whole crew is listening: The crew is the best!', '{"script": "The crew is the best!", "narration": "Read your finished log entry out loud, Captain! The whole crew is listening: The crew is the best!"}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'write_sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Read your finished log entry out loud, Captain! The whole crew is listening: The crew is the best!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_target', 'Three notes for Wren — but only one is PERFECT! Tap the note that is written perfectly.', '{"targets": [{"id": "o2", "label": "Wren flies far"}, {"id": "o1", "label": "wren flies far."}, {"id": "o0", "label": "Wren flies far."}, {"id": "o3", "label": "Wren Flies Far."}], "narration": "Three notes: Wren flies far. wren flies far. Wren flies far. Wren Flies Far. Tap the perfect one."}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'write_sentences'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Three notes for Wren — but only one is PERFECT! Tap the note that is written perfectly.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'BEEP! Bolt the firefly is flashing hello. Tap once for each flash you see!', '{"thing": "firefly flashes", "total": 3, "narration": "BEEP! Bolt the firefly is flashing hello. Tap once for each flash you see!"}'::jsonb, '{"count": 3}'::jsonb, 10, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'count'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Bolt the firefly is flashing hello. Tap once for each flash you see!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'The Number Volcano hiccuped and out tumbled some warm rocks. Tap each rock to count them!', '{"thing": "volcano rocks", "total": 4, "narration": "The Number Volcano hiccuped and out tumbled some warm rocks. Tap each rock to count them!"}'::jsonb, '{"count": 4}'::jsonb, 10, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'count'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The Number Volcano hiccuped and out tumbled some warm rocks. Tap each rock to count them!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Sprocket dropped his gears — plip, plop! Milo sees 2 gears, then 1 more rolls out. How many gears?', '{"options": [{"id": "o1", "label": "2"}, {"id": "o3", "label": "1"}, {"id": "o0", "label": "3"}, {"id": "o2", "label": "4"}], "narration": "Sprocket dropped his gears — plip, plop! Milo sees 2 gears, then 1 more rolls out. How many gears?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'count'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sprocket dropped his gears — plip, plop! Milo sees 2 gears, then 1 more rolls out. How many gears?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Tap the number on Milo''s machine: Bolt flashed 5 times!', '{"targets": [{"id": "o3", "label": "3"}, {"id": "o0", "label": "5"}, {"id": "o2", "label": "6"}, {"id": "o1", "label": "4"}], "narration": "Bolt flashed five times. Tap the number five."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'count'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Tap the number on Milo''s machine: Bolt flashed 5 times!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_count', 'Sprocket''s gear bag burst open! Tap each gear to help him count them all.', '{"thing": "brass gears", "total": 7, "narration": "Sprocket''s gear bag burst open! Tap each gear to help him count them all."}'::jsonb, '{"count": 7}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'count'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sprocket''s gear bag burst open! Tap each gear to help him count them all.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_count', 'Bolt found a basket of star-berries for the rocket crew. Tap each berry to count them.', '{"thing": "star-berries", "total": 9, "narration": "Bolt found a basket of star-berries for the rocket crew. Tap each berry to count them."}'::jsonb, '{"count": 9}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'count'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Bolt found a basket of star-berries for the rocket crew. Tap each berry to count them.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Milo''s counting machine blinked 6 times, then 2 more times. What number did the machine record?', '{"options": [{"id": "o3", "label": "6"}, {"id": "o2", "label": "9"}, {"id": "o1", "label": "7"}, {"id": "o0", "label": "8"}], "narration": "Milo''s counting machine blinked 6 times, then 2 more times. What number did the machine record?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'count'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Milo''s counting machine blinked 6 times, then 2 more times. What number did the machine record?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'Oh no — the machine printed Bolt''s flashes out of order! Put them back in counting order.', '{"items": [{"id": "s2", "label": "3 flashes"}, {"id": "s1", "label": "2 flashes"}, {"id": "s3", "label": "4 flashes"}, {"id": "s4", "label": "5 flashes"}, {"id": "s0", "label": "1 flash"}], "narration": "Oh no — the machine printed Bolt''s flashes out of order! Put them back in counting order."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3", "s4"]}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'count'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Oh no — the machine printed Bolt''s flashes out of order! Put them back in counting order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_count', 'Bolt lost count of his own flashes and feels wobbly. Count them with him — tap each flash!', '{"thing": "firefly flashes", "total": 12, "narration": "Bolt lost count of his own flashes and feels wobbly. Count them with him — tap each flash!"}'::jsonb, '{"count": 12}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'count'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Bolt lost count of his own flashes and feels wobbly. Count them with him — tap each flash!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Sprocket packed a box of crystal bolts and forgot the total. Milo counted 14. Which number goes on the label?', '{"options": [{"id": "o2", "label": "15"}, {"id": "o0", "label": "14"}, {"id": "o1", "label": "13"}, {"id": "o3", "label": "41"}], "narration": "Sprocket packed a box of crystal bolts and forgot the total. Milo counted 14. Which number goes on the label?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'count'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sprocket packed a box of crystal bolts and forgot the total. Milo counted 14. Which number goes on the label?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_target', 'Bolt needs the number 13 for his flash code. Tap 13!', '{"targets": [{"id": "o1", "label": "31"}, {"id": "o2", "label": "12"}, {"id": "o0", "label": "13"}, {"id": "o3", "label": "14"}], "narration": "Tap the number thirteen."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'count'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Bolt needs the number 13 for his flash code. Tap 13!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'listen_repeat', 'Bolt''s secret count-code goes 11, 12, 13, 14. Say it with Milo so the volcano rumbles happily!', '{"script": "Eleven, twelve, thirteen, fourteen!", "narration": "Bolt''s secret count-code goes 11, 12, 13, 14. Say it with Milo so the volcano rumbles happily!"}'::jsonb, '{}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'count'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Bolt''s secret count-code goes 11, 12, 13, 14. Say it with Milo so the volcano rumbles happily!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'The volcano hiccuped and scrambled Milo''s number stones! Line them up from 16 to 20.', '{"items": [{"id": "s3", "label": "19"}, {"id": "s4", "label": "20"}, {"id": "s0", "label": "16"}, {"id": "s2", "label": "18"}, {"id": "s1", "label": "17"}], "narration": "The volcano hiccuped and scrambled Milo''s number stones! Line them up from 16 to 20."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3", "s4"]}'::jsonb, 20, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'count'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The volcano hiccuped and scrambled Milo''s number stones! Line them up from 16 to 20.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Milo''s machine shows 17, 19, 18, 20 in a jumble. Which number is missing from 16 to 20?', '{"options": [{"id": "o2", "label": "15"}, {"id": "o1", "label": "17"}, {"id": "o3", "label": "21"}, {"id": "o0", "label": "16"}], "narration": "Milo''s machine shows 17, 19, 18, 20 in a jumble. Which number is missing from 16 to 20?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'count'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Milo''s machine shows 17, 19, 18, 20 in a jumble. Which number is missing from 16 to 20?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_count', 'Midnight crystals for the rocket — they only glow if you count every one. Tap each crystal!', '{"thing": "midnight crystals", "total": 18, "narration": "Midnight crystals for the rocket — they only glow if you count every one. Tap each crystal!"}'::jsonb, '{"count": 18}'::jsonb, 20, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'count'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Midnight crystals for the rocket — they only glow if you count every one. Tap each crystal!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'trace', 'Trace the glowing number trail from 10 to 20 to guide Bolt safely home.', '{"trace": "the glowing number trail from 10 to 20", "narration": "Trace the glowing number trail from 10 to 20 to guide Bolt safely home."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 20, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'count'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Trace the glowing number trail from 10 to 20 to guide Bolt safely home.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'Bolt learned to skip-count by twos! Lay out his flash pattern for the grand show.', '{"items": [{"id": "s4", "label": "10"}, {"id": "s3", "label": "8"}, {"id": "s0", "label": "2"}, {"id": "s2", "label": "6"}, {"id": "s1", "label": "4"}], "narration": "Bolt learned to skip-count by twos! Lay out his flash pattern for the grand show."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3", "s4"]}'::jsonb, 25, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'count'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Bolt learned to skip-count by twos! Lay out his flash pattern for the grand show.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'Now by fives — the volcano LOVES fives! Order Bolt''s big flash code.', '{"items": [{"id": "s1", "label": "10"}, {"id": "s3", "label": "20"}, {"id": "s0", "label": "5"}, {"id": "s4", "label": "25"}, {"id": "s2", "label": "15"}], "narration": "Now by fives — the volcano LOVES fives! Order Bolt''s big flash code."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3", "s4"]}'::jsonb, 25, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'count'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Now by fives — the volcano LOVES fives! Order Bolt''s big flash code.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Bolt flashes 5, 10, 15... Milo holds his breath. What number comes next?', '{"options": [{"id": "o0", "label": "20"}, {"id": "o3", "label": "18"}, {"id": "o1", "label": "16"}, {"id": "o2", "label": "25"}], "narration": "Bolt flashes 5, 10, 15... Milo holds his breath. What number comes next?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'count'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Bolt flashes 5, 10, 15... Milo holds his breath. What number comes next?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_count', 'The master launch needs every fuel crystal counted. Tap each one — the whole volcano is watching!', '{"thing": "fuel crystals", "total": 30, "narration": "The master launch needs every fuel crystal counted. Tap each one — the whole volcano is watching!"}'::jsonb, '{"count": 30}'::jsonb, 25, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'count'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The master launch needs every fuel crystal counted. Tap each one — the whole volcano is watching!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'Bolt flashed some flashes into Milo''s jar. Tap once for each flash to find how many!', '{"thing": "flashes in the jar", "total": 3, "narration": "Bolt flashed some flashes into Milo''s jar. Tap once for each flash to find how many!"}'::jsonb, '{"count": 3}'::jsonb, 10, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'cardinality'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Bolt flashed some flashes into Milo''s jar. Tap once for each flash to find how many!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Sprocket dropped 4 gears into the oil pan — sploosh! How many gears are in the pan?', '{"options": [{"id": "o2", "label": "5"}, {"id": "o1", "label": "3"}, {"id": "o3", "label": "2"}, {"id": "o0", "label": "4"}], "narration": "Sprocket dropped 4 gears into the oil pan — sploosh! How many gears are in the pan?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'cardinality'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sprocket dropped 4 gears into the oil pan — sploosh! How many gears are in the pan?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Milo packed two baskets of star-berries. Tap the basket that holds exactly 2 berries!', '{"targets": [{"id": "o3", "label": "4 star-berries"}, {"id": "o2", "label": "3 star-berries"}, {"id": "o0", "label": "2 star-berries"}, {"id": "o1", "label": "1 star-berry"}], "narration": "Tap the basket that holds exactly two star-berries."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'cardinality'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Milo packed two baskets of star-berries. Tap the basket that holds exactly 2 berries!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'Milo is teaching the volcano to count berries: one berry, two berries, three berries! Say it with him!', '{"script": "One berry, two berries, three berries!", "narration": "Milo is teaching the volcano to count berries: one berry, two berries, three berries! Say it with him!"}'::jsonb, '{}'::jsonb, 10, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'cardinality'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Milo is teaching the volcano to count berries: one berry, two berries, three berries! Say it with him!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_count', 'The workshop shelf is covered in loose screws! Tap each screw to find how many.', '{"thing": "loose screws", "total": 8, "narration": "The workshop shelf is covered in loose screws! Tap each screw to find how many."}'::jsonb, '{"count": 8}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'cardinality'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The workshop shelf is covered in loose screws! Tap each screw to find how many.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Bolt flashed 9 times into the counting jar. Milo peeked: 8, 9, or 10? How many flashes are in the jar?', '{"options": [{"id": "o1", "label": "8"}, {"id": "o3", "label": "7"}, {"id": "o0", "label": "9"}, {"id": "o2", "label": "10"}], "narration": "Bolt flashed 9 times into the counting jar. Milo peeked: 8, 9, or 10? How many flashes are in the jar?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'cardinality'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Bolt flashed 9 times into the counting jar. Milo peeked: 8, 9, or 10? How many flashes are in the jar?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sort', 'Sprocket''s counting jars got mixed up! Sort them: jars holding 5 crystals, and jars holding 6 crystals.', '{"items": [{"id": "g1i0", "label": "six red crystals", "group": "6 crystals"}, {"id": "g1i1", "label": "six blue crystals", "group": "6 crystals"}, {"id": "g0i2", "label": "five green crystals", "group": "5 crystals"}, {"id": "g0i0", "label": "five red crystals", "group": "5 crystals"}, {"id": "g0i1", "label": "five blue crystals", "group": "5 crystals"}, {"id": "g1i2", "label": "six green crystals", "group": "6 crystals"}], "groups": [{"id": "g0", "label": "5 crystals"}, {"id": "g1", "label": "6 crystals"}], "narration": "Sprocket''s counting jars got mixed up! Sort them: jars holding 5 crystals, and jars holding 6 crystals."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'cardinality'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sprocket''s counting jars got mixed up! Sort them: jars holding 5 crystals, and jars holding 6 crystals.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'Line up Milo''s jars from fewest crystals to most crystals.', '{"items": [{"id": "s2", "label": "6 crystals"}, {"id": "s1", "label": "5 crystals"}, {"id": "s0", "label": "4 crystals"}, {"id": "s3", "label": "7 crystals"}], "narration": "Line up Milo''s jars from fewest crystals to most crystals."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'cardinality'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Line up Milo''s jars from fewest crystals to most crystals.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Sprocket needs 12 bolts for his gadget. He counted 10 in the tray and 2 on the floor. How many bolts is that?', '{"options": [{"id": "o1", "label": "11"}, {"id": "o2", "label": "13"}, {"id": "o3", "label": "10"}, {"id": "o0", "label": "12"}], "narration": "Sprocket needs 12 bolts for his gadget. He counted 10 in the tray and 2 on the floor. How many bolts is that?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'cardinality'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sprocket needs 12 bolts for his gadget. He counted 10 in the tray and 2 on the floor. How many bolts is that?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_count', 'Bolt''s flashes are hiding in the tall grass! Tap each flash to count them all.', '{"thing": "hidden flashes", "total": 11, "narration": "Bolt''s flashes are hiding in the tall grass! Tap each flash to count them all."}'::jsonb, '{"count": 11}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'cardinality'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Bolt''s flashes are hiding in the tall grass! Tap each flash to count them all.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_target', 'Milo''s machine is dizzy. Tap the pile that holds exactly 10 bolts!', '{"targets": [{"id": "o3", "label": "12 bolts"}, {"id": "o1", "label": "9 bolts"}, {"id": "o0", "label": "10 bolts"}, {"id": "o2", "label": "11 bolts"}], "narration": "Tap the pile that holds exactly ten bolts."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'cardinality'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Milo''s machine is dizzy. Tap the pile that holds exactly 10 bolts!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'trace', 'Trace a counting circle around each gear so Milo can count them one by one.', '{"trace": "a counting circle around the gears", "narration": "Trace a counting circle around each gear so Milo can count them one by one."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'cardinality'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Trace a counting circle around each gear so Milo can count them one by one.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Jar A holds 14 crystals. Jar B holds 17. Milo''s machine can''t tell which holds more. How many MORE crystals does the fuller jar hold?', '{"options": [{"id": "o0", "label": "3"}, {"id": "o3", "label": "31"}, {"id": "o1", "label": "2"}, {"id": "o2", "label": "4"}], "narration": "Jar A holds 14 crystals. Jar B holds 17. Milo''s machine can''t tell which holds more. How many MORE crystals does the fuller jar hold?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'cardinality'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Jar A holds 14 crystals. Jar B holds 17. Milo''s machine can''t tell which holds more. How many MORE crystals does the fuller jar hold?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_count', 'The volcano coughed up moon-pebbles! Count them before they roll away!', '{"thing": "moon-pebbles", "total": 16, "narration": "The volcano coughed up moon-pebbles! Count them before they roll away!"}'::jsonb, '{"count": 16}'::jsonb, 20, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'cardinality'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The volcano coughed up moon-pebbles! Count them before they roll away!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'The hiccup scattered Milo''s crystal jars! Line them up from fewest to most.', '{"items": [{"id": "s2", "label": "15 crystals"}, {"id": "s0", "label": "13 crystals"}, {"id": "s1", "label": "14 crystals"}, {"id": "s3", "label": "16 crystals"}], "narration": "The hiccup scattered Milo''s crystal jars! Line them up from fewest to most."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 20, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'cardinality'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The hiccup scattered Milo''s crystal jars! Line them up from fewest to most.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_target', 'Bolt swears he flashed 18 times. Tap the number 18 to check his story!', '{"targets": [{"id": "o2", "label": "17"}, {"id": "o1", "label": "16"}, {"id": "o3", "label": "19"}, {"id": "o0", "label": "18"}], "narration": "Tap the number eighteen."}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'cardinality'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Bolt swears he flashed 18 times. Tap the number 18 to check his story!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'The great count-off! Sprocket gathered 24 gears. Milo gathered 19. How many MORE gears does Sprocket have?', '{"options": [{"id": "o1", "label": "4"}, {"id": "o2", "label": "6"}, {"id": "o0", "label": "5"}, {"id": "o3", "label": "15"}], "narration": "The great count-off! Sprocket gathered 24 gears. Milo gathered 19. How many MORE gears does Sprocket have?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'cardinality'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The great count-off! Sprocket gathered 24 gears. Milo gathered 19. How many MORE gears does Sprocket have?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sort', 'The volcano judges the count-off! Sort the number stones: less than 20, or 20 and more.', '{"items": [{"id": "g0i1", "label": "19", "group": "Less than 20"}, {"id": "g1i0", "label": "23", "group": "20 or more"}, {"id": "g1i1", "label": "21", "group": "20 or more"}, {"id": "g0i0", "label": "17", "group": "Less than 20"}, {"id": "g1i2", "label": "25", "group": "20 or more"}, {"id": "g0i2", "label": "18", "group": "Less than 20"}], "groups": [{"id": "g0", "label": "Less than 20"}, {"id": "g1", "label": "20 or more"}], "narration": "The volcano judges the count-off! Sort the number stones: less than 20, or 20 and more."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 25, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'cardinality'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The volcano judges the count-off! Sort the number stones: less than 20, or 20 and more.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_target', 'Two berry baskets: one holds 26 berries, one holds 23. Tap the basket with MORE berries!', '{"targets": [{"id": "o3", "label": "25 star-berries"}, {"id": "o2", "label": "24 star-berries"}, {"id": "o0", "label": "26 star-berries"}, {"id": "o1", "label": "23 star-berries"}], "narration": "Tap the basket holding more star-berries: twenty-six or twenty-three?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'cardinality'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Two berry baskets: one holds 26 berries, one holds 23. Tap the basket with MORE berries!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_count', 'The master launch needs 29 fuel crystals and not one fewer. Tap each crystal to prove the count!', '{"thing": "fuel crystals", "total": 29, "narration": "The master launch needs 29 fuel crystals and not one fewer. Tap each crystal to prove the count!"}'::jsonb, '{"count": 29}'::jsonb, 25, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'cardinality'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The master launch needs 29 fuel crystals and not one fewer. Tap each crystal to prove the count!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'The volcano loves BIG piles! Tap the biggest rock pile!', '{"targets": [{"id": "o1", "label": "3 rocks"}, {"id": "o2", "label": "5 rocks"}, {"id": "o0", "label": "7 rocks"}, {"id": "o3", "label": "4 rocks"}], "narration": "Tap the biggest pile of rocks."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'compare_order'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The volcano loves BIG piles! Tap the biggest rock pile!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Sprocket''s tiny gear has 2 teeth. Milo''s big gear has 6 teeth. Which gear is smaller?', '{"options": [{"id": "o3", "label": "5 teeth"}, {"id": "o0", "label": "2 teeth"}, {"id": "o1", "label": "6 teeth"}, {"id": "o2", "label": "4 teeth"}], "narration": "Sprocket''s tiny gear has 2 teeth. Milo''s big gear has 6 teeth. Which gear is smaller?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'compare_order'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sprocket''s tiny gear has 2 teeth. Milo''s big gear has 6 teeth. Which gear is smaller?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'sort', 'Tidy the workshop! Sort the number cards into Big numbers and Small numbers.', '{"items": [{"id": "g1i1", "label": "3", "group": "Small numbers"}, {"id": "g0i2", "label": "7", "group": "Big numbers"}, {"id": "g0i1", "label": "9", "group": "Big numbers"}, {"id": "g1i0", "label": "2", "group": "Small numbers"}, {"id": "g0i0", "label": "8", "group": "Big numbers"}, {"id": "g1i2", "label": "4", "group": "Small numbers"}], "groups": [{"id": "g0", "label": "Big numbers"}, {"id": "g1", "label": "Small numbers"}], "narration": "Tidy the workshop! Sort the number cards into Big numbers and Small numbers."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'compare_order'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Tidy the workshop! Sort the number cards into Big numbers and Small numbers.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'Milo''s rule: 8 is bigger than 3! Shout it with him so the volcano rumbles!', '{"script": "Eight is bigger than three!", "narration": "Milo''s rule: 8 is bigger than 3! Shout it with him so the volcano rumbles!"}'::jsonb, '{}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'compare_order'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Milo''s rule: 8 is bigger than 3! Shout it with him so the volcano rumbles!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'The volcano steps are jumbled! Put the stepping stones in order from smallest to biggest.', '{"items": [{"id": "s2", "label": "3"}, {"id": "s0", "label": "1"}, {"id": "s1", "label": "2"}, {"id": "s3", "label": "4"}], "narration": "The volcano steps are jumbled! Put the stepping stones in order from smallest to biggest."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'compare_order'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The volcano steps are jumbled! Put the stepping stones in order from smallest to biggest.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Bolt''s flash scores: 9, 12, 7, 10. Which flash was the BIGGEST?', '{"options": [{"id": "o0", "label": "12"}, {"id": "o1", "label": "9"}, {"id": "o2", "label": "10"}, {"id": "o3", "label": "7"}], "narration": "Bolt''s flash scores: 9, 12, 7, 10. Which flash was the BIGGEST?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'compare_order'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Bolt''s flash scores: 9, 12, 7, 10. Which flash was the BIGGEST?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'trace', 'Trace the path from the small rock to the big rock so Bolt can hop across!', '{"trace": "the path from the small rock to the big rock", "narration": "Trace the path from the small rock to the big rock so Bolt can hop across!"}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'compare_order'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Trace the path from the small rock to the big rock so Bolt can hop across!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'Sprocket lost his smallest gear! Tap the smallest gear to find it.', '{"targets": [{"id": "o2", "label": "6 teeth"}, {"id": "o0", "label": "5 teeth"}, {"id": "o1", "label": "8 teeth"}, {"id": "o3", "label": "9 teeth"}], "narration": "Tap the smallest gear."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'compare_order'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sprocket lost his smallest gear! Tap the smallest gear to find it.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sequence', 'Sprocket lined up his inventions all wrong! Fix the row from smallest number to biggest.', '{"items": [{"id": "s3", "label": "9"}, {"id": "s0", "label": "6"}, {"id": "s4", "label": "10"}, {"id": "s1", "label": "7"}, {"id": "s2", "label": "8"}], "narration": "Sprocket lined up his inventions all wrong! Fix the row from smallest number to biggest."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3", "s4"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'compare_order'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sprocket lined up his inventions all wrong! Fix the row from smallest number to biggest.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Milo''s rocket dials must read 11, 12, 13, 14, 15 in order. Which number comes right after 12?', '{"options": [{"id": "o2", "label": "14"}, {"id": "o1", "label": "12"}, {"id": "o3", "label": "11"}, {"id": "o0", "label": "13"}], "narration": "Milo''s rocket dials must read 11, 12, 13, 14, 15 in order. Which number comes right after 12?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'compare_order'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Milo''s rocket dials must read 11, 12, 13, 14, 15 in order. Which number comes right after 12?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sort', 'Sprocket''s number stones rolled everywhere! Sort them: smaller than 10, or bigger than 10.', '{"items": [{"id": "g0i2", "label": "7", "group": "Smaller than 10"}, {"id": "g1i0", "label": "12", "group": "Bigger than 10"}, {"id": "g0i0", "label": "8", "group": "Smaller than 10"}, {"id": "g1i2", "label": "11", "group": "Bigger than 10"}, {"id": "g0i1", "label": "9", "group": "Smaller than 10"}, {"id": "g1i1", "label": "14", "group": "Bigger than 10"}], "groups": [{"id": "g0", "label": "Smaller than 10"}, {"id": "g1", "label": "Bigger than 10"}], "narration": "Sprocket''s number stones rolled everywhere! Sort them: smaller than 10, or bigger than 10."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'compare_order'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sprocket''s number stones rolled everywhere! Sort them: smaller than 10, or bigger than 10.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'listen_repeat', 'Help Sprocket count his dials in order: eleven, twelve, thirteen! Say it with Milo!', '{"script": "Eleven, twelve, thirteen!", "narration": "Help Sprocket count his dials in order: eleven, twelve, thirteen! Say it with Milo!"}'::jsonb, '{}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'compare_order'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Help Sprocket count his dials in order: eleven, twelve, thirteen! Say it with Milo!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'The hiccup scrambled the volcano''s number stones! Line them up from 21 to 25.', '{"items": [{"id": "s0", "label": "21"}, {"id": "s3", "label": "24"}, {"id": "s4", "label": "25"}, {"id": "s2", "label": "23"}, {"id": "s1", "label": "22"}], "narration": "The hiccup scrambled the volcano''s number stones! Line them up from 21 to 25."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3", "s4"]}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'compare_order'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The hiccup scrambled the volcano''s number stones! Line them up from 21 to 25.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'The stones read 27, 29, 28 in a jumble. Which line shows them in order from smallest?', '{"options": [{"id": "o1", "label": "27, 29, 28"}, {"id": "o2", "label": "28, 27, 29"}, {"id": "o3", "label": "29, 28, 27"}, {"id": "o0", "label": "27, 28, 29"}], "narration": "The stones read 27, 29, 28 in a jumble. Which line shows them in order from smallest?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'compare_order'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The stones read 27, 29, 28 in a jumble. Which line shows them in order from smallest?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_target', 'One stone is missing: 23, 24, __, 26. Tap the missing number!', '{"targets": [{"id": "o0", "label": "25"}, {"id": "o3", "label": "27"}, {"id": "o1", "label": "24"}, {"id": "o2", "label": "26"}], "narration": "Twenty-three, twenty-four, blank, twenty-six. Tap the missing number."}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'compare_order'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'One stone is missing: 23, 24, __, 26. Tap the missing number!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'trace', 'Trace the lava''s number trail from 20 to 30 to find where the missing stone rolled!', '{"trace": "the lava number trail from 20 to 30", "narration": "Trace the lava''s number trail from 20 to 30 to find where the missing stone rolled!"}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'compare_order'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Trace the lava''s number trail from 20 to 30 to find where the missing stone rolled!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'The rocket countdown is scrambled! Fix it from 10 down to 6 — the launch depends on you!', '{"items": [{"id": "s2", "label": "8"}, {"id": "s0", "label": "10"}, {"id": "s1", "label": "9"}, {"id": "s3", "label": "7"}, {"id": "s4", "label": "6"}], "narration": "The rocket countdown is scrambled! Fix it from 10 down to 6 — the launch depends on you!"}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3", "s4"]}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'compare_order'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The rocket countdown is scrambled! Fix it from 10 down to 6 — the launch depends on you!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Fuel readings: 48, 35, 51, 42. Milo needs them biggest first. Which order is right?', '{"options": [{"id": "o0", "label": "51, 48, 42, 35"}, {"id": "o1", "label": "48, 51, 42, 35"}, {"id": "o3", "label": "51, 42, 48, 35"}, {"id": "o2", "label": "35, 42, 48, 51"}], "narration": "Fuel readings: 48, 35, 51, 42. Milo needs them biggest first. Which order is right?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'compare_order'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Fuel readings: 48, 35, 51, 42. Milo needs them biggest first. Which order is right?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sort', 'Final launch check! Sort the fuel cells: less than 40, or more than 40.', '{"items": [{"id": "g1i0", "label": "44", "group": "More than 40"}, {"id": "g0i0", "label": "33", "group": "Less than 40"}, {"id": "g0i2", "label": "39", "group": "Less than 40"}, {"id": "g1i2", "label": "41", "group": "More than 40"}, {"id": "g1i1", "label": "47", "group": "More than 40"}, {"id": "g0i1", "label": "37", "group": "Less than 40"}], "groups": [{"id": "g0", "label": "Less than 40"}, {"id": "g1", "label": "More than 40"}], "narration": "Final launch check! Sort the fuel cells: less than 40, or more than 40."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'compare_order'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Final launch check! Sort the fuel cells: less than 40, or more than 40.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_target', 'The launch needs the BIGGEST fuel reading. Tap it!', '{"targets": [{"id": "o0", "label": "51"}, {"id": "o2", "label": "47"}, {"id": "o1", "label": "44"}, {"id": "o3", "label": "49"}], "narration": "Tap the biggest fuel reading."}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'compare_order'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The launch needs the BIGGEST fuel reading. Tap it!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'Bolt flashed 2 times, then 1 more time. Tap once for each flash — how many in all?', '{"thing": "firefly flashes", "total": 3, "narration": "Bolt flashed 2 times, then 1 more time. Tap once for each flash — how many in all?"}'::jsonb, '{"count": 3}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'add'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Bolt flashed 2 times, then 1 more time. Tap once for each flash — how many in all?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Sprocket found 2 gears, then 2 more gears under the workbench. How many gears now?', '{"options": [{"id": "o3", "label": "2"}, {"id": "o2", "label": "5"}, {"id": "o1", "label": "3"}, {"id": "o0", "label": "4"}], "narration": "Sprocket found 2 gears, then 2 more gears under the workbench. How many gears now?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'add'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sprocket found 2 gears, then 2 more gears under the workbench. How many gears now?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Milo''s berry bowl: 3 red berries plus 2 blue berries. Tap the bowl that holds 5 berries!', '{"targets": [{"id": "o0", "label": "5 berries"}, {"id": "o1", "label": "4 berries"}, {"id": "o2", "label": "3 berries"}, {"id": "o3", "label": "6 berries"}], "narration": "Three red berries plus two blue berries. Tap the bowl with five berries."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'add'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Milo''s berry bowl: 3 red berries plus 2 blue berries. Tap the bowl that holds 5 berries!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'Add with Milo: 1 berry plus 2 berries is 3 berries! Say the berry math with him!', '{"script": "One plus two is three!", "narration": "Add with Milo: 1 berry plus 2 berries is 3 berries! Say the berry math with him!"}'::jsonb, '{}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'add'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Add with Milo: 1 berry plus 2 berries is 3 berries! Say the berry math with him!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'BEEP! The rocket needs fuel! Milo loaded 4 crystals, then Sprocket added 5 more. How many crystals?', '{"options": [{"id": "o0", "label": "9"}, {"id": "o2", "label": "10"}, {"id": "o3", "label": "1"}, {"id": "o1", "label": "8"}], "narration": "BEEP! The rocket needs fuel! Milo loaded 4 crystals, then Sprocket added 5 more. How many crystals?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'add'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! The rocket needs fuel! Milo loaded 4 crystals, then Sprocket added 5 more. How many crystals?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_count', 'Star-berries for the crew: 3 in the basket, 4 more just picked. Tap each berry to count them all!', '{"thing": "star-berries", "total": 7, "narration": "Star-berries for the crew: 3 in the basket, 4 more just picked. Tap each berry to count them all!"}'::jsonb, '{"count": 7}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'add'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Star-berries for the crew: 3 in the basket, 4 more just picked. Tap each berry to count them all!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'Milo''s adding machine tells the story in steps. Put the steps in order!', '{"items": [{"id": "s0", "label": "Milo had 4 crystals"}, {"id": "s1", "label": "He added 3 more"}, {"id": "s2", "label": "Now he has 7"}], "narration": "Milo''s adding machine tells the story in steps. Put the steps in order!"}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'add'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Milo''s adding machine tells the story in steps. Put the steps in order!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'Sprocket had 5 bolts. Milo gave him 3 more. Tap the jar that now holds 8 bolts!', '{"targets": [{"id": "o2", "label": "9 bolts"}, {"id": "o0", "label": "8 bolts"}, {"id": "o3", "label": "6 bolts"}, {"id": "o1", "label": "7 bolts"}], "narration": "Five bolts plus three more. Tap the jar with eight bolts."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'add'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sprocket had 5 bolts. Milo gave him 3 more. Tap the jar that now holds 8 bolts!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Sprocket''s gadget needs 12 bolts. He has 7, and Milo hands him 5 more. Bolts now?', '{"options": [{"id": "o0", "label": "12"}, {"id": "o1", "label": "11"}, {"id": "o2", "label": "13"}, {"id": "o3", "label": "2"}], "narration": "Sprocket''s gadget needs 12 bolts. He has 7, and Milo hands him 5 more. Bolts now?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'add'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sprocket''s gadget needs 12 bolts. He has 7, and Milo hands him 5 more. Bolts now?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Bolt flashed 6 times, then 6 more times for Sprocket''s birthday. How many flashes in all?', '{"options": [{"id": "o1", "label": "11"}, {"id": "o2", "label": "13"}, {"id": "o0", "label": "12"}, {"id": "o3", "label": "6"}], "narration": "Bolt flashed 6 times, then 6 more times for Sprocket''s birthday. How many flashes in all?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'add'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Bolt flashed 6 times, then 6 more times for Sprocket''s birthday. How many flashes in all?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sort', 'Milo''s fuel recipes! Sort the pairs: which pairs make 10, and which make 11?', '{"items": [{"id": "g1i2", "label": "4 and 7", "group": "Make 11"}, {"id": "g0i2", "label": "8 and 2", "group": "Make 10"}, {"id": "g1i0", "label": "5 and 6", "group": "Make 11"}, {"id": "g1i1", "label": "9 and 2", "group": "Make 11"}, {"id": "g0i0", "label": "6 and 4", "group": "Make 10"}, {"id": "g0i1", "label": "7 and 3", "group": "Make 10"}], "groups": [{"id": "g0", "label": "Make 10"}, {"id": "g1", "label": "Make 11"}], "narration": "Milo''s fuel recipes! Sort the pairs: which pairs make 10, and which make 11?"}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'add'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Milo''s fuel recipes! Sort the pairs: which pairs make 10, and which make 11?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'trace', 'Trace the giant plus sign to switch on Milo''s adding machine!', '{"trace": "a big glowing plus sign", "narration": "Trace the giant plus sign to switch on Milo''s adding machine!"}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'add'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Trace the giant plus sign to switch on Milo''s adding machine!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'The hiccup machine claims 9 + 8 = 16. Milo smells a glitch! What is 9 + 8 really?', '{"options": [{"id": "o1", "label": "16"}, {"id": "o0", "label": "17"}, {"id": "o2", "label": "18"}, {"id": "o3", "label": "1"}], "narration": "The hiccup machine claims 9 + 8 = 16. Milo smells a glitch! What is 9 + 8 really?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'add'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The hiccup machine claims 9 + 8 = 16. Milo smells a glitch! What is 9 + 8 really?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Bolt flashed 13 times, then 5 more times before breakfast. How many flashes total?', '{"options": [{"id": "o0", "label": "18"}, {"id": "o2", "label": "19"}, {"id": "o1", "label": "17"}, {"id": "o3", "label": "8"}], "narration": "Bolt flashed 13 times, then 5 more times before breakfast. How many flashes total?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'add'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Bolt flashed 13 times, then 5 more times before breakfast. How many flashes total?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_target', 'A rockslide! 14 rocks plus 6 more rocks. Tap the pile showing 20 rocks!', '{"targets": [{"id": "o2", "label": "21 rocks"}, {"id": "o1", "label": "19 rocks"}, {"id": "o0", "label": "20 rocks"}, {"id": "o3", "label": "18 rocks"}], "narration": "Fourteen rocks plus six more. Tap the pile with twenty rocks."}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'add'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'A rockslide! 14 rocks plus 6 more rocks. Tap the pile showing 20 rocks!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'Rebuild the adding story the hiccup scrambled!', '{"items": [{"id": "s0", "label": "Milo poured 11 crystals"}, {"id": "s1", "label": "Sprocket added 7 more"}, {"id": "s2", "label": "The tank holds 18"}], "narration": "Rebuild the adding story the hiccup scrambled!"}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'add'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Rebuild the adding story the hiccup scrambled!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Grand launch! Milo loads 25 crystals. Sprocket loads 18 more. How many fuel crystals in all?', '{"options": [{"id": "o2", "label": "42"}, {"id": "o3", "label": "7"}, {"id": "o1", "label": "33"}, {"id": "o0", "label": "43"}], "narration": "Grand launch! Milo loads 25 crystals. Sprocket loads 18 more. How many fuel crystals in all?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'add'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Grand launch! Milo loads 25 crystals. Sprocket loads 18 more. How many fuel crystals in all?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Bolt''s grand flash code: 36 flashes, then 24 more! What is the grand total?', '{"options": [{"id": "o2", "label": "59"}, {"id": "o3", "label": "61"}, {"id": "o1", "label": "50"}, {"id": "o0", "label": "60"}], "narration": "Bolt''s grand flash code: 36 flashes, then 24 more! What is the grand total?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'add'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Bolt''s grand flash code: 36 flashes, then 24 more! What is the grand total?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sort', 'The volcano only rumbles for perfect fuel! Sort the pairs: which make 50, which make 60?', '{"items": [{"id": "g1i1", "label": "40 and 20", "group": "Make 60"}, {"id": "g1i0", "label": "30 and 30", "group": "Make 60"}, {"id": "g0i2", "label": "40 and 10", "group": "Make 50"}, {"id": "g0i0", "label": "30 and 20", "group": "Make 50"}, {"id": "g1i2", "label": "35 and 25", "group": "Make 60"}, {"id": "g0i1", "label": "25 and 25", "group": "Make 50"}], "groups": [{"id": "g0", "label": "Make 50"}, {"id": "g1", "label": "Make 60"}], "narration": "The volcano only rumbles for perfect fuel! Sort the pairs: which make 50, which make 60?"}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'add'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The volcano only rumbles for perfect fuel! Sort the pairs: which make 50, which make 60?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'You are the launch chief! Teach Bolt the big-add chant: 20 plus 30 is 50!', '{"script": "Twenty plus thirty is fifty!", "narration": "You are the launch chief! Teach Bolt the big-add chant: 20 plus 30 is 50!"}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'add'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'You are the launch chief! Teach Bolt the big-add chant: 20 plus 30 is 50!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', '5 berries in the bowl. Milo munched 2 — crunch! Tap once for each berry that is LEFT.', '{"thing": "berries left", "total": 3, "narration": "5 berries in the bowl. Milo munched 2 — crunch! Tap once for each berry that is LEFT."}'::jsonb, '{"count": 3}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'subtract'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = '5 berries in the bowl. Milo munched 2 — crunch! Tap once for each berry that is LEFT.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Bolt flashed 5 times, but 2 flashes fizzled out. How many flashes still glow?', '{"options": [{"id": "o0", "label": "3"}, {"id": "o2", "label": "2"}, {"id": "o3", "label": "7"}, {"id": "o1", "label": "4"}], "narration": "Bolt flashed 5 times, but 2 flashes fizzled out. How many flashes still glow?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'subtract'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Bolt flashed 5 times, but 2 flashes fizzled out. How many flashes still glow?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Sprocket had 5 gears. One rolled away! Tap the tray that now holds 4 gears.', '{"targets": [{"id": "o3", "label": "2 gears"}, {"id": "o1", "label": "3 gears"}, {"id": "o2", "label": "5 gears"}, {"id": "o0", "label": "4 gears"}], "narration": "Five gears minus one that rolled away. Tap the tray with four gears."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'subtract'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sprocket had 5 gears. One rolled away! Tap the tray that now holds 4 gears.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'Take away with Milo: 4 rocks minus 1 rock is 3 rocks! Say the rocky math!', '{"script": "Four minus one is three!", "narration": "Take away with Milo: 4 rocks minus 1 rock is 3 rocks! Say the rocky math!"}'::jsonb, '{}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'subtract'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Take away with Milo: 4 rocks minus 1 rock is 3 rocks! Say the rocky math!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Milo baked 9 rock-cakes. Sprocket munched 4 — crumbs everywhere! How many rock-cakes are left?', '{"options": [{"id": "o1", "label": "6"}, {"id": "o0", "label": "5"}, {"id": "o3", "label": "13"}, {"id": "o2", "label": "4"}], "narration": "Milo baked 9 rock-cakes. Sprocket munched 4 — crumbs everywhere! How many rock-cakes are left?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'subtract'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Milo baked 9 rock-cakes. Sprocket munched 4 — crumbs everywhere! How many rock-cakes are left?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_count', '10 fireflies glowed in the jar. 4 flew out the window! Tap each one that is still inside.', '{"thing": "fireflies still inside", "total": 6, "narration": "10 fireflies glowed in the jar. 4 flew out the window! Tap each one that is still inside."}'::jsonb, '{"count": 6}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'subtract'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = '10 fireflies glowed in the jar. 4 flew out the window! Tap each one that is still inside.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'The take-away tale got tangled! Put the story in order.', '{"items": [{"id": "s2", "label": "5 crystals are left"}, {"id": "s1", "label": "The volcano hiccuped 3 away"}, {"id": "s0", "label": "There were 8 crystals"}], "narration": "The take-away tale got tangled! Put the story in order."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'subtract'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The take-away tale got tangled! Put the story in order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', '10 rocks on the hill. 3 tumbled down! Tap the pile with 7 rocks left.', '{"targets": [{"id": "o3", "label": "5 rocks"}, {"id": "o0", "label": "7 rocks"}, {"id": "o1", "label": "6 rocks"}, {"id": "o2", "label": "8 rocks"}], "narration": "Ten rocks minus three that tumbled. Tap the pile with seven rocks."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'subtract'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = '10 rocks on the hill. 3 tumbled down! Tap the pile with 7 rocks left.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Sprocket had 14 bolts and gave 6 to Milo for the rocket. How many bolts does Sprocket have now?', '{"options": [{"id": "o2", "label": "7"}, {"id": "o1", "label": "9"}, {"id": "o3", "label": "20"}, {"id": "o0", "label": "8"}], "narration": "Sprocket had 14 bolts and gave 6 to Milo for the rocket. How many bolts does Sprocket have now?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'subtract'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sprocket had 14 bolts and gave 6 to Milo for the rocket. How many bolts does Sprocket have now?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Bolt flashed 12 times. Then 5 flashes faded into the night. How many still glow?', '{"options": [{"id": "o3", "label": "17"}, {"id": "o2", "label": "6"}, {"id": "o1", "label": "8"}, {"id": "o0", "label": "7"}], "narration": "Bolt flashed 12 times. Then 5 flashes faded into the night. How many still glow?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'subtract'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Bolt flashed 12 times. Then 5 flashes faded into the night. How many still glow?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sort', 'Milo''s take-away recipes! Sort: which take-aways leave 8, and which leave 9?', '{"items": [{"id": "g1i0", "label": "13 minus 4", "group": "Leave 9"}, {"id": "g1i2", "label": "12 minus 3", "group": "Leave 9"}, {"id": "g0i2", "label": "11 minus 3", "group": "Leave 8"}, {"id": "g0i1", "label": "15 minus 7", "group": "Leave 8"}, {"id": "g1i1", "label": "14 minus 5", "group": "Leave 9"}, {"id": "g0i0", "label": "12 minus 4", "group": "Leave 8"}], "groups": [{"id": "g0", "label": "Leave 8"}, {"id": "g1", "label": "Leave 9"}], "narration": "Milo''s take-away recipes! Sort: which take-aways leave 8, and which leave 9?"}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'subtract'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Milo''s take-away recipes! Sort: which take-aways leave 8, and which leave 9?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'trace', 'Trace the long minus sign to power down the hiccup machine — gently!', '{"trace": "a long glowing minus sign", "narration": "Trace the long minus sign to power down the hiccup machine — gently!"}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'subtract'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Trace the long minus sign to power down the hiccup machine — gently!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'The tank held 18 crystals. Now it holds 11. How many crystals did the hiccup steal?', '{"options": [{"id": "o3", "label": "29"}, {"id": "o0", "label": "7"}, {"id": "o2", "label": "6"}, {"id": "o1", "label": "8"}], "narration": "The tank held 18 crystals. Now it holds 11. How many crystals did the hiccup steal?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'subtract'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The tank held 18 crystals. Now it holds 11. How many crystals did the hiccup steal?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Milo counted 20 fireflies at dusk. Now only 13 glow. How many flew away?', '{"options": [{"id": "o2", "label": "8"}, {"id": "o0", "label": "7"}, {"id": "o3", "label": "33"}, {"id": "o1", "label": "6"}], "narration": "Milo counted 20 fireflies at dusk. Now only 13 glow. How many flew away?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'subtract'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Milo counted 20 fireflies at dusk. Now only 13 glow. How many flew away?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_target', 'Mystery rocks: 17 rocks minus some rocks leaves 9 rocks. Tap the missing number!', '{"targets": [{"id": "o0", "label": "8"}, {"id": "o1", "label": "7"}, {"id": "o2", "label": "9"}, {"id": "o3", "label": "6"}], "narration": "Seventeen minus what equals nine? Tap the missing number."}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'subtract'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Mystery rocks: 17 rocks minus some rocks leaves 9 rocks. Tap the missing number!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'Solve the berry mystery! Put the clues in order.', '{"items": [{"id": "s1", "label": "Some berries vanished overnight"}, {"id": "s0", "label": "The jar held 16 berries"}, {"id": "s2", "label": "Only 9 berries remain"}], "narration": "Solve the berry mystery! Put the clues in order."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'subtract'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Solve the berry mystery! Put the clues in order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Launch day! The tank holds 45 crystals. The launch burns 23. How many crystals are left?', '{"options": [{"id": "o1", "label": "21"}, {"id": "o2", "label": "23"}, {"id": "o3", "label": "68"}, {"id": "o0", "label": "22"}], "narration": "Launch day! The tank holds 45 crystals. The launch burns 23. How many crystals are left?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'subtract'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Launch day! The tank holds 45 crystals. The launch burns 23. How many crystals are left?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Sprocket built 52 gadgets and gave 30 to the volcano crew. How many gadgets are left?', '{"options": [{"id": "o1", "label": "21"}, {"id": "o3", "label": "82"}, {"id": "o0", "label": "22"}, {"id": "o2", "label": "23"}], "narration": "Sprocket built 52 gadgets and gave 30 to the volcano crew. How many gadgets are left?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'subtract'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sprocket built 52 gadgets and gave 30 to the volcano crew. How many gadgets are left?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sort', 'Final fuel check! Sort the take-aways: which leave 20, and which leave 30?', '{"items": [{"id": "g0i0", "label": "50 minus 30", "group": "Leave 20"}, {"id": "g1i0", "label": "60 minus 30", "group": "Leave 30"}, {"id": "g0i1", "label": "40 minus 20", "group": "Leave 20"}, {"id": "g1i2", "label": "50 minus 20", "group": "Leave 30"}, {"id": "g1i1", "label": "45 minus 15", "group": "Leave 30"}, {"id": "g0i2", "label": "35 minus 15", "group": "Leave 20"}], "groups": [{"id": "g0", "label": "Leave 20"}, {"id": "g1", "label": "Leave 30"}], "narration": "Final fuel check! Sort the take-aways: which leave 20, and which leave 30?"}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'subtract'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Final fuel check! Sort the take-aways: which leave 20, and which leave 30?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'You are the countdown captain! Teach Sprocket: 40 minus 10 is 30!', '{"script": "Forty minus ten is thirty!", "narration": "You are the countdown captain! Teach Sprocket: 40 minus 10 is 30!"}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'subtract'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'You are the countdown captain! Teach Sprocket: 40 minus 10 is 30!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Milo bundles bolts: 3 bundles of ten, plus 4 loose bolts. Tap the number he built!', '{"targets": [{"id": "o0", "label": "34"}, {"id": "o1", "label": "43"}, {"id": "o2", "label": "30"}, {"id": "o3", "label": "33"}], "narration": "Three tens and four ones. Tap the number Milo built."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'place_value'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Milo bundles bolts: 3 bundles of ten, plus 4 loose bolts. Tap the number he built!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Sprocket''s tray shows 2 tens and 5 ones. What number did he build?', '{"options": [{"id": "o0", "label": "25"}, {"id": "o1", "label": "52"}, {"id": "o3", "label": "7"}, {"id": "o2", "label": "20"}], "narration": "Sprocket''s tray shows 2 tens and 5 ones. What number did he build?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'place_value'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sprocket''s tray shows 2 tens and 5 ones. What number did he build?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'sort', 'Milo''s digit sorter is jammed! Sort the digits: which live in the Tens place, which in the Ones place?', '{"items": [{"id": "g0i1", "label": "the 2 in 25", "group": "Tens place"}, {"id": "g1i1", "label": "the 5 in 25", "group": "Ones place"}, {"id": "g1i2", "label": "the 3 in 83", "group": "Ones place"}, {"id": "g0i2", "label": "the 8 in 83", "group": "Tens place"}, {"id": "g0i0", "label": "the 4 in 47", "group": "Tens place"}, {"id": "g1i0", "label": "the 7 in 47", "group": "Ones place"}], "groups": [{"id": "g0", "label": "Tens place"}, {"id": "g1", "label": "Ones place"}], "narration": "Milo''s digit sorter is jammed! Sort the digits: which live in the Tens place, which in the Ones place?"}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'place_value'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Milo''s digit sorter is jammed! Sort the digits: which live in the Tens place, which in the Ones place?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'Build it with Milo: 3 tens and 2 ones make 32! Say the builder chant!', '{"script": "Three tens and two ones make thirty-two!", "narration": "Build it with Milo: 3 tens and 2 ones make 32! Say the builder chant!"}'::jsonb, '{}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'place_value'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Build it with Milo: 3 tens and 2 ones make 32! Say the builder chant!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'BEEP! Sprocket''s counter shows 6 tens and 1 one. What number is flashing?', '{"options": [{"id": "o2", "label": "60"}, {"id": "o0", "label": "61"}, {"id": "o3", "label": "7"}, {"id": "o1", "label": "16"}], "narration": "BEEP! Sprocket''s counter shows 6 tens and 1 one. What number is flashing?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'place_value'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Sprocket''s counter shows 6 tens and 1 one. What number is flashing?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'Bolt''s flash code needs five tens and eight ones. Tap the right number!', '{"targets": [{"id": "o0", "label": "58"}, {"id": "o2", "label": "50"}, {"id": "o3", "label": "68"}, {"id": "o1", "label": "85"}], "narration": "Five tens and eight ones. Tap the right number."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'place_value'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Bolt''s flash code needs five tens and eight ones. Tap the right number!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'Milo''s number packs are out of order! Line them up from smallest to biggest.', '{"items": [{"id": "s1", "label": "32"}, {"id": "s2", "label": "41"}, {"id": "s0", "label": "23"}], "narration": "Milo''s number packs are out of order! Line them up from smallest to biggest."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'place_value'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Milo''s number packs are out of order! Line them up from smallest to biggest.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'trace', 'Trace the digits 1 and 0 to build a brand-new ten-stick for Sprocket!', '{"trace": "the digits 1 and 0, a ten-stick", "narration": "Trace the digits 1 and 0 to build a brand-new ten-stick for Sprocket!"}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'place_value'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Trace the digits 1 and 0 to build a brand-new ten-stick for Sprocket!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Sprocket built the number 74, but his tens tray tipped over! He still has 7 tens. How many ones does he need?', '{"options": [{"id": "o1", "label": "7"}, {"id": "o3", "label": "5"}, {"id": "o0", "label": "4"}, {"id": "o2", "label": "3"}], "narration": "Sprocket built the number 74, but his tens tray tipped over! He still has 7 tens. How many ones does he need?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'place_value'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sprocket built the number 74, but his tens tray tipped over! He still has 7 tens. How many ones does he need?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Bolt flashed 5 tens and 6 ones at the volcano. The volcano rumbles: how many flashes?', '{"options": [{"id": "o0", "label": "56"}, {"id": "o1", "label": "65"}, {"id": "o2", "label": "50"}, {"id": "o3", "label": "11"}], "narration": "Bolt flashed 5 tens and 6 ones at the volcano. The volcano rumbles: how many flashes?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'place_value'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Bolt flashed 5 tens and 6 ones at the volcano. The volcano rumbles: how many flashes?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sort', 'Help Sprocket re-pack! Sort the numbers: which have 4 tens, and which have 7 tens?', '{"items": [{"id": "g0i2", "label": "40", "group": "4 tens"}, {"id": "g0i0", "label": "42", "group": "4 tens"}, {"id": "g1i0", "label": "71", "group": "7 tens"}, {"id": "g1i1", "label": "79", "group": "7 tens"}, {"id": "g1i2", "label": "70", "group": "7 tens"}, {"id": "g0i1", "label": "47", "group": "4 tens"}], "groups": [{"id": "g0", "label": "4 tens"}, {"id": "g1", "label": "7 tens"}], "narration": "Help Sprocket re-pack! Sort the numbers: which have 4 tens, and which have 7 tens?"}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 15, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'place_value'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Help Sprocket re-pack! Sort the numbers: which have 4 tens, and which have 7 tens?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'listen_repeat', 'Fix it with Milo: seventy-four is seven tens and four ones! Say it proud!', '{"script": "Seventy-four is seven tens and four ones!", "narration": "Fix it with Milo: seventy-four is seven tens and four ones! Say it proud!"}'::jsonb, '{}'::jsonb, 15, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'place_value'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Fix it with Milo: seventy-four is seven tens and four ones! Say it proud!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Milo found a mystery box: 3 hundreds, 2 tens, 5 ones. What number is hiding inside?', '{"options": [{"id": "o2", "label": "320"}, {"id": "o1", "label": "235"}, {"id": "o0", "label": "325"}, {"id": "o3", "label": "352"}], "narration": "Milo found a mystery box: 3 hundreds, 2 tens, 5 ones. What number is hiding inside?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'place_value'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Milo found a mystery box: 3 hundreds, 2 tens, 5 ones. What number is hiding inside?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_target', 'The volcano coughed up a hundred-stone: 4 hundreds, 1 ten, 7 ones. Tap the number!', '{"targets": [{"id": "o3", "label": "714"}, {"id": "o2", "label": "147"}, {"id": "o1", "label": "471"}, {"id": "o0", "label": "417"}], "narration": "Four hundreds, one ten, seven ones. Tap the number."}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'place_value'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The volcano coughed up a hundred-stone: 4 hundreds, 1 ten, 7 ones. Tap the number!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'The hundred-packs rolled down the volcano! Stack them from smallest to biggest.', '{"items": [{"id": "s1", "label": "250"}, {"id": "s0", "label": "150"}, {"id": "s2", "label": "350"}], "narration": "The hundred-packs rolled down the volcano! Stack them from smallest to biggest."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'place_value'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The hundred-packs rolled down the volcano! Stack them from smallest to biggest.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'trace', 'Trace the digits 2, 0, 0 to forge two hundred fuel crystals!', '{"trace": "the digits 2-0-0", "narration": "Trace the digits 2, 0, 0 to forge two hundred fuel crystals!"}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'place_value'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Trace the digits 2, 0, 0 to forge two hundred fuel crystals!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Grand launch fuel: 5 hundreds, 3 tens, 8 ones. You are the fuel master — how much fuel is that?', '{"options": [{"id": "o0", "label": "538"}, {"id": "o3", "label": "835"}, {"id": "o1", "label": "583"}, {"id": "o2", "label": "530"}], "narration": "Grand launch fuel: 5 hundreds, 3 tens, 8 ones. You are the fuel master — how much fuel is that?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'place_value'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Grand launch fuel: 5 hundreds, 3 tens, 8 ones. You are the fuel master — how much fuel is that?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Sprocket''s mega-gadget holds 700 + 40 + 6. What number does the dial show?', '{"options": [{"id": "o2", "label": "740"}, {"id": "o0", "label": "746"}, {"id": "o3", "label": "476"}, {"id": "o1", "label": "764"}], "narration": "Sprocket''s mega-gadget holds 700 + 40 + 6. What number does the dial show?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'place_value'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sprocket''s mega-gadget holds 700 + 40 + 6. What number does the dial show?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sort', 'The volcano inspects every digit! Sort them: Hundreds place, or Ones place?', '{"items": [{"id": "g1i2", "label": "the 5 in 325", "group": "Ones place"}, {"id": "g1i0", "label": "the 8 in 538", "group": "Ones place"}, {"id": "g0i2", "label": "the 2 in 325", "group": "Hundreds place"}, {"id": "g1i1", "label": "the 6 in 746", "group": "Ones place"}, {"id": "g0i1", "label": "the 7 in 746", "group": "Hundreds place"}, {"id": "g0i0", "label": "the 5 in 538", "group": "Hundreds place"}], "groups": [{"id": "g0", "label": "Hundreds place"}, {"id": "g1", "label": "Ones place"}], "narration": "The volcano inspects every digit! Sort them: Hundreds place, or Ones place?"}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'place_value'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The volcano inspects every digit! Sort them: Hundreds place, or Ones place?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'You are the hundreds hero! Teach Bolt: five hundreds is five hundred!', '{"script": "Five hundreds is five hundred!", "narration": "You are the hundreds hero! Teach Bolt: five hundreds is five hundred!"}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'place_value'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'You are the hundreds hero! Teach Bolt: five hundreds is five hundred!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Sprocket needs a triangle gear for his gadget! Tap the triangle gear.', '{"targets": [{"id": "o2", "label": "square gear"}, {"id": "o0", "label": "triangle gear"}, {"id": "o1", "label": "circle gear"}, {"id": "o3", "label": "star gear"}], "narration": "Find the triangle gear and tap it."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'shapes_patterns'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sprocket needs a triangle gear for his gadget! Tap the triangle gear.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Milo''s new window is perfectly round, like a ball. What shape is the window?', '{"options": [{"id": "o2", "label": "triangle"}, {"id": "o3", "label": "oval"}, {"id": "o0", "label": "circle"}, {"id": "o1", "label": "square"}], "narration": "Milo''s new window is perfectly round, like a ball. What shape is the window?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'shapes_patterns'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Milo''s new window is perfectly round, like a ball. What shape is the window?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'trace', 'Trace the square window so Sprocket can fit it into his workshop wall!', '{"trace": "a square window", "narration": "Trace the square window so Sprocket can fit it into his workshop wall!"}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'shapes_patterns'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Trace the square window so Sprocket can fit it into his workshop wall!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'Name the shapes with Milo: circle, square, triangle! Shout them like an inventor!', '{"script": "Circle, square, triangle!", "narration": "Name the shapes with Milo: circle, square, triangle! Shout them like an inventor!"}'::jsonb, '{}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'shapes_patterns'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Name the shapes with Milo: circle, square, triangle! Shout them like an inventor!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'The Pattern Bridge lost its stones in the hiccup! Relay the row: circle, square, circle, square.', '{"items": [{"id": "s2", "label": "circle"}, {"id": "s3", "label": "square"}, {"id": "s0", "label": "circle"}, {"id": "s1", "label": "square"}], "narration": "The Pattern Bridge lost its stones in the hiccup! Relay the row: circle, square, circle, square."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'shapes_patterns'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The Pattern Bridge lost its stones in the hiccup! Relay the row: circle, square, circle, square.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'Sprocket dropped his hexagon bolt! Tap the hexagon bolt.', '{"targets": [{"id": "o3", "label": "square bolt"}, {"id": "o0", "label": "hexagon bolt"}, {"id": "o1", "label": "pentagon bolt"}, {"id": "o2", "label": "circle bolt"}], "narration": "Find the hexagon bolt and tap it."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'shapes_patterns'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sprocket dropped his hexagon bolt! Tap the hexagon bolt.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'The bridge glows red, blue, red, blue... What color comes next?', '{"options": [{"id": "o1", "label": "blue"}, {"id": "o3", "label": "yellow"}, {"id": "o2", "label": "green"}, {"id": "o0", "label": "red"}], "narration": "The bridge glows red, blue, red, blue... What color comes next?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'shapes_patterns'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The bridge glows red, blue, red, blue... What color comes next?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sort', 'Tidy the shape bin! Sort the shapes: round ones, and pointy ones.', '{"items": [{"id": "g1i1", "label": "square", "group": "Pointy"}, {"id": "g1i0", "label": "triangle", "group": "Pointy"}, {"id": "g1i3", "label": "diamond", "group": "Pointy"}, {"id": "g1i2", "label": "star", "group": "Pointy"}, {"id": "g0i1", "label": "oval", "group": "Round"}, {"id": "g0i0", "label": "circle", "group": "Round"}], "groups": [{"id": "g0", "label": "Round"}, {"id": "g1", "label": "Pointy"}], "narration": "Tidy the shape bin! Sort the shapes: round ones, and pointy ones."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1"], "g1": ["g1i0", "g1i1", "g1i2", "g1i3"]}}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'shapes_patterns'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Tidy the shape bin! Sort the shapes: round ones, and pointy ones.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sequence', 'Help Sprocket finish his gear row: big gear, small gear, big gear, small gear!', '{"items": [{"id": "s0", "label": "big gear"}, {"id": "s2", "label": "big gear"}, {"id": "s1", "label": "small gear"}, {"id": "s3", "label": "small gear"}], "narration": "Help Sprocket finish his gear row: big gear, small gear, big gear, small gear!"}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'shapes_patterns'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Help Sprocket finish his gear row: big gear, small gear, big gear, small gear!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Bolt blinks a signal: flash, flash, pause, flash, flash, pause... What comes next?', '{"options": [{"id": "o1", "label": "flash"}, {"id": "o0", "label": "pause"}, {"id": "o2", "label": "double flash"}, {"id": "o3", "label": "long glow"}], "narration": "Bolt blinks a signal: flash, flash, pause, flash, flash, pause... What comes next?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'shapes_patterns'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Bolt blinks a signal: flash, flash, pause, flash, flash, pause... What comes next?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_target', 'The bridge pattern reads square, circle, square, circle... Tap the shape that comes next!', '{"targets": [{"id": "o2", "label": "triangle"}, {"id": "o3", "label": "star"}, {"id": "o1", "label": "circle"}, {"id": "o0", "label": "square"}], "narration": "Square, circle, square, circle. Tap the shape that comes next."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'shapes_patterns'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The bridge pattern reads square, circle, square, circle... Tap the shape that comes next!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'trace', 'Trace the zigzag crack in the bridge so Milo can seal it with lava-glue!', '{"trace": "a zigzag crack", "narration": "Trace the zigzag crack in the bridge so Milo can seal it with lava-glue!"}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'shapes_patterns'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Trace the zigzag crack in the bridge so Milo can seal it with lava-glue!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Mystery stones! The dots grow: 1 dot, 2 dots, 3 dots... How many dots on the next stone?', '{"options": [{"id": "o1", "label": "3"}, {"id": "o3", "label": "6"}, {"id": "o2", "label": "5"}, {"id": "o0", "label": "4"}], "narration": "Mystery stones! The dots grow: 1 dot, 2 dots, 3 dots... How many dots on the next stone?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'shapes_patterns'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Mystery stones! The dots grow: 1 dot, 2 dots, 3 dots... How many dots on the next stone?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'The hiccup stacked Milo''s block tower wrong! Rebuild it from 2 blocks to 6 blocks.', '{"items": [{"id": "s0", "label": "2 blocks"}, {"id": "s1", "label": "4 blocks"}, {"id": "s2", "label": "6 blocks"}], "narration": "The hiccup stacked Milo''s block tower wrong! Rebuild it from 2 blocks to 6 blocks."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'shapes_patterns'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The hiccup stacked Milo''s block tower wrong! Rebuild it from 2 blocks to 6 blocks.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_target', 'The code stones read circle, square, triangle, circle, square... Tap the missing stone!', '{"targets": [{"id": "o3", "label": "star"}, {"id": "o0", "label": "triangle"}, {"id": "o1", "label": "square"}, {"id": "o2", "label": "circle"}], "narration": "Circle, square, triangle, circle, square. Tap the missing stone."}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'shapes_patterns'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The code stones read circle, square, triangle, circle, square... Tap the missing stone!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sort', 'Milo found two kinds of secret codes! Sort them: AB patterns, and ABC patterns.', '{"items": [{"id": "g0i0", "label": "red, blue, red, blue", "group": "AB patterns"}, {"id": "g1i1", "label": "circle, square, triangle, circle, square, triangle", "group": "ABC patterns"}, {"id": "g1i0", "label": "red, blue, green, red, blue, green", "group": "ABC patterns"}, {"id": "g0i1", "label": "up, down, up, down", "group": "AB patterns"}], "groups": [{"id": "g0", "label": "AB patterns"}, {"id": "g1", "label": "ABC patterns"}], "narration": "Milo found two kinds of secret codes! Sort them: AB patterns, and ABC patterns."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1"], "g1": ["g1i0", "g1i1"]}}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'shapes_patterns'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Milo found two kinds of secret codes! Sort them: AB patterns, and ABC patterns.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'The master gate code: 5, 10, 15... You designed this bridge! What number opens the gate?', '{"options": [{"id": "o0", "label": "20"}, {"id": "o1", "label": "16"}, {"id": "o3", "label": "18"}, {"id": "o2", "label": "25"}], "narration": "The master gate code: 5, 10, 15... You designed this bridge! What number opens the gate?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'shapes_patterns'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The master gate code: 5, 10, 15... You designed this bridge! What number opens the gate?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'Lay your master bridge row for the grand opening: star, star, circle, star, star, circle!', '{"items": [{"id": "s4", "label": "star"}, {"id": "s3", "label": "star"}, {"id": "s1", "label": "star"}, {"id": "s2", "label": "circle"}, {"id": "s5", "label": "circle"}, {"id": "s0", "label": "star"}], "narration": "Lay your master bridge row for the grand opening: star, star, circle, star, star, circle!"}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3", "s4", "s5"]}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'shapes_patterns'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Lay your master bridge row for the grand opening: star, star, circle, star, star, circle!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_target', 'Bolt''s farewell code: flash, pause, pause, flash, pause, pause... Tap what comes next!', '{"targets": [{"id": "o2", "label": "double flash"}, {"id": "o1", "label": "pause"}, {"id": "o0", "label": "flash"}, {"id": "o3", "label": "glow"}], "narration": "Flash, pause, pause, flash, pause, pause. Tap what comes next."}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'shapes_patterns'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Bolt''s farewell code: flash, pause, pause, flash, pause, pause... Tap what comes next!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'You are the pattern master! Teach Sprocket your song: circle, circle, square — again!', '{"script": "Circle, circle, square, circle, circle, square!", "narration": "You are the pattern master! Teach Sprocket your song: circle, circle, square — again!"}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'shapes_patterns'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'You are the pattern master! Teach Sprocket your song: circle, circle, square — again!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Milo cut a star-berry two ways. Tap the berry cut into two EQUAL halves!', '{"targets": [{"id": "o1", "label": "cut into 2 uneven pieces"}, {"id": "o0", "label": "cut into 2 equal halves"}, {"id": "o3", "label": "a whole berry"}, {"id": "o2", "label": "cut into 3 pieces"}], "narration": "Tap the berry cut into two equal halves."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'fractions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Milo cut a star-berry two ways. Tap the berry cut into two EQUAL halves!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Milo shares one rock-cake with Sprocket, cut right down the middle. What does each friend get?', '{"options": [{"id": "o1", "label": "one whole"}, {"id": "o2", "label": "one third"}, {"id": "o0", "label": "one half"}, {"id": "o3", "label": "two halves"}], "narration": "Milo shares one rock-cake with Sprocket, cut right down the middle. What does each friend get?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'fractions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Milo shares one rock-cake with Sprocket, cut right down the middle. What does each friend get?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'sort', 'Snack time! Sort the snacks: halves for sharing, and wholes for keeping.', '{"items": [{"id": "g0i2", "label": "half an apple", "group": "Halves"}, {"id": "g1i0", "label": "a whole berry", "group": "Wholes"}, {"id": "g0i1", "label": "half a cake", "group": "Halves"}, {"id": "g0i0", "label": "half a berry", "group": "Halves"}, {"id": "g1i2", "label": "a whole apple", "group": "Wholes"}, {"id": "g1i1", "label": "a whole cake", "group": "Wholes"}], "groups": [{"id": "g0", "label": "Halves"}, {"id": "g1", "label": "Wholes"}], "narration": "Snack time! Sort the snacks: halves for sharing, and wholes for keeping."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'fractions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Snack time! Sort the snacks: halves for sharing, and wholes for keeping.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'The fair-share rule: two halves make one whole! Chant it with Milo!', '{"script": "Two halves make one whole!", "narration": "The fair-share rule: two halves make one whole! Chant it with Milo!"}'::jsonb, '{}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'fractions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The fair-share rule: two halves make one whole! Chant it with Milo!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Bolt collected 6 flashes of light and shares half with Milo. How many flashes does each friend get?', '{"options": [{"id": "o1", "label": "2"}, {"id": "o3", "label": "6"}, {"id": "o0", "label": "3"}, {"id": "o2", "label": "4"}], "narration": "Bolt collected 6 flashes of light and shares half with Milo. How many flashes does each friend get?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'fractions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Bolt collected 6 flashes of light and shares half with Milo. How many flashes does each friend get?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'Milo needs half of 8 stars for his star-map. Tap the group showing half of 8!', '{"targets": [{"id": "o0", "label": "4 stars"}, {"id": "o3", "label": "6 stars"}, {"id": "o2", "label": "2 stars"}, {"id": "o1", "label": "8 stars"}], "narration": "Tap the group showing half of eight stars."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'fractions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Milo needs half of 8 stars for his star-map. Tap the group showing half of 8!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'Put Milo''s cake-sharing story in order!', '{"items": [{"id": "s2", "label": "Now there are 4 halves"}, {"id": "s0", "label": "Milo baked 2 cakes"}, {"id": "s1", "label": "He cut each cake in half"}], "narration": "Put Milo''s cake-sharing story in order!"}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'fractions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Put Milo''s cake-sharing story in order!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'trace', 'Trace the line that cuts the rock-cake into two equal halves!', '{"trace": "a line through the middle of the cake", "narration": "Trace the line that cuts the rock-cake into two equal halves!"}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'fractions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Trace the line that cuts the rock-cake into two equal halves!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Sprocket has 8 crystals and shares half with Milo for the rocket. How many does Milo get?', '{"options": [{"id": "o1", "label": "2"}, {"id": "o3", "label": "8"}, {"id": "o2", "label": "6"}, {"id": "o0", "label": "4"}], "narration": "Sprocket has 8 crystals and shares half with Milo for the rocket. How many does Milo get?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'fractions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sprocket has 8 crystals and shares half with Milo for the rocket. How many does Milo get?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Bolt''s glow-cookie is cut into 4 equal parts. What is ONE part called?', '{"options": [{"id": "o2", "label": "one third"}, {"id": "o1", "label": "one half"}, {"id": "o3", "label": "one whole"}, {"id": "o0", "label": "one quarter"}], "narration": "Bolt''s glow-cookie is cut into 4 equal parts. What is ONE part called?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'fractions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Bolt''s glow-cookie is cut into 4 equal parts. What is ONE part called?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sort', 'Sprocket''s picnic packs! Sort them: packs cut into halves, and packs cut into quarters.', '{"items": [{"id": "g0i1", "label": "one half of a pie", "group": "Halves"}, {"id": "g1i1", "label": "one quarter of a pie", "group": "Quarters"}, {"id": "g1i2", "label": "a quarter sandwich", "group": "Quarters"}, {"id": "g0i0", "label": "cut into 2 equal parts", "group": "Halves"}, {"id": "g0i2", "label": "half a sandwich", "group": "Halves"}, {"id": "g1i0", "label": "cut into 4 equal parts", "group": "Quarters"}], "groups": [{"id": "g0", "label": "Halves"}, {"id": "g1", "label": "Quarters"}], "narration": "Sprocket''s picnic packs! Sort them: packs cut into halves, and packs cut into quarters."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'fractions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sprocket''s picnic packs! Sort them: packs cut into halves, and packs cut into quarters.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_target', 'Milo ordered a quarter-pie! Tap the pie cut into 4 equal quarters.', '{"targets": [{"id": "o0", "label": "cut into 4 equal parts"}, {"id": "o2", "label": "cut into 3 parts"}, {"id": "o3", "label": "a whole pie"}, {"id": "o1", "label": "cut into 2 halves"}], "narration": "Tap the pie cut into four equal quarters."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'fractions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Milo ordered a quarter-pie! Tap the pie cut into 4 equal quarters.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'The volcano split 12 crystals into 3 EQUAL piles for Milo, Sprocket, and Bolt. How many crystals in each pile?', '{"options": [{"id": "o3", "label": "5"}, {"id": "o2", "label": "6"}, {"id": "o1", "label": "3"}, {"id": "o0", "label": "4"}], "narration": "The volcano split 12 crystals into 3 EQUAL piles for Milo, Sprocket, and Bolt. How many crystals in each pile?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'fractions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The volcano split 12 crystals into 3 EQUAL piles for Milo, Sprocket, and Bolt. How many crystals in each pile?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'One third of 9 star-berries are ripe and red. How many berries are ripe?', '{"options": [{"id": "o0", "label": "3"}, {"id": "o2", "label": "4"}, {"id": "o3", "label": "6"}, {"id": "o1", "label": "2"}], "narration": "One third of 9 star-berries are ripe and red. How many berries are ripe?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'fractions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'One third of 9 star-berries are ripe and red. How many berries are ripe?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_target', 'Milo hid one third of 12 bolts in the toolbox. Tap the pile with 4 bolts!', '{"targets": [{"id": "o0", "label": "4 bolts"}, {"id": "o3", "label": "2 bolts"}, {"id": "o2", "label": "6 bolts"}, {"id": "o1", "label": "3 bolts"}], "narration": "One third of twelve is four. Tap the pile with four bolts."}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'fractions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Milo hid one third of 12 bolts in the toolbox. Tap the pile with 4 bolts!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'Rebuild the great crystal share that the hiccup scattered!', '{"items": [{"id": "s2", "label": "Each friend gets 4"}, {"id": "s1", "label": "Split into 3 equal piles"}, {"id": "s0", "label": "12 crystals in the pot"}], "narration": "Rebuild the great crystal share that the hiccup scattered!"}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'fractions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Rebuild the great crystal share that the hiccup scattered!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Grand feast! One quarter of 20 berries go to Bolt. You are the feast master — how many berries?', '{"options": [{"id": "o2", "label": "10"}, {"id": "o1", "label": "4"}, {"id": "o3", "label": "6"}, {"id": "o0", "label": "5"}], "narration": "Grand feast! One quarter of 20 berries go to Bolt. You are the feast master — how many berries?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'fractions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Grand feast! One quarter of 20 berries go to Bolt. You are the feast master — how many berries?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Two thirds of 12 gears are shiny and new. How many gears shine?', '{"options": [{"id": "o2", "label": "6"}, {"id": "o1", "label": "4"}, {"id": "o0", "label": "8"}, {"id": "o3", "label": "9"}], "narration": "Two thirds of 12 gears are shiny and new. How many gears shine?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'fractions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Two thirds of 12 gears are shiny and new. How many gears shine?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sort', 'The volcano demands perfect shares! Sort: groups showing half of 10, and a quarter of 12.', '{"items": [{"id": "g1i2", "label": "3 berries", "group": "Quarter of 12"}, {"id": "g0i0", "label": "5 stars", "group": "Half of 10"}, {"id": "g0i1", "label": "5 bolts", "group": "Half of 10"}, {"id": "g1i1", "label": "3 bolts", "group": "Quarter of 12"}, {"id": "g0i2", "label": "5 berries", "group": "Half of 10"}, {"id": "g1i0", "label": "3 stars", "group": "Quarter of 12"}], "groups": [{"id": "g0", "label": "Half of 10"}, {"id": "g1", "label": "Quarter of 12"}], "narration": "The volcano demands perfect shares! Sort: groups showing half of 10, and a quarter of 12."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'fractions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The volcano demands perfect shares! Sort: groups showing half of 10, and a quarter of 12.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'You are the fair-share champion! Teach Bolt: a quarter of twelve is three!', '{"script": "A quarter of twelve is three!", "narration": "You are the fair-share champion! Teach Bolt: a quarter of twelve is three!"}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'fractions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'You are the fair-share champion! Teach Bolt: a quarter of twelve is three!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Buzz buzz! Sprout the seedling just poked out of the soil! Which part of Sprout drinks up the water?', '{"options": [{"id": "o0", "label": "roots"}, {"id": "o2", "label": "flower"}, {"id": "o1", "label": "leaves"}, {"id": "o3", "label": "stem"}], "narration": "Buzz buzz! Sprout the seedling just poked out of the soil! Which part of Sprout drinks up the water?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'plants'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Sprout the seedling just poked out of the soil! Which part of Sprout drinks up the water?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Buzz buzz! Welcome to the Greenhouse! Can you tap the leaf on little Sprout?', '{"targets": [{"id": "o0", "label": "leaf"}, {"id": "o2", "label": "stem"}, {"id": "o1", "label": "root"}, {"id": "o3", "label": "flower"}], "narration": "Tap the leaf — the flat green part of the plant."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'plants'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Welcome to the Greenhouse! Can you tap the leaf on little Sprout?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'Buzz buzz! Sprout grew four tiny leaves! Count the leaves with me.', '{"thing": "leaves", "total": 4, "narration": "Count the four tiny leaves on Sprout."}'::jsonb, '{"count": 4}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'plants'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Sprout grew four tiny leaves! Count the leaves with me.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Buzz buzz! Sprout is getting tall! Which part holds Sprout up straight?', '{"options": [{"id": "o3", "label": "seeds"}, {"id": "o0", "label": "stem"}, {"id": "o1", "label": "roots"}, {"id": "o2", "label": "leaves"}], "narration": "Buzz buzz! Sprout is getting tall! Which part holds Sprout up straight?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'plants'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Sprout is getting tall! Which part holds Sprout up straight?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Buzz buzz! Sprout looks droopy, but Bea watered it yesterday. What else might Sprout need?', '{"options": [{"id": "o1", "label": "even more water"}, {"id": "o0", "label": "sunlight"}, {"id": "o2", "label": "a darker corner"}, {"id": "o3", "label": "a bigger pot"}], "narration": "Buzz buzz! Sprout looks droopy, but Bea watered it yesterday. What else might Sprout need?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'plants'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Sprout looks droopy, but Bea watered it yesterday. What else might Sprout need?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'listen_repeat', 'Buzz buzz! Sprout made a wish list! Say it with Bea so we remember.', '{"script": "Plants need sunlight, water, and air to grow.", "narration": "Buzz buzz! Sprout made a wish list! Say it with Bea so we remember."}'::jsonb, '{}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'plants'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Sprout made a wish list! Say it with Bea so we remember.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Buzz buzz! Bea covered a plant with a box to keep it safe. After a week, what happened?', '{"options": [{"id": "o3", "label": "nothing changed at all"}, {"id": "o2", "label": "it turned bright blue"}, {"id": "o0", "label": "it wilted without light"}, {"id": "o1", "label": "it grew taller"}], "narration": "Buzz buzz! Bea covered a plant with a box to keep it safe. After a week, what happened?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'plants'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Bea covered a plant with a box to keep it safe. After a week, what happened?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'trace', 'Buzz buzz! The watering can is full! Trace the water''s path down to Sprout''s roots.', '{"trace": "the water''s path from the can down into the soil to the roots", "narration": "Trace the water''s path from the watering can down into the soil to Sprout''s roots."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'plants'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! The watering can is full! Trace the water''s path down to Sprout''s roots.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sequence', 'Buzz buzz! The wind scattered Sprout''s growth diary! Put Sprout''s life in order, from first to last.', '{"items": [{"id": "s3", "label": "a blooming flower"}, {"id": "s2", "label": "a tall stem with leaves"}, {"id": "s0", "label": "a tiny seed in the soil"}, {"id": "s1", "label": "a sprout pokes out"}], "narration": "Buzz buzz! The wind scattered Sprout''s growth diary! Put Sprout''s life in order, from first to last."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'plants'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! The wind scattered Sprout''s growth diary! Put Sprout''s life in order, from first to last.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Buzz buzz! Buzzy buried his seed under a rock to keep it safe. What should he do instead?', '{"options": [{"id": "o0", "label": "let sunlight reach it"}, {"id": "o1", "label": "cover it with a bigger rock"}, {"id": "o3", "label": "water it every hour"}, {"id": "o2", "label": "dig it up to check"}], "narration": "Buzz buzz! Buzzy buried his seed under a rock to keep it safe. What should he do instead?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'plants'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Buzzy buried his seed under a rock to keep it safe. What should he do instead?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_target', 'Buzz buzz! Buzzy wants to see where plants drink. Tap Sprout''s roots!', '{"targets": [{"id": "o0", "label": "roots"}, {"id": "o2", "label": "leaves"}, {"id": "o3", "label": "flower"}, {"id": "o1", "label": "stem"}], "narration": "Tap the roots — the parts hiding under the soil."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'plants'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Buzzy wants to see where plants drink. Tap Sprout''s roots!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Buzz buzz! Which of these could grow into a brand-new plant?', '{"options": [{"id": "o1", "label": "a pebble"}, {"id": "o2", "label": "a marble"}, {"id": "o0", "label": "an apple seed"}, {"id": "o3", "label": "a button"}], "narration": "Buzz buzz! Which of these could grow into a brand-new plant?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'plants'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Which of these could grow into a brand-new plant?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Buzz buzz! Mystery! Bea watered her mint, but it still wilted. What is the sneaky reason?', '{"options": [{"id": "o3", "label": "it wants a bigger pot"}, {"id": "o0", "label": "water is stuck with no drain hole"}, {"id": "o1", "label": "it needs even more water"}, {"id": "o2", "label": "mint hates sunshine"}], "narration": "Buzz buzz! Mystery! Bea watered her mint, but it still wilted. What is the sneaky reason?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'plants'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Mystery! Bea watered her mint, but it still wilted. What is the sneaky reason?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Buzz buzz! Two seedlings: one by the window, one in a dark box. After a week, which one stands tall?', '{"options": [{"id": "o2", "label": "both grow the same"}, {"id": "o1", "label": "the one in the dark box"}, {"id": "o0", "label": "the one by the window"}, {"id": "o3", "label": "neither grows at all"}], "narration": "Buzz buzz! Two seedlings: one by the window, one in a dark box. After a week, which one stands tall?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'plants'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Two seedlings: one by the window, one in a dark box. After a week, which one stands tall?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'Buzz buzz! Mystery! Sprout''s leaves have tiny holes! What happened first, next, and last?', '{"items": [{"id": "s2", "label": "Bea found the holes this morning"}, {"id": "s0", "label": "a hungry caterpillar visited"}, {"id": "s1", "label": "it munched tiny holes in the leaves"}], "narration": "Buzz buzz! Mystery! Sprout''s leaves have tiny holes! What happened first, next, and last?"}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'plants'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Mystery! Sprout''s leaves have tiny holes! What happened first, next, and last?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Buzz buzz! The soil is dry AND Sprout is droopy. What is the best fix?', '{"options": [{"id": "o3", "label": "move it to a dark corner"}, {"id": "o1", "label": "pull it out to check the roots"}, {"id": "o2", "label": "pour in lots of plant food"}, {"id": "o0", "label": "give it water, then wait"}], "narration": "Buzz buzz! The soil is dry AND Sprout is droopy. What is the best fix?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'plants'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! The soil is dry AND Sprout is droopy. What is the best fix?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Buzz buzz! A new bee asks what plants need. Teach her like a master gardener!', '{"options": [{"id": "o3", "label": "soil and nothing else"}, {"id": "o0", "label": "sunlight, water, and air"}, {"id": "o1", "label": "only water"}, {"id": "o2", "label": "water and music"}], "narration": "Buzz buzz! A new bee asks what plants need. Teach her like a master gardener!"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'plants'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! A new bee asks what plants need. Teach her like a master gardener!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'Buzz buzz! Master quest! Tell Sprout''s whole life story, from start to finish.', '{"items": [{"id": "s1", "label": "sprout pokes out"}, {"id": "s3", "label": "flower blooms"}, {"id": "s4", "label": "new seeds are made"}, {"id": "s2", "label": "tall plant with leaves"}, {"id": "s0", "label": "seed sleeping in the soil"}], "narration": "Buzz buzz! Master quest! Tell Sprout''s whole life story, from start to finish."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3", "s4"]}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'plants'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Master quest! Tell Sprout''s whole life story, from start to finish.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Buzz buzz! Which part of the plant uses sunlight to make food?', '{"options": [{"id": "o0", "label": "leaves"}, {"id": "o1", "label": "roots"}, {"id": "o2", "label": "flowers"}, {"id": "o3", "label": "seeds"}], "narration": "Buzz buzz! Which part of the plant uses sunlight to make food?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'plants'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Which part of the plant uses sunlight to make food?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'Buzz buzz! Say Sprout''s life story with Bea, nice and loud!', '{"script": "Seed, sprout, plant, flower, seeds again!", "narration": "Buzz buzz! Say Sprout''s life story with Bea, nice and loud!"}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'plants'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Say Sprout''s life story with Bea, nice and loud!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'sort', 'Buzz buzz! These animals got mixed up on the way home! Put each animal in its home.', '{"items": [{"id": "g1i0", "label": "bird", "group": "Tree"}, {"id": "g0i0", "label": "frog", "group": "Pond"}, {"id": "g1i1", "label": "squirrel", "group": "Tree"}, {"id": "g0i1", "label": "duck", "group": "Pond"}], "groups": [{"id": "g0", "label": "Pond"}, {"id": "g1", "label": "Tree"}], "narration": "Buzz buzz! These animals got mixed up on the way home! Put each animal in its home."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1"], "g1": ["g1i0", "g1i1"]}}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'animals_habitats'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! These animals got mixed up on the way home! Put each animal in its home.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Buzz buzz! Dewdrop the frog is getting sleepy. Where will he rest tonight?', '{"options": [{"id": "o3", "label": "on a mountain top"}, {"id": "o0", "label": "in the pond"}, {"id": "o2", "label": "in the desert"}, {"id": "o1", "label": "in a tree"}], "narration": "Buzz buzz! Dewdrop the frog is getting sleepy. Where will he rest tonight?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'animals_habitats'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Dewdrop the frog is getting sleepy. Where will he rest tonight?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Buzz buzz! Tap the animal that lives in a hive, just like Bea!', '{"targets": [{"id": "o1", "label": "fish"}, {"id": "o0", "label": "bee"}, {"id": "o3", "label": "bird"}, {"id": "o2", "label": "rabbit"}], "narration": "Tap the bee — the animal that lives in a hive."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'animals_habitats'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Tap the animal that lives in a hive, just like Bea!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Buzz buzz! Where would you find a fish swimming happily?', '{"options": [{"id": "o1", "label": "in a tree"}, {"id": "o0", "label": "in the pond"}, {"id": "o3", "label": "in the desert"}, {"id": "o2", "label": "in the sky"}], "narration": "Buzz buzz! Where would you find a fish swimming happily?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'animals_habitats'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Where would you find a fish swimming happily?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Buzz buzz! Why does Dewdrop love the pond so much?', '{"options": [{"id": "o3", "label": "ponds are always warm"}, {"id": "o2", "label": "he is afraid of land"}, {"id": "o0", "label": "his skin must stay wet"}, {"id": "o1", "label": "he likes being dry"}], "narration": "Buzz buzz! Why does Dewdrop love the pond so much?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'animals_habitats'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Why does Dewdrop love the pond so much?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Buzz buzz! A polar bear is visiting and feels too hot! Where does a polar bear feel at home?', '{"options": [{"id": "o2", "label": "a warm pond"}, {"id": "o0", "label": "the snowy Arctic"}, {"id": "o3", "label": "the steamy rainforest"}, {"id": "o1", "label": "the hot desert"}], "narration": "Buzz buzz! A polar bear is visiting and feels too hot! Where does a polar bear feel at home?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'animals_habitats'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! A polar bear is visiting and feels too hot! Where does a polar bear feel at home?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_count', 'Buzz buzz! Five ducks came to visit Dewdrop''s pond! Count the ducks.', '{"thing": "ducks", "total": 5, "narration": "Count the five ducks visiting the pond."}'::jsonb, '{"count": 5}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'animals_habitats'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Five ducks came to visit Dewdrop''s pond! Count the ducks.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'Buzz buzz! Something is hiding in the tree! Tap the animal that lives up there.', '{"targets": [{"id": "o0", "label": "squirrel"}, {"id": "o1", "label": "frog"}, {"id": "o2", "label": "fish"}, {"id": "o3", "label": "rabbit"}], "narration": "Tap the squirrel hiding in the tree."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'animals_habitats'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Something is hiding in the tree! Tap the animal that lives up there.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Buzz buzz! A baby bird tumbled out of its nest! Where should we gently put it back?', '{"options": [{"id": "o0", "label": "in its nest in the tree"}, {"id": "o2", "label": "in a flower pot inside"}, {"id": "o3", "label": "on the soft grass"}, {"id": "o1", "label": "in the pond"}], "narration": "Buzz buzz! A baby bird tumbled out of its nest! Where should we gently put it back?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'animals_habitats'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! A baby bird tumbled out of its nest! Where should we gently put it back?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sort', 'Buzz buzz! Buzzy packed lunch for everyone! Sort who eats plants and who eats meat.', '{"items": [{"id": "g0i0", "label": "rabbit", "group": "Eats plants"}, {"id": "g1i0", "label": "fox", "group": "Eats meat"}, {"id": "g0i1", "label": "deer", "group": "Eats plants"}, {"id": "g1i1", "label": "owl", "group": "Eats meat"}], "groups": [{"id": "g0", "label": "Eats plants"}, {"id": "g1", "label": "Eats meat"}], "narration": "Buzz buzz! Buzzy packed lunch for everyone! Sort who eats plants and who eats meat."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1"], "g1": ["g1i0", "g1i1"]}}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'animals_habitats'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Buzzy packed lunch for everyone! Sort who eats plants and who eats meat.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Buzz buzz! A lost bee is buzzing in circles. What kind of home should we look for?', '{"options": [{"id": "o1", "label": "a burrow"}, {"id": "o3", "label": "a pond"}, {"id": "o2", "label": "a nest of twigs"}, {"id": "o0", "label": "a hive"}], "narration": "Buzz buzz! A lost bee is buzzing in circles. What kind of home should we look for?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'animals_habitats'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! A lost bee is buzzing in circles. What kind of home should we look for?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'listen_repeat', 'Buzz buzz! Croak the frog song with Dewdrop!', '{"script": "Frogs live in ponds. Birds live in trees.", "narration": "Buzz buzz! Croak the frog song with Dewdrop!"}'::jsonb, '{}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'animals_habitats'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Croak the frog song with Dewdrop!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Buzz buzz! Mystery! The duck dives every day but never gets soggy! Why?', '{"options": [{"id": "o1", "label": "it stays out of deep water"}, {"id": "o3", "label": "its feathers soak up water"}, {"id": "o2", "label": "the sun dries it fast"}, {"id": "o0", "label": "oily feathers push water away"}], "narration": "Buzz buzz! Mystery! The duck dives every day but never gets soggy! Why?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'animals_habitats'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Mystery! The duck dives every day but never gets soggy! Why?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Buzz buzz! Why does the rabbit have such long ears?', '{"options": [{"id": "o3", "label": "to look bigger to foxes"}, {"id": "o1", "label": "to help it hop higher"}, {"id": "o2", "label": "to swat away flies"}, {"id": "o0", "label": "to hear danger from far away"}], "narration": "Buzz buzz! Why does the rabbit have such long ears?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'animals_habitats'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Why does the rabbit have such long ears?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'Buzz buzz! Dewdrop was not always a frog! Put his life in order.', '{"items": [{"id": "s3", "label": "a frog hops onto land"}, {"id": "s0", "label": "tiny eggs in the pond"}, {"id": "s2", "label": "the tadpole grows legs"}, {"id": "s1", "label": "a wiggly tadpole hatches"}], "narration": "Buzz buzz! Dewdrop was not always a frog! Put his life in order."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'animals_habitats'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Dewdrop was not always a frog! Put his life in order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Buzz buzz! Camels cross the hot desert. What helps the camel most?', '{"options": [{"id": "o3", "label": "its thick fur cools it down"}, {"id": "o1", "label": "its hump stores water"}, {"id": "o0", "label": "its hump stores food for the trip"}, {"id": "o2", "label": "it never feels thirsty"}], "narration": "Buzz buzz! Camels cross the hot desert. What helps the camel most?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'animals_habitats'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Camels cross the hot desert. What helps the camel most?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Buzz buzz! Teach the hive! Why do fish have fins?', '{"options": [{"id": "o1", "label": "to breathe the air"}, {"id": "o0", "label": "to swim and steer"}, {"id": "o2", "label": "to look pretty"}, {"id": "o3", "label": "to walk on land"}], "narration": "Buzz buzz! Teach the hive! Why do fish have fins?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'animals_habitats'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Teach the hive! Why do fish have fins?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sort', 'Buzz buzz! Master quest! Sort every animal into its home: water, land, or sky.', '{"items": [{"id": "g2i0", "label": "bird", "group": "Sky"}, {"id": "g0i1", "label": "frog", "group": "Water"}, {"id": "g1i1", "label": "fox", "group": "Land"}, {"id": "g2i1", "label": "bee", "group": "Sky"}, {"id": "g0i0", "label": "fish", "group": "Water"}, {"id": "g1i0", "label": "rabbit", "group": "Land"}], "groups": [{"id": "g0", "label": "Water"}, {"id": "g1", "label": "Land"}, {"id": "g2", "label": "Sky"}], "narration": "Buzz buzz! Master quest! Sort every animal into its home: water, land, or sky."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1"], "g1": ["g1i0", "g1i1"], "g2": ["g2i0", "g2i1"]}}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'animals_habitats'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Master quest! Sort every animal into its home: water, land, or sky.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Buzz buzz! A young bee asks why birds build nests. What do you tell her?', '{"options": [{"id": "o1", "label": "to store food for winter"}, {"id": "o3", "label": "because trees are soft"}, {"id": "o0", "label": "to keep eggs safe and warm"}, {"id": "o2", "label": "to hide from rain only"}], "narration": "Buzz buzz! A young bee asks why birds build nests. What do you tell her?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'animals_habitats'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! A young bee asks why birds build nests. What do you tell her?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'trace', 'Buzz buzz! Trace Bea''s round trip: from the hive to the flower and back home!', '{"trace": "Bea''s round trip from the hive to the flower and back", "narration": "Trace Bea''s round trip from the hive to the flower and back home."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'animals_habitats'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Trace Bea''s round trip: from the hive to the flower and back home!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Buzz buzz! Dewdrop is watching the sky! The sun is shining bright. What is the weather?', '{"options": [{"id": "o1", "label": "rainy"}, {"id": "o3", "label": "windy"}, {"id": "o0", "label": "sunny"}, {"id": "o2", "label": "snowy"}], "narration": "Buzz buzz! Dewdrop is watching the sky! The sun is shining bright. What is the weather?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'weather'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Dewdrop is watching the sky! The sun is shining bright. What is the weather?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Buzz buzz! Dark clouds are rolling in! Tap the picture that shows rainy weather.', '{"targets": [{"id": "o3", "label": "windy day"}, {"id": "o2", "label": "snowy cloud"}, {"id": "o1", "label": "bright sun"}, {"id": "o0", "label": "rainy cloud"}], "narration": "Tap the rainy cloud."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'weather'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Dark clouds are rolling in! Tap the picture that shows rainy weather.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Buzz buzz! The clouds turned dark and heavy. What might happen next?', '{"options": [{"id": "o2", "label": "snow in summer"}, {"id": "o1", "label": "bright sunshine"}, {"id": "o3", "label": "nothing at all"}, {"id": "o0", "label": "rain"}], "narration": "Buzz buzz! The clouds turned dark and heavy. What might happen next?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'weather'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! The clouds turned dark and heavy. What might happen next?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'Buzz buzz! Say the weather words with Dewdrop!', '{"script": "Sunny, rainy, cloudy, snowy!", "narration": "Buzz buzz! Say the weather words with Dewdrop!"}'::jsonb, '{}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'weather'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Say the weather words with Dewdrop!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Buzz buzz! Dewdrop''s weather station shows rain clouds! What should Bea pack?', '{"options": [{"id": "o2", "label": "a snow shovel"}, {"id": "o1", "label": "sunglasses"}, {"id": "o3", "label": "a sun hat"}, {"id": "o0", "label": "a raincoat"}], "narration": "Buzz buzz! Dewdrop''s weather station shows rain clouds! What should Bea pack?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'weather'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Dewdrop''s weather station shows rain clouds! What should Bea pack?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Buzz buzz! The wind is blowing leaves sideways! How strong is the wind?', '{"options": [{"id": "o3", "label": "soft as a whisper"}, {"id": "o1", "label": "gentle"}, {"id": "o2", "label": "stopped"}, {"id": "o0", "label": "strong"}], "narration": "Buzz buzz! The wind is blowing leaves sideways! How strong is the wind?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'weather'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! The wind is blowing leaves sideways! How strong is the wind?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_count', 'Buzz buzz! Raindrops are plopping on Dewdrop''s big leaf! Count them.', '{"thing": "raindrops", "total": 7, "narration": "Count the seven raindrops on the leaf."}'::jsonb, '{"count": 7}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'weather'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Raindrops are plopping on Dewdrop''s big leaf! Count them.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Buzz buzz! The rain stopped and colors arched across the sky! What is it?', '{"options": [{"id": "o3", "label": "the bright sun"}, {"id": "o1", "label": "a storm cloud"}, {"id": "o0", "label": "a rainbow"}, {"id": "o2", "label": "lightning"}], "narration": "Buzz buzz! The rain stopped and colors arched across the sky! What is it?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'weather'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! The rain stopped and colors arched across the sky! What is it?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Buzz buzz! Dewdrop must warn the picnic ants! Which clouds mean rain is coming?', '{"options": [{"id": "o0", "label": "dark, heavy clouds"}, {"id": "o3", "label": "pink sunset clouds"}, {"id": "o1", "label": "white fluffy clouds"}, {"id": "o2", "label": "no clouds at all"}], "narration": "Buzz buzz! Dewdrop must warn the picnic ants! Which clouds mean rain is coming?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'weather'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Dewdrop must warn the picnic ants! Which clouds mean rain is coming?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sort', 'Buzz buzz! Help Dewdrop sort his weather cards before the storm!', '{"items": [{"id": "g0i0", "label": "bright sun", "group": "Sunny day"}, {"id": "g1i1", "label": "umbrella", "group": "Rainy day"}, {"id": "g1i0", "label": "dark rain cloud", "group": "Rainy day"}, {"id": "g0i1", "label": "sunglasses", "group": "Sunny day"}], "groups": [{"id": "g0", "label": "Sunny day"}, {"id": "g1", "label": "Rainy day"}], "narration": "Buzz buzz! Help Dewdrop sort his weather cards before the storm!"}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1"], "g1": ["g1i0", "g1i1"]}}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'weather'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Help Dewdrop sort his weather cards before the storm!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Buzz buzz! Sprout is thirsty and the sky is cloudy. Should Bea water Sprout now?', '{"options": [{"id": "o0", "label": "wait — rain may come"}, {"id": "o3", "label": "water twice as much"}, {"id": "o1", "label": "yes, water right away"}, {"id": "o2", "label": "never water plants"}], "narration": "Buzz buzz! Sprout is thirsty and the sky is cloudy. Should Bea water Sprout now?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'weather'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Sprout is thirsty and the sky is cloudy. Should Bea water Sprout now?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_target', 'Buzz buzz! Tap what you see in the sky BEFORE a storm starts.', '{"targets": [{"id": "o0", "label": "dark clouds"}, {"id": "o3", "label": "twinkling stars"}, {"id": "o2", "label": "rainbow"}, {"id": "o1", "label": "bright sun"}], "narration": "Tap the dark clouds that come before a storm."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'weather'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Tap what you see in the sky BEFORE a storm starts.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'Buzz buzz! Mystery! Where did the puddle go? Put the water''s journey in order.', '{"items": [{"id": "s0", "label": "puddle water rises into the air"}, {"id": "s3", "label": "the puddle fills again"}, {"id": "s2", "label": "rain falls back down"}, {"id": "s1", "label": "clouds gather up high"}], "narration": "Buzz buzz! Mystery! Where did the puddle go? Put the water''s journey in order."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'weather'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Mystery! Where did the puddle go? Put the water''s journey in order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Buzz buzz! The morning grass is wet, but it never rained! What happened?', '{"options": [{"id": "o1", "label": "it rained while we slept"}, {"id": "o2", "label": "the grass made its own water"}, {"id": "o0", "label": "dew formed overnight"}, {"id": "o3", "label": "Dewdrop splashed it"}], "narration": "Buzz buzz! The morning grass is wet, but it never rained! What happened?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'weather'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! The morning grass is wet, but it never rained! What happened?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Buzz buzz! In winter the pond turned hard and slippery! What happened?', '{"options": [{"id": "o3", "label": "it turned to glass"}, {"id": "o2", "label": "the water sank away"}, {"id": "o0", "label": "the water froze into ice"}, {"id": "o1", "label": "snow piled on top"}], "narration": "Buzz buzz! In winter the pond turned hard and slippery! What happened?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'weather'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! In winter the pond turned hard and slippery! What happened?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Buzz buzz! The leaves turned red and gold, then fell down! What season is coming?', '{"options": [{"id": "o3", "label": "winter"}, {"id": "o1", "label": "spring"}, {"id": "o2", "label": "summer"}, {"id": "o0", "label": "autumn"}], "narration": "Buzz buzz! The leaves turned red and gold, then fell down! What season is coming?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'weather'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! The leaves turned red and gold, then fell down! What season is coming?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Buzz buzz! Teach the hive! Where do clouds come from?', '{"options": [{"id": "o0", "label": "water rising into the sky"}, {"id": "o2", "label": "cotton in the sky"}, {"id": "o1", "label": "smoke from houses"}, {"id": "o3", "label": "birds breathing out"}], "narration": "Buzz buzz! Teach the hive! Where do clouds come from?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'weather'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Teach the hive! Where do clouds come from?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'Buzz buzz! Master quest! Put the whole year in order for Dewdrop''s weather station.', '{"items": [{"id": "s0", "label": "spring flowers bloom"}, {"id": "s2", "label": "autumn leaves fall"}, {"id": "s3", "label": "winter snow falls"}, {"id": "s1", "label": "summer sun shines hot"}], "narration": "Buzz buzz! Master quest! Put the whole year in order for Dewdrop''s weather station."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'weather'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Master quest! Put the whole year in order for Dewdrop''s weather station.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Buzz buzz! A young bee asks why it rains. What is the true story?', '{"options": [{"id": "o1", "label": "the sky is crying"}, {"id": "o3", "label": "water leaks from the sky"}, {"id": "o0", "label": "heavy clouds let the water fall"}, {"id": "o2", "label": "clouds get squeezed dry"}], "narration": "Buzz buzz! A young bee asks why it rains. What is the true story?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'weather'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! A young bee asks why it rains. What is the true story?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'Buzz buzz! Say the water cycle with Dewdrop, round and round!', '{"script": "Water rises up, clouds gather, rain falls down, again and again!", "narration": "Buzz buzz! Say the water cycle with Dewdrop, round and round!"}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'weather'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Say the water cycle with Dewdrop, round and round!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Buzz buzz! Our Body Expedition begins! Tap the nose in the picture.', '{"targets": [{"id": "o2", "label": "eye"}, {"id": "o0", "label": "nose"}, {"id": "o1", "label": "ear"}, {"id": "o3", "label": "mouth"}], "narration": "Tap the nose in the picture."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'human_body'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Our Body Expedition begins! Tap the nose in the picture.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Buzz buzz! Our tiny tour bus is rolling! What do we use to see the road?', '{"options": [{"id": "o1", "label": "ears"}, {"id": "o2", "label": "nose"}, {"id": "o3", "label": "hands"}, {"id": "o0", "label": "eyes"}], "narration": "Buzz buzz! Our tiny tour bus is rolling! What do we use to see the road?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'human_body'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Our tiny tour bus is rolling! What do we use to see the road?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'Buzz buzz! Hold up one hand! Count the fingers with Bea.', '{"thing": "fingers", "total": 5, "narration": "Count the five fingers on one hand."}'::jsonb, '{"count": 5}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'human_body'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Hold up one hand! Count the fingers with Bea.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Buzz buzz! Bea is buzzing her buzziest buzz! What do we use to hear it?', '{"options": [{"id": "o2", "label": "nose"}, {"id": "o1", "label": "eyes"}, {"id": "o0", "label": "ears"}, {"id": "o3", "label": "mouth"}], "narration": "Buzz buzz! Bea is buzzing her buzziest buzz! What do we use to hear it?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'human_body'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Bea is buzzing her buzziest buzz! What do we use to hear it?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Buzz buzz! The tour bus reached Nose Station! What does the nose help us do?', '{"options": [{"id": "o0", "label": "smell the flowers"}, {"id": "o2", "label": "hear buzzing"}, {"id": "o3", "label": "taste honey"}, {"id": "o1", "label": "see colors"}], "narration": "Buzz buzz! The tour bus reached Nose Station! What does the nose help us do?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'human_body'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! The tour bus reached Nose Station! What does the nose help us do?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Buzz buzz! Buzzy tasted honey with his tongue! What does the tongue help us do?', '{"options": [{"id": "o2", "label": "hear"}, {"id": "o0", "label": "taste"}, {"id": "o3", "label": "see"}, {"id": "o1", "label": "smell"}], "narration": "Buzz buzz! Buzzy tasted honey with his tongue! What does the tongue help us do?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'human_body'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Buzzy tasted honey with his tongue! What does the tongue help us do?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sort', 'Buzz buzz! Sort what each body part does on the tour!', '{"items": [{"id": "g0i0", "label": "see", "group": "Eyes"}, {"id": "g2i0", "label": "smell", "group": "Nose"}, {"id": "g3i0", "label": "taste", "group": "Tongue"}, {"id": "g1i0", "label": "hear", "group": "Ears"}], "groups": [{"id": "g0", "label": "Eyes"}, {"id": "g1", "label": "Ears"}, {"id": "g2", "label": "Nose"}, {"id": "g3", "label": "Tongue"}], "narration": "Buzz buzz! Sort what each body part does on the tour!"}'::jsonb, '{"groups": {"g0": ["g0i0"], "g1": ["g1i0"], "g2": ["g2i0"], "g3": ["g3i0"]}}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'human_body'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Sort what each body part does on the tour!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'listen_repeat', 'Buzz buzz! Point and say the senses with Bea!', '{"script": "Eyes see. Ears hear. Nose smells.", "narration": "Buzz buzz! Point and say the senses with Bea!"}'::jsonb, '{}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'human_body'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Point and say the senses with Bea!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Buzz buzz! Buzzy bumped his knee! What hard parts inside keep us standing tall?', '{"options": [{"id": "o3", "label": "hair"}, {"id": "o2", "label": "skin"}, {"id": "o1", "label": "muscles"}, {"id": "o0", "label": "bones"}], "narration": "Buzz buzz! Buzzy bumped his knee! What hard parts inside keep us standing tall?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'human_body'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Buzzy bumped his knee! What hard parts inside keep us standing tall?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Buzz buzz! What covers our whole body and keeps the inside safe?', '{"options": [{"id": "o3", "label": "wings"}, {"id": "o2", "label": "clothes"}, {"id": "o0", "label": "skin"}, {"id": "o1", "label": "hair"}], "narration": "Buzz buzz! What covers our whole body and keeps the inside safe?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'human_body'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! What covers our whole body and keeps the inside safe?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_target', 'Buzz buzz! The tour bus reached the heart! Tap the heart in the picture.', '{"targets": [{"id": "o2", "label": "stomach"}, {"id": "o1", "label": "rib"}, {"id": "o0", "label": "heart"}, {"id": "o3", "label": "brain"}], "narration": "Tap the heart in the picture."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'human_body'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! The tour bus reached the heart! Tap the heart in the picture.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Buzz buzz! Buzzy wants strong arms to lift honey jars! What helps arms move?', '{"options": [{"id": "o2", "label": "softer skin"}, {"id": "o1", "label": "longer bones"}, {"id": "o3", "label": "lots of candy"}, {"id": "o0", "label": "muscles"}], "narration": "Buzz buzz! Buzzy wants strong arms to lift honey jars! What helps arms move?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'human_body'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Buzzy wants strong arms to lift honey jars! What helps arms move?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Buzz buzz! Mystery! After running, Buzzy''s chest goes thump-thump-thump! What is thumping?', '{"options": [{"id": "o1", "label": "his lungs breathing"}, {"id": "o3", "label": "his bones knocking"}, {"id": "o0", "label": "his heart pumping"}, {"id": "o2", "label": "his stomach growling"}], "narration": "Buzz buzz! Mystery! After running, Buzzy''s chest goes thump-thump-thump! What is thumping?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'human_body'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Mystery! After running, Buzzy''s chest goes thump-thump-thump! What is thumping?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Buzz buzz! We breathe in... what does our body take from the air?', '{"options": [{"id": "o0", "label": "oxygen"}, {"id": "o3", "label": "dust"}, {"id": "o1", "label": "water"}, {"id": "o2", "label": "smoke"}], "narration": "Buzz buzz! We breathe in... what does our body take from the air?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'human_body'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! We breathe in... what does our body take from the air?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Buzz buzz! Why do we breathe faster when we run?', '{"options": [{"id": "o2", "label": "to fill the lungs like balloons"}, {"id": "o3", "label": "to push the blood faster"}, {"id": "o0", "label": "working muscles need more air"}, {"id": "o1", "label": "to cool the body down"}], "narration": "Buzz buzz! Why do we breathe faster when we run?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'human_body'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Why do we breathe faster when we run?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'Buzz buzz! Follow one breath on the Body Expedition! Put the journey in order.', '{"items": [{"id": "s3", "label": "used air flows back out"}, {"id": "s0", "label": "air flows in through the nose"}, {"id": "s2", "label": "the body takes the air it needs"}, {"id": "s1", "label": "air travels down to the lungs"}], "narration": "Buzz buzz! Follow one breath on the Body Expedition! Put the journey in order."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'human_body'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Follow one breath on the Body Expedition! Put the journey in order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Buzz buzz! Teach the hive! What does the heart do all day?', '{"options": [{"id": "o3", "label": "beats to make music"}, {"id": "o2", "label": "holds the air"}, {"id": "o1", "label": "makes the blood"}, {"id": "o0", "label": "pumps blood around the body"}], "narration": "Buzz buzz! Teach the hive! What does the heart do all day?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'human_body'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Teach the hive! What does the heart do all day?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Buzz buzz! Master quest! What do the lungs do?', '{"options": [{"id": "o0", "label": "take fresh air in and send used air out"}, {"id": "o2", "label": "digest the food"}, {"id": "o1", "label": "pump the blood"}, {"id": "o3", "label": "make us talk"}], "narration": "Buzz buzz! Master quest! What do the lungs do?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'human_body'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Master quest! What do the lungs do?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Buzz buzz! A young bee asks why we must drink water every day!', '{"options": [{"id": "o0", "label": "our bodies are mostly water"}, {"id": "o3", "label": "to cool our bones"}, {"id": "o1", "label": "to wash our insides"}, {"id": "o2", "label": "so we feel full"}], "narration": "Buzz buzz! A young bee asks why we must drink water every day!"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'human_body'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! A young bee asks why we must drink water every day!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'trace', 'Buzz buzz! Trace the loop blood travels: out of the heart, around the body, and back!', '{"trace": "the loop blood travels from the heart around the body and back", "narration": "Trace the loop that blood travels, from the heart around the body and back."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'human_body'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Trace the loop blood travels: out of the heart, around the body, and back!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Buzz buzz! Bea drops a wooden block and a coin into the pond! Which one floats?', '{"options": [{"id": "o1", "label": "the coin"}, {"id": "o0", "label": "the wooden block"}, {"id": "o2", "label": "both float"}, {"id": "o3", "label": "both sink"}], "narration": "Buzz buzz! Bea drops a wooden block and a coin into the pond! Which one floats?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'experiments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Bea drops a wooden block and a coin into the pond! Which one floats?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Buzz buzz! Bea left an ice cube in the warm sunshine! What happens?', '{"options": [{"id": "o2", "label": "it turns to stone"}, {"id": "o3", "label": "it disappears forever"}, {"id": "o1", "label": "it gets even colder"}, {"id": "o0", "label": "it melts into water"}], "narration": "Buzz buzz! Bea left an ice cube in the warm sunshine! What happens?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'experiments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Bea left an ice cube in the warm sunshine! What happens?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'Buzz buzz! Bea lined up jars for her experiment corner! Count the jars.', '{"thing": "jars", "total": 6, "narration": "Count the six jars in Bea''s experiment corner."}'::jsonb, '{"count": 6}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'experiments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Bea lined up jars for her experiment corner! Count the jars.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'Buzz buzz! Say the scientist''s rhyme with Bea!', '{"script": "First I guess, then I test, then I see!", "narration": "Buzz buzz! Say the scientist''s rhyme with Bea!"}'::jsonb, '{}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'experiments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Say the scientist''s rhyme with Bea!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Buzz buzz! Which of these will float in Dewdrop''s pond?', '{"options": [{"id": "o0", "label": "a wooden spoon"}, {"id": "o2", "label": "a glass marble"}, {"id": "o1", "label": "a metal key"}, {"id": "o3", "label": "a heavy rock"}], "narration": "Buzz buzz! Which of these will float in Dewdrop''s pond?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'experiments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Which of these will float in Dewdrop''s pond?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Buzz buzz! Bea rolls a ball down a steep ramp and a gentle ramp! Which ball goes faster?', '{"options": [{"id": "o2", "label": "both go the same speed"}, {"id": "o1", "label": "the one on the gentle ramp"}, {"id": "o3", "label": "the ramp does not matter"}, {"id": "o0", "label": "the one on the steep ramp"}], "narration": "Buzz buzz! Bea rolls a ball down a steep ramp and a gentle ramp! Which ball goes faster?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'experiments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Bea rolls a ball down a steep ramp and a gentle ramp! Which ball goes faster?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sort', 'Buzz buzz! Help Bea sort her experiment tools before the big test!', '{"items": [{"id": "g0i0", "label": "wooden block", "group": "Floats"}, {"id": "g1i0", "label": "rock", "group": "Sinks"}, {"id": "g0i1", "label": "leaf", "group": "Floats"}, {"id": "g0i2", "label": "plastic duck", "group": "Floats"}, {"id": "g1i1", "label": "coin", "group": "Sinks"}, {"id": "g1i2", "label": "metal key", "group": "Sinks"}], "groups": [{"id": "g0", "label": "Floats"}, {"id": "g1", "label": "Sinks"}], "narration": "Buzz buzz! Help Bea sort her experiment tools before the big test!"}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'experiments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Help Bea sort her experiment tools before the big test!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'Buzz buzz! Tap the thing Bea should test next — the one that might float!', '{"targets": [{"id": "o3", "label": "marble"}, {"id": "o0", "label": "feather"}, {"id": "o1", "label": "coin"}, {"id": "o2", "label": "rock"}], "narration": "Tap the feather — the thing that might float."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'experiments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Tap the thing Bea should test next — the one that might float!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Buzz buzz! Buzzy planted one seed deep and one seed shallow! What will happen?', '{"options": [{"id": "o3", "label": "seeds cannot grow in soil"}, {"id": "o1", "label": "the deep one grows faster"}, {"id": "o2", "label": "only the deep one grows"}, {"id": "o0", "label": "both grow, the shallow one pops up first"}], "narration": "Buzz buzz! Buzzy planted one seed deep and one seed shallow! What will happen?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'experiments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Buzzy planted one seed deep and one seed shallow! What will happen?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Buzz buzz! Buzzy shines a light on his toy! Where does the shadow fall?', '{"options": [{"id": "o1", "label": "right under the light"}, {"id": "o0", "label": "on the far side from the light"}, {"id": "o2", "label": "on the same side as the light"}, {"id": "o3", "label": "shadows only come at night"}], "narration": "Buzz buzz! Buzzy shines a light on his toy! Where does the shadow fall?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'experiments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Buzzy shines a light on his toy! Where does the shadow fall?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sequence', 'Buzz buzz! Help Buzzy do the sink-or-float test in the right order!', '{"items": [{"id": "s1", "label": "gently drop it in the water"}, {"id": "s0", "label": "guess: will it sink or float?"}, {"id": "s2", "label": "watch what happens"}, {"id": "s3", "label": "tell a friend what you saw"}], "narration": "Buzz buzz! Help Buzzy do the sink-or-float test in the right order!"}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'experiments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Help Buzzy do the sink-or-float test in the right order!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Buzz buzz! Buzzy poured oil into water! What happens in the jar?', '{"options": [{"id": "o1", "label": "they mix into one"}, {"id": "o2", "label": "the water floats on top"}, {"id": "o3", "label": "both disappear"}, {"id": "o0", "label": "the oil floats on top"}], "narration": "Buzz buzz! Buzzy poured oil into water! What happens in the jar?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'experiments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Buzzy poured oil into water! What happens in the jar?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Buzz buzz! Mystery! Bea raced two ramps, but one ball was big and one was tiny! Why is the test unfair?', '{"options": [{"id": "o3", "label": "the ramp color matters"}, {"id": "o1", "label": "big balls always win"}, {"id": "o0", "label": "she changed two things at once"}, {"id": "o2", "label": "she tested on a cloudy day"}], "narration": "Buzz buzz! Mystery! Bea raced two ramps, but one ball was big and one was tiny! Why is the test unfair?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'experiments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Mystery! Bea raced two ramps, but one ball was big and one was tiny! Why is the test unfair?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Buzz buzz! Bea wants to find which paper plane flies farthest! What is the fair way?', '{"options": [{"id": "o3", "label": "let Dewdrop guess instead"}, {"id": "o0", "label": "throw each one the same way"}, {"id": "o1", "label": "throw the red one harder"}, {"id": "o2", "label": "only test the pretty one"}], "narration": "Buzz buzz! Bea wants to find which paper plane flies farthest! What is the fair way?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'experiments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Bea wants to find which paper plane flies farthest! What is the fair way?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Buzz buzz! Garden mystery solved? The window plant thrived, the closet plant wilted! What did Bea learn?', '{"options": [{"id": "o2", "label": "the window plant got lucky"}, {"id": "o3", "label": "plants grow better alone"}, {"id": "o0", "label": "plants need light to grow"}, {"id": "o1", "label": "closets are too quiet"}], "narration": "Buzz buzz! Garden mystery solved? The window plant thrived, the closet plant wilted! What did Bea learn?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'experiments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Garden mystery solved? The window plant thrived, the closet plant wilted! What did Bea learn?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'trace', 'Buzz buzz! Trace the ball''s path as it zooms down Bea''s ramp!', '{"trace": "the ball''s path rolling down the ramp", "narration": "Trace the ball''s path rolling down the ramp."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'experiments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Trace the ball''s path as it zooms down Bea''s ramp!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Buzz buzz! Master quest! Teach Buzzy the golden rule of testing!', '{"options": [{"id": "o1", "label": "change everything at once"}, {"id": "o3", "label": "only test your favorite"}, {"id": "o2", "label": "keep your test a secret"}, {"id": "o0", "label": "change only one thing at a time"}], "narration": "Buzz buzz! Master quest! Teach Buzzy the golden rule of testing!"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'experiments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Master quest! Teach Buzzy the golden rule of testing!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Buzz buzz! A young bee asks: how do we know the result is true and not just luck?', '{"options": [{"id": "o1", "label": "ask the loudest bee"}, {"id": "o2", "label": "one test is enough"}, {"id": "o0", "label": "test it again and see"}, {"id": "o3", "label": "it felt true"}], "narration": "Buzz buzz! A young bee asks: how do we know the result is true and not just luck?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'experiments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! A young bee asks: how do we know the result is true and not just luck?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'Buzz buzz! Teach the hive the scientist''s steps, in order!', '{"items": [{"id": "s2", "label": "test it fairly"}, {"id": "s0", "label": "ask a question"}, {"id": "s1", "label": "guess what will happen"}, {"id": "s3", "label": "share what you learned"}], "narration": "Buzz buzz! Teach the hive the scientist''s steps, in order!"}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'experiments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Teach the hive the scientist''s steps, in order!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'Buzz buzz! Say the scientist''s promise with Bea, nice and loud!', '{"script": "I change one thing, and I test again!", "narration": "Buzz buzz! Say the scientist''s promise with Bea, nice and loud!"}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'experiments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Buzz buzz! Say the scientist''s promise with Bea, nice and loud!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Gather round, explorers! Atlas''s magic globe is spinning. Can you tap the big blue water?', '{"targets": [{"id": "o1", "label": "the continent"}, {"id": "o3", "label": "a mountain"}, {"id": "o2", "label": "an island"}, {"id": "o0", "label": "the ocean"}], "narration": "Tap the big blue water on the spinning globe. That is the ocean."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'continents_oceans'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Gather round, explorers! Atlas''s magic globe is spinning. Can you tap the big blue water?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Wren sent a postcard: ''I flew over the biggest ocean in the world!'' Which ocean did Wren cross?', '{"options": [{"id": "o2", "label": "Indian Ocean"}, {"id": "o1", "label": "Atlantic Ocean"}, {"id": "o3", "label": "Arctic Ocean"}, {"id": "o0", "label": "Pacific Ocean"}], "narration": "Wren sent a postcard: ''I flew over the biggest ocean in the world!'' Which ocean did Wren cross?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'continents_oceans'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren sent a postcard: ''I flew over the biggest ocean in the world!'' Which ocean did Wren cross?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'Atlas points his trunk at the globe. ''Let''s count Earth''s oceans together, explorer!'' How many oceans are there?', '{"thing": "oceans", "total": 5, "narration": "Atlas points his trunk at the globe. ''Let''s count Earth''s oceans together, explorer!'' How many oceans are there?"}'::jsonb, '{"count": 5}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'continents_oceans'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Atlas points his trunk at the globe. ''Let''s count Earth''s oceans together, explorer!'' How many oceans are there?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'Atlas stomps happily. ''Every explorer must know two big words!'' Can you say them with Atlas?', '{"script": "continent, ocean", "narration": "Atlas stomps happily. ''Every explorer must know two big words!'' Can you say them with Atlas?"}'::jsonb, '{}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'continents_oceans'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Atlas stomps happily. ''Every explorer must know two big words!'' Can you say them with Atlas?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'Oh no! The labels fell off the magic globe. Can you tap Africa to stick its name back on?', '{"targets": [{"id": "o2", "label": "Europe"}, {"id": "o1", "label": "Asia"}, {"id": "o0", "label": "Africa"}, {"id": "o3", "label": "South America"}], "narration": "Tap Africa on the globe to stick its name label back on."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'continents_oceans'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Oh no! The labels fell off the magic globe. Can you tap Africa to stick its name back on?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Wren''s postcard shows bouncing kangaroos! ''Guess where I am!'' Which continent is Wren visiting?', '{"options": [{"id": "o0", "label": "Australia"}, {"id": "o3", "label": "South America"}, {"id": "o1", "label": "Africa"}, {"id": "o2", "label": "Asia"}], "narration": "Wren''s postcard shows bouncing kangaroos! ''Guess where I am!'' Which continent is Wren visiting?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'continents_oceans'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren''s postcard shows bouncing kangaroos! ''Guess where I am!'' Which continent is Wren visiting?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sort', 'A gust of wind mixed up the globe''s labels! Sort them back into Continents and Oceans.', '{"items": [{"id": "g1i2", "label": "Indian Ocean", "group": "Oceans"}, {"id": "g1i1", "label": "Atlantic Ocean", "group": "Oceans"}, {"id": "g0i1", "label": "Asia", "group": "Continents"}, {"id": "g1i0", "label": "Pacific Ocean", "group": "Oceans"}, {"id": "g0i0", "label": "Africa", "group": "Continents"}, {"id": "g0i2", "label": "Europe", "group": "Continents"}], "groups": [{"id": "g0", "label": "Continents"}, {"id": "g1", "label": "Oceans"}], "narration": "A gust of wind mixed up the globe''s labels! Sort them back into Continents and Oceans."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'continents_oceans'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'A gust of wind mixed up the globe''s labels! Sort them back into Continents and Oceans.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'listen_repeat', 'Wren flutters down, chirping the ocean names she learned. Can you say them with Wren?', '{"script": "Pacific, Atlantic, Indian", "narration": "Wren flutters down, chirping the ocean names she learned. Can you say them with Wren?"}'::jsonb, '{}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'continents_oceans'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren flutters down, chirping the ocean names she learned. Can you say them with Wren?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Wren''s postcard got rained on! You can only read: ''...snowy land... penguins everywhere!'' Where is Wren?', '{"options": [{"id": "o3", "label": "Europe"}, {"id": "o2", "label": "Asia"}, {"id": "o1", "label": "Africa"}, {"id": "o0", "label": "Antarctica"}], "narration": "Wren''s postcard got rained on! You can only read: ''...snowy land... penguins everywhere!'' Where is Wren?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'continents_oceans'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren''s postcard got rained on! You can only read: ''...snowy land... penguins everywhere!'' Where is Wren?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_target', 'Wren writes: ''I am on the continent with the Eiffel Tower!'' Tap it on the globe for her.', '{"targets": [{"id": "o2", "label": "Africa"}, {"id": "o3", "label": "North America"}, {"id": "o0", "label": "Europe"}, {"id": "o1", "label": "Asia"}], "narration": "Tap the continent with the Eiffel Tower. That is Europe."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'continents_oceans'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren writes: ''I am on the continent with the Eiffel Tower!'' Tap it on the globe for her.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sort', 'Help Atlas tidy the observatory shelf! Sort the words into Land and Water.', '{"items": [{"id": "g0i2", "label": "mountain", "group": "Land"}, {"id": "g0i1", "label": "island", "group": "Land"}, {"id": "g0i0", "label": "continent", "group": "Land"}, {"id": "g1i2", "label": "lake", "group": "Water"}, {"id": "g1i0", "label": "ocean", "group": "Water"}, {"id": "g1i1", "label": "river", "group": "Water"}], "groups": [{"id": "g0", "label": "Land"}, {"id": "g1", "label": "Water"}], "narration": "Help Atlas tidy the observatory shelf! Sort the words into Land and Water."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'continents_oceans'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Help Atlas tidy the observatory shelf! Sort the words into Land and Water.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Wren''s new photo shows a very long wall winding over green hills. Which continent is she on?', '{"options": [{"id": "o3", "label": "South America"}, {"id": "o1", "label": "Africa"}, {"id": "o2", "label": "Europe"}, {"id": "o0", "label": "Asia"}], "narration": "Wren''s new photo shows a very long wall winding over green hills. Which continent is she on?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'continents_oceans'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren''s new photo shows a very long wall winding over green hills. Which continent is she on?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'A mystery postcard arrived with no name! It says: ''This is the smallest continent — and it is a country too!'' Where?', '{"options": [{"id": "o2", "label": "Antarctica"}, {"id": "o0", "label": "Australia"}, {"id": "o1", "label": "Europe"}, {"id": "o3", "label": "South America"}], "narration": "A mystery postcard arrived with no name! It says: ''This is the smallest continent — and it is a country too!'' Where?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'continents_oceans'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'A mystery postcard arrived with no name! It says: ''This is the smallest continent — and it is a country too!'' Where?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'Atlas''s telescope measured the continents! Put them in order from biggest to smallest.', '{"items": [{"id": "s0", "label": "Asia"}, {"id": "s3", "label": "Australia"}, {"id": "s2", "label": "North America"}, {"id": "s1", "label": "Africa"}], "narration": "Atlas''s telescope measured the continents! Put them in order from biggest to smallest."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'continents_oceans'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Atlas''s telescope measured the continents! Put them in order from biggest to smallest.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'trace', 'Wren''s little boat must cross the big ocean between Europe and North America. Trace the wavy route for her!', '{"trace": "the wavy ocean route", "narration": "Wren''s little boat must cross the big ocean between Europe and North America. Trace the wavy route for her!"}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'continents_oceans'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren''s little boat must cross the big ocean between Europe and North America. Trace the wavy route for her!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Atlas peers at the top of the globe. ''Which ocean sits near the North Pole, under the ice?'' Can you tell him?', '{"options": [{"id": "o3", "label": "Indian Ocean"}, {"id": "o0", "label": "Arctic Ocean"}, {"id": "o1", "label": "Pacific Ocean"}, {"id": "o2", "label": "Atlantic Ocean"}], "narration": "Atlas peers at the top of the globe. ''Which ocean sits near the North Pole, under the ice?'' Can you tell him?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'continents_oceans'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Atlas peers at the top of the globe. ''Which ocean sits near the North Pole, under the ice?'' Can you tell him?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_target', 'You are the globe master now! Atlas spins it fast — can you tap South America?', '{"targets": [{"id": "o3", "label": "Europe"}, {"id": "o0", "label": "South America"}, {"id": "o1", "label": "North America"}, {"id": "o2", "label": "Africa"}], "narration": "The globe is spinning fast. Tap South America, master explorer."}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'continents_oceans'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'You are the globe master now! Atlas spins it fast — can you tap South America?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Atlas''s telescope is foggy, so YOU are the guide! Wren asks: ''Which continent is south of Europe and home to kangaroos?''', '{"options": [{"id": "o2", "label": "South America"}, {"id": "o3", "label": "Asia"}, {"id": "o1", "label": "Africa"}, {"id": "o0", "label": "Australia"}], "narration": "Atlas''s telescope is foggy, so YOU are the guide! Wren asks: ''Which continent is south of Europe and home to kangaroos?''"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'continents_oceans'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Atlas''s telescope is foggy, so YOU are the guide! Wren asks: ''Which continent is south of Europe and home to kangaroos?''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sort', 'The labels fell off AGAIN! Only a master explorer can fix them all. Sort every label.', '{"items": [{"id": "g1i1", "label": "Atlantic Ocean", "group": "Oceans"}, {"id": "g0i0", "label": "Africa", "group": "Continents"}, {"id": "g0i2", "label": "North America", "group": "Continents"}, {"id": "g1i0", "label": "Pacific Ocean", "group": "Oceans"}, {"id": "g1i2", "label": "Arctic Ocean", "group": "Oceans"}, {"id": "g0i1", "label": "Asia", "group": "Continents"}], "groups": [{"id": "g0", "label": "Continents"}, {"id": "g1", "label": "Oceans"}], "narration": "The labels fell off AGAIN! Only a master explorer can fix them all. Sort every label."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'continents_oceans'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The labels fell off AGAIN! Only a master explorer can fix them all. Sort every label.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'Wren flew all the way around the world! Put her stops in the order she visited them.', '{"items": [{"id": "s0", "label": "Europe"}, {"id": "s3", "label": "Australia"}, {"id": "s2", "label": "Asia"}, {"id": "s1", "label": "Africa"}], "narration": "Wren flew all the way around the world! Put her stops in the order she visited them."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'continents_oceans'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren flew all the way around the world! Put her stops in the order she visited them.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Atlas points his telescope at a postcard city. ''Tap the tall iron tower, explorer!''', '{"targets": [{"id": "o1", "label": "Big Ben"}, {"id": "o2", "label": "the Pyramids"}, {"id": "o3", "label": "the Statue of Liberty"}, {"id": "o0", "label": "Eiffel Tower"}], "narration": "Look through the telescope. Tap the tall iron tower."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'landmarks'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Atlas points his telescope at a postcard city. ''Tap the tall iron tower, explorer!''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Wren''s postcard reads: ''I see a giant statue holding a torch in New York!'' Which landmark did Wren visit?', '{"options": [{"id": "o2", "label": "Big Ben"}, {"id": "o0", "label": "Statue of Liberty"}, {"id": "o1", "label": "Eiffel Tower"}, {"id": "o3", "label": "the Pyramids"}], "narration": "Wren''s postcard reads: ''I see a giant statue holding a torch in New York!'' Which landmark did Wren visit?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'landmarks'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren''s postcard reads: ''I see a giant statue holding a torch in New York!'' Which landmark did Wren visit?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'Wren photographed the desert. ''How many huge triangle tombs do you see, explorer?''', '{"thing": "pyramids", "total": 3, "narration": "Wren photographed the desert. ''How many huge triangle tombs do you see, explorer?''"}'::jsonb, '{"count": 3}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'landmarks'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren photographed the desert. ''How many huge triangle tombs do you see, explorer?''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'Wren loves saying landmark names! Say this one with her, nice and slow.', '{"script": "Eiffel Tower", "narration": "Wren loves saying landmark names! Say this one with her, nice and slow."}'::jsonb, '{}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'landmarks'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren loves saying landmark names! Say this one with her, nice and slow.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Atlas''s telescope is all foggy! He sees a very long wall winding over hills. Which landmark is it?', '{"options": [{"id": "o0", "label": "Great Wall"}, {"id": "o3", "label": "Big Ben"}, {"id": "o2", "label": "Eiffel Tower"}, {"id": "o1", "label": "the Pyramids"}], "narration": "Atlas''s telescope is all foggy! He sees a very long wall winding over hills. Which landmark is it?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'landmarks'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Atlas''s telescope is all foggy! He sees a very long wall winding over hills. Which landmark is it?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'The fog is lifting! ''Tap the white marble palace glowing in the sun.''', '{"targets": [{"id": "o3", "label": "Eiffel Tower"}, {"id": "o1", "label": "the Pyramids"}, {"id": "o0", "label": "Taj Mahal"}, {"id": "o2", "label": "the Colosseum"}], "narration": "The fog is lifting. Tap the white marble palace glowing in the sun."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'landmarks'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The fog is lifting! ''Tap the white marble palace glowing in the sun.''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'Wren visited three landmarks today! Put her day in the order she saw them.', '{"items": [{"id": "s2", "label": "Statue of Liberty"}, {"id": "s1", "label": "Big Ben"}, {"id": "s0", "label": "Eiffel Tower"}], "narration": "Wren visited three landmarks today! Put her day in the order she saw them."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'landmarks'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren visited three landmarks today! Put her day in the order she saw them.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sort', 'Help Atlas file his telescope photos! Sort them into Tall Towers and Wonders of Stone.', '{"items": [{"id": "g0i1", "label": "Big Ben", "group": "Tall Towers"}, {"id": "g0i0", "label": "Eiffel Tower", "group": "Tall Towers"}, {"id": "g1i1", "label": "Great Wall", "group": "Wonders of Stone"}, {"id": "g1i2", "label": "Taj Mahal", "group": "Wonders of Stone"}, {"id": "g0i2", "label": "Leaning Tower of Pisa", "group": "Tall Towers"}, {"id": "g1i0", "label": "the Pyramids", "group": "Wonders of Stone"}], "groups": [{"id": "g0", "label": "Tall Towers"}, {"id": "g1", "label": "Wonders of Stone"}], "narration": "Help Atlas file his telescope photos! Sort them into Tall Towers and Wonders of Stone."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'landmarks'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Help Atlas file his telescope photos! Sort them into Tall Towers and Wonders of Stone.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Wren mixed up her photos! This one shows huge triangle tombs in the desert. Help her label it.', '{"options": [{"id": "o3", "label": "the Colosseum"}, {"id": "o0", "label": "the Pyramids"}, {"id": "o1", "label": "Taj Mahal"}, {"id": "o2", "label": "Great Wall"}], "narration": "Wren mixed up her photos! This one shows huge triangle tombs in the desert. Help her label it."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'landmarks'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren mixed up her photos! This one shows huge triangle tombs in the desert. Help her label it.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_target', 'Wren''s camera roll is a mess! ''Tap the photo of the Sydney Opera House.''', '{"targets": [{"id": "o1", "label": "Eiffel Tower"}, {"id": "o2", "label": "Big Ben"}, {"id": "o3", "label": "Taj Mahal"}, {"id": "o0", "label": "Sydney Opera House"}], "narration": "Wren''s photos are all mixed up. Tap the Sydney Opera House."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'landmarks'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren''s camera roll is a mess! ''Tap the photo of the Sydney Opera House.''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'This photo shows a giant statue with a lion''s body and a human head in Egypt. What is it?', '{"options": [{"id": "o1", "label": "the Pyramids"}, {"id": "o3", "label": "Big Ben"}, {"id": "o2", "label": "the Colosseum"}, {"id": "o0", "label": "the Sphinx"}], "narration": "This photo shows a giant statue with a lion''s body and a human head in Egypt. What is it?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'landmarks'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'This photo shows a giant statue with a lion''s body and a human head in Egypt. What is it?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'trace', 'Wren wants to walk the whole Great Wall! Trace its winding line to guide her.', '{"trace": "the winding wall", "narration": "Wren wants to walk the whole Great Wall! Trace its winding line to guide her."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'landmarks'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren wants to walk the whole Great Wall! Trace its winding line to guide her.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'A mystery postcard! It says only: ''I am standing by a giant waterfall between two countries!'' Where is Wren?', '{"options": [{"id": "o1", "label": "the Grand Canyon"}, {"id": "o2", "label": "Mount Everest"}, {"id": "o0", "label": "Niagara Falls"}, {"id": "o3", "label": "the Amazon Rainforest"}], "narration": "A mystery postcard! It says only: ''I am standing by a giant waterfall between two countries!'' Where is Wren?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'landmarks'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'A mystery postcard! It says only: ''I am standing by a giant waterfall between two countries!'' Where is Wren?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Atlas spots a red bridge over a foggy bay in California. Which landmark did he find?', '{"options": [{"id": "o1", "label": "Sydney Opera House"}, {"id": "o2", "label": "Big Ben"}, {"id": "o3", "label": "Eiffel Tower"}, {"id": "o0", "label": "Golden Gate Bridge"}], "narration": "Atlas spots a red bridge over a foggy bay in California. Which landmark did he find?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'landmarks'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Atlas spots a red bridge over a foggy bay in California. Which landmark did he find?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'Wren''s mystery tour! She will not tell Atlas the order — can you fix her jumbled list?', '{"items": [{"id": "s0", "label": "the Pyramids"}, {"id": "s2", "label": "Great Wall"}, {"id": "s3", "label": "Sydney Opera House"}, {"id": "s1", "label": "Taj Mahal"}], "narration": "Wren''s mystery tour! She will not tell Atlas the order — can you fix her jumbled list?"}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'landmarks'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren''s mystery tour! She will not tell Atlas the order — can you fix her jumbled list?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sort', 'Some landmarks were built by people, and some were made by nature! Sort Wren''s photos.', '{"items": [{"id": "g1i2", "label": "Mount Everest", "group": "Made by Nature"}, {"id": "g0i1", "label": "the Pyramids", "group": "Built by People"}, {"id": "g1i1", "label": "Niagara Falls", "group": "Made by Nature"}, {"id": "g1i0", "label": "the Grand Canyon", "group": "Made by Nature"}, {"id": "g0i2", "label": "Great Wall", "group": "Built by People"}, {"id": "g0i0", "label": "Eiffel Tower", "group": "Built by People"}], "groups": [{"id": "g0", "label": "Built by People"}, {"id": "g1", "label": "Made by Nature"}], "narration": "Some landmarks were built by people, and some were made by nature! Sort Wren''s photos."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'landmarks'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Some landmarks were built by people, and some were made by nature! Sort Wren''s photos.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'You are the landmark master! Atlas asks: ''The Colosseum stands in which country?''', '{"options": [{"id": "o1", "label": "France"}, {"id": "o0", "label": "Italy"}, {"id": "o2", "label": "Spain"}, {"id": "o3", "label": "Greece"}], "narration": "You are the landmark master! Atlas asks: ''The Colosseum stands in which country?''"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'landmarks'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'You are the landmark master! Atlas asks: ''The Colosseum stands in which country?''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Wren asks the expert — that''s you! ''Christ the Redeemer watches over which city?''', '{"options": [{"id": "o0", "label": "Rio de Janeiro"}, {"id": "o2", "label": "London"}, {"id": "o3", "label": "Sydney"}, {"id": "o1", "label": "Paris"}], "narration": "Wren asks the expert — that''s you! ''Christ the Redeemer watches over which city?''"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'landmarks'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren asks the expert — that''s you! ''Christ the Redeemer watches over which city?''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sort', 'Only a master can match every landmark to its country! Sort them all.', '{"items": [{"id": "g2i0", "label": "Statue of Liberty", "group": "the USA"}, {"id": "g1i0", "label": "Big Ben", "group": "England"}, {"id": "g3i1", "label": "the Sphinx", "group": "Egypt"}, {"id": "g3i0", "label": "the Pyramids", "group": "Egypt"}, {"id": "g0i0", "label": "Eiffel Tower", "group": "France"}, {"id": "g2i1", "label": "Golden Gate Bridge", "group": "the USA"}], "groups": [{"id": "g0", "label": "France"}, {"id": "g1", "label": "England"}, {"id": "g2", "label": "the USA"}, {"id": "g3", "label": "Egypt"}], "narration": "Only a master can match every landmark to its country! Sort them all."}'::jsonb, '{"groups": {"g0": ["g0i0"], "g1": ["g1i0"], "g2": ["g2i0", "g2i1"], "g3": ["g3i0", "g3i1"]}}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'landmarks'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Only a master can match every landmark to its country! Sort them all.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'Teach Wren like a true master! Say each landmark and its country.', '{"script": "Eiffel Tower, France! Big Ben, England!", "narration": "Teach Wren like a true master! Say each landmark and its country."}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'landmarks'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Teach Wren like a true master! Say each landmark and its country.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Wren is visiting the outback! ''Tap the animal that hops on big back legs.''', '{"targets": [{"id": "o3", "label": "camel"}, {"id": "o0", "label": "kangaroo"}, {"id": "o1", "label": "koala"}, {"id": "o2", "label": "penguin"}], "narration": "Wren is in the outback. Tap the animal that hops on big back legs."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'world_animals'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren is visiting the outback! ''Tap the animal that hops on big back legs.''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Wren''s photo shows a black-and-white bird that cannot fly but loves the snow. Who is it?', '{"options": [{"id": "o2", "label": "seal"}, {"id": "o3", "label": "puffin"}, {"id": "o1", "label": "polar bear"}, {"id": "o0", "label": "penguin"}], "narration": "Wren''s photo shows a black-and-white bird that cannot fly but loves the snow. Who is it?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'world_animals'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren''s photo shows a black-and-white bird that cannot fly but loves the snow. Who is it?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'Look at the icy shore in Wren''s photo! How many penguins are waddling?', '{"thing": "penguins", "total": 4, "narration": "Look at the icy shore in Wren''s photo! How many penguins are waddling?"}'::jsonb, '{"count": 4}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'world_animals'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Look at the icy shore in Wren''s photo! How many penguins are waddling?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'Atlas is teaching animal names! Say this one with him, nice and loud.', '{"script": "kangaroo", "narration": "Atlas is teaching animal names! Say this one with him, nice and loud."}'::jsonb, '{}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'world_animals'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Atlas is teaching animal names! Say this one with him, nice and loud.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Wren met the ''ship of the desert'' — it has humps on its back and walks for miles! Which animal?', '{"options": [{"id": "o0", "label": "camel"}, {"id": "o1", "label": "horse"}, {"id": "o3", "label": "llama"}, {"id": "o2", "label": "donkey"}], "narration": "Wren met the ''ship of the desert'' — it has humps on its back and walks for miles! Which animal?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'world_animals'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren met the ''ship of the desert'' — it has humps on its back and walks for miles! Which animal?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'Deep in the bamboo forest... ''Tap the black-and-white bear munching bamboo!''', '{"targets": [{"id": "o1", "label": "koala"}, {"id": "o3", "label": "raccoon"}, {"id": "o0", "label": "panda"}, {"id": "o2", "label": "sloth"}], "narration": "Deep in the bamboo forest. Tap the black-and-white bear munching bamboo."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'world_animals'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Deep in the bamboo forest... ''Tap the black-and-white bear munching bamboo!''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sort', 'Atlas''s animal photos blew everywhere! Sort them into Snow Animals and Desert Animals.', '{"items": [{"id": "g1i1", "label": "fennec fox", "group": "Desert Animals"}, {"id": "g1i2", "label": "lizard", "group": "Desert Animals"}, {"id": "g0i2", "label": "seal", "group": "Snow Animals"}, {"id": "g0i0", "label": "penguin", "group": "Snow Animals"}, {"id": "g0i1", "label": "polar bear", "group": "Snow Animals"}, {"id": "g1i0", "label": "camel", "group": "Desert Animals"}], "groups": [{"id": "g0", "label": "Snow Animals"}, {"id": "g1", "label": "Desert Animals"}], "narration": "Atlas''s animal photos blew everywhere! Sort them into Snow Animals and Desert Animals."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'world_animals'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Atlas''s animal photos blew everywhere! Sort them into Snow Animals and Desert Animals.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'Wren''s savanna day! Put the animals she saw in the order she met them.', '{"items": [{"id": "s2", "label": "giraffe"}, {"id": "s1", "label": "zebra"}, {"id": "s0", "label": "lion"}], "narration": "Wren''s savanna day! Put the animals she saw in the order she met them."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'world_animals'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren''s savanna day! Put the animals she saw in the order she met them.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sort', 'Wren mixed up her animal photos! Help her sort them into The Savanna and The Ocean.', '{"items": [{"id": "g1i0", "label": "whale", "group": "The Ocean"}, {"id": "g0i0", "label": "lion", "group": "The Savanna"}, {"id": "g1i2", "label": "seal", "group": "The Ocean"}, {"id": "g0i2", "label": "giraffe", "group": "The Savanna"}, {"id": "g0i1", "label": "zebra", "group": "The Savanna"}, {"id": "g1i1", "label": "dolphin", "group": "The Ocean"}], "groups": [{"id": "g0", "label": "The Savanna"}, {"id": "g1", "label": "The Ocean"}], "narration": "Wren mixed up her animal photos! Help her sort them into The Savanna and The Ocean."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'world_animals'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren mixed up her animal photos! Help her sort them into The Savanna and The Ocean.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'This photo shows a slow climber hanging upside down in the rainforest. Who needs a label?', '{"options": [{"id": "o2", "label": "koala"}, {"id": "o1", "label": "monkey"}, {"id": "o3", "label": "lemur"}, {"id": "o0", "label": "sloth"}], "narration": "This photo shows a slow climber hanging upside down in the rainforest. Who needs a label?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'world_animals'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'This photo shows a slow climber hanging upside down in the rainforest. Who needs a label?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_target', 'Atlas asks: ''Which of these animals lives at the very top of the world, in the Arctic?''', '{"targets": [{"id": "o3", "label": "seal"}, {"id": "o0", "label": "polar bear"}, {"id": "o2", "label": "brown bear"}, {"id": "o1", "label": "penguin"}], "narration": "Which animal lives at the very top of the world, in the Arctic? Tap it."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'world_animals'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Atlas asks: ''Which of these animals lives at the very top of the world, in the Arctic?''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'listen_repeat', 'Wren keeps forgetting! ''Where do giant pandas live?'' Say the answer with Wren.', '{"script": "China", "narration": "Wren keeps forgetting! ''Where do giant pandas live?'' Say the answer with Wren."}'::jsonb, '{}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'world_animals'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren keeps forgetting! ''Where do giant pandas live?'' Say the answer with Wren.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Mystery footprints in the snow! Huge paws, white fur, near the North Pole. Who walked here?', '{"options": [{"id": "o0", "label": "polar bear"}, {"id": "o3", "label": "penguin"}, {"id": "o1", "label": "brown bear"}, {"id": "o2", "label": "arctic fox"}], "narration": "Mystery footprints in the snow! Huge paws, white fur, near the North Pole. Who walked here?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'world_animals'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Mystery footprints in the snow! Huge paws, white fur, near the North Pole. Who walked here?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Wren hears a strange ''laugh'' on the night savanna. Which animal makes that laughing sound?', '{"options": [{"id": "o1", "label": "lion"}, {"id": "o0", "label": "hyena"}, {"id": "o2", "label": "zebra"}, {"id": "o3", "label": "jackal"}], "narration": "Wren hears a strange ''laugh'' on the night savanna. Which animal makes that laughing sound?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'world_animals'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren hears a strange ''laugh'' on the night savanna. Which animal makes that laughing sound?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'trace', 'A whale is singing far out at sea! Trace the wavy ocean path so Wren can follow the song.', '{"trace": "the wavy ocean path", "narration": "A whale is singing far out at sea! Trace the wavy ocean path so Wren can follow the song."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'world_animals'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'A whale is singing far out at sea! Trace the wavy ocean path so Wren can follow the song.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'The Arctic tern flies farther than any bird! Put its long journey in order.', '{"items": [{"id": "s2", "label": "Antarctica"}, {"id": "s1", "label": "the ocean"}, {"id": "s0", "label": "the Arctic"}], "narration": "The Arctic tern flies farther than any bird! Put its long journey in order."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'world_animals'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The Arctic tern flies farther than any bird! Put its long journey in order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sort', 'You are the animal expert! Match every animal to its continent.', '{"items": [{"id": "g0i2", "label": "giraffe", "group": "Africa"}, {"id": "g1i1", "label": "koala", "group": "Australia"}, {"id": "g0i0", "label": "lion", "group": "Africa"}, {"id": "g0i1", "label": "elephant", "group": "Africa"}, {"id": "g2i0", "label": "penguin", "group": "Antarctica"}, {"id": "g1i0", "label": "kangaroo", "group": "Australia"}], "groups": [{"id": "g0", "label": "Africa"}, {"id": "g1", "label": "Australia"}, {"id": "g2", "label": "Antarctica"}], "narration": "You are the animal expert! Match every animal to its continent."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1"], "g2": ["g2i0"]}}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'world_animals'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'You are the animal expert! Match every animal to its continent.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Atlas tests the master: ''Which of these animals lives ONLY in the wild in China?''', '{"options": [{"id": "o2", "label": "tiger"}, {"id": "o0", "label": "panda"}, {"id": "o3", "label": "red panda"}, {"id": "o1", "label": "koala"}], "narration": "Atlas tests the master: ''Which of these animals lives ONLY in the wild in China?''"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'world_animals'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Atlas tests the master: ''Which of these animals lives ONLY in the wild in China?''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_target', 'Wren is in the rainforest and hears chattering above! ''Tap the rainforest animal.''', '{"targets": [{"id": "o0", "label": "monkey"}, {"id": "o1", "label": "camel"}, {"id": "o3", "label": "polar bear"}, {"id": "o2", "label": "penguin"}], "narration": "Wren hears chattering in the rainforest. Tap the rainforest animal."}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'world_animals'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren is in the rainforest and hears chattering above! ''Tap the rainforest animal.''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_count', 'Wren''s photo album is full! ''How many animal photos did she take on this trip, explorer?''', '{"thing": "animal photos", "total": 6, "narration": "Wren''s photo album is full! ''How many animal photos did she take on this trip, explorer?''"}'::jsonb, '{"count": 6}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'world_animals'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren''s photo album is full! ''How many animal photos did she take on this trip, explorer?''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Wren drew you a little map! ''Can you tap the school, explorer?''', '{"targets": [{"id": "o1", "label": "the park"}, {"id": "o3", "label": "the shop"}, {"id": "o2", "label": "the lake"}, {"id": "o0", "label": "the school"}], "narration": "Wren drew a little map. Tap the school."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'map_skills'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren drew you a little map! ''Can you tap the school, explorer?''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'On Wren''s map there is a blue squiggle. On maps, the color blue usually means...', '{"options": [{"id": "o3", "label": "forests"}, {"id": "o2", "label": "mountains"}, {"id": "o0", "label": "water"}, {"id": "o1", "label": "roads"}], "narration": "On Wren''s map there is a blue squiggle. On maps, the color blue usually means..."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'map_skills'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'On Wren''s map there is a blue squiggle. On maps, the color blue usually means...');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'trace', 'Wren wants to sail her paper boat to the pond! Trace the dotted path on the map.', '{"trace": "the dotted path", "narration": "Wren wants to sail her paper boat to the pond! Trace the dotted path on the map."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'map_skills'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren wants to sail her paper boat to the pond! Trace the dotted path on the map.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'Wren''s map has tiny trees! ''How many trees can you count, explorer?''', '{"thing": "trees", "total": 4, "narration": "Wren''s map has tiny trees! ''How many trees can you count, explorer?''"}'::jsonb, '{"count": 4}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'map_skills'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren''s map has tiny trees! ''How many trees can you count, explorer?''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Atlas studies the map key. ''The green shapes stand for... what, explorer?''', '{"options": [{"id": "o2", "label": "roads"}, {"id": "o1", "label": "water"}, {"id": "o3", "label": "cities"}, {"id": "o0", "label": "forests"}], "narration": "Atlas studies the map key. ''The green shapes stand for... what, explorer?''"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'map_skills'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Atlas studies the map key. ''The green shapes stand for... what, explorer?''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'Wren is giving Atlas a tour! Put her stops in the order they visit them.', '{"items": [{"id": "s0", "label": "the house"}, {"id": "s2", "label": "the hill"}, {"id": "s1", "label": "the bridge"}], "narration": "Wren is giving Atlas a tour! Put her stops in the order they visit them."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'map_skills'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren is giving Atlas a tour! Put her stops in the order they visit them.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'On the treasure map... ''Tap the triangle that means mountain!''', '{"targets": [{"id": "o0", "label": "the mountain"}, {"id": "o1", "label": "the river"}, {"id": "o3", "label": "the lake"}, {"id": "o2", "label": "the road"}], "narration": "On the treasure map. Tap the triangle that means mountain."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'map_skills'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'On the treasure map... ''Tap the triangle that means mountain!''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'listen_repeat', 'Every explorer needs the compass words! Point north and say it with Atlas.', '{"script": "North", "narration": "Every explorer needs the compass words! Point north and say it with Atlas."}'::jsonb, '{}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'map_skills'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Every explorer needs the compass words! Point north and say it with Atlas.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Wren is lost! The map key says the star means treasure, and the star is by the big oak. Where should she dig?', '{"options": [{"id": "o3", "label": "at the gate"}, {"id": "o1", "label": "by the river"}, {"id": "o2", "label": "on the hill"}, {"id": "o0", "label": "under the big oak"}], "narration": "Wren is lost! The map key says the star means treasure, and the star is by the big oak. Where should she dig?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'map_skills'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren is lost! The map key says the star means treasure, and the star is by the big oak. Where should she dig?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sort', 'Wren''s map stickers are all mixed up! Sort them into Water Places and Land Places.', '{"items": [{"id": "g1i1", "label": "mountain", "group": "Land Places"}, {"id": "g1i0", "label": "forest", "group": "Land Places"}, {"id": "g1i2", "label": "desert", "group": "Land Places"}, {"id": "g0i0", "label": "lake", "group": "Water Places"}, {"id": "g0i1", "label": "river", "group": "Water Places"}, {"id": "g0i2", "label": "pond", "group": "Water Places"}], "groups": [{"id": "g0", "label": "Water Places"}, {"id": "g1", "label": "Land Places"}], "narration": "Wren''s map stickers are all mixed up! Sort them into Water Places and Land Places."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'map_skills'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren''s map stickers are all mixed up! Sort them into Water Places and Land Places.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'trace', 'Wren''s boat must follow the river to the lake! Trace the wavy river for her.', '{"trace": "the wavy river", "narration": "Wren''s boat must follow the river to the lake! Trace the wavy river for her."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'map_skills'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren''s boat must follow the river to the lake! Trace the wavy river for her.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_count', 'The treasure map has red X marks! ''How many X''s do you see, explorer?''', '{"thing": "red X marks", "total": 3, "narration": "The treasure map has red X marks! ''How many X''s do you see, explorer?''"}'::jsonb, '{"count": 3}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'map_skills'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The treasure map has red X marks! ''How many X''s do you see, explorer?''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'The sun rises in the east. Wren is facing the sunrise. Which way is she facing?', '{"options": [{"id": "o0", "label": "east"}, {"id": "o2", "label": "north"}, {"id": "o1", "label": "west"}, {"id": "o3", "label": "south"}], "narration": "The sun rises in the east. Wren is facing the sunrise. Which way is she facing?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'map_skills'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The sun rises in the east. Wren is facing the sunrise. Which way is she facing?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Mystery! The compass needle points north, but Wren wants to walk the OPPOSITE way. Which way should she go?', '{"options": [{"id": "o0", "label": "south"}, {"id": "o2", "label": "east"}, {"id": "o1", "label": "north"}, {"id": "o3", "label": "west"}], "narration": "Mystery! The compass needle points north, but Wren wants to walk the OPPOSITE way. Which way should she go?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'map_skills'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Mystery! The compass needle points north, but Wren wants to walk the OPPOSITE way. Which way should she go?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_target', 'Atlas hands you his brass compass. ''Tap the arrow that points north!''', '{"targets": [{"id": "o0", "label": "the N arrow"}, {"id": "o2", "label": "the E arrow"}, {"id": "o1", "label": "the S arrow"}, {"id": "o3", "label": "the W arrow"}], "narration": "Atlas hands you his brass compass. Tap the arrow that points north."}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'map_skills'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Atlas hands you his brass compass. ''Tap the arrow that points north!''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'Atlas teaches the compass trick! Put the directions in clockwise order, starting at north.', '{"items": [{"id": "s3", "label": "west"}, {"id": "s1", "label": "east"}, {"id": "s0", "label": "north"}, {"id": "s2", "label": "south"}], "narration": "Atlas teaches the compass trick! Put the directions in clockwise order, starting at north."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'map_skills'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Atlas teaches the compass trick! Put the directions in clockwise order, starting at north.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'You are the map master! The lake is north of the forest. Wren stands in the forest and walks north. Where is she now?', '{"options": [{"id": "o1", "label": "at the mountain"}, {"id": "o2", "label": "at the desert"}, {"id": "o0", "label": "at the lake"}, {"id": "o3", "label": "at the river"}], "narration": "You are the map master! The lake is north of the forest. Wren stands in the forest and walks north. Where is she now?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'map_skills'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'You are the map master! The lake is north of the forest. Wren stands in the forest and walks north. Where is she now?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sort', 'Atlas drew a master map! The lake and mountain are north of camp. The forest and desert are south. Sort where Wren ends up!', '{"items": [{"id": "g1i1", "label": "the desert", "group": "South of Camp"}, {"id": "g0i0", "label": "the lake", "group": "North of Camp"}, {"id": "g1i0", "label": "the forest", "group": "South of Camp"}, {"id": "g0i1", "label": "the mountain", "group": "North of Camp"}], "groups": [{"id": "g0", "label": "North of Camp"}, {"id": "g1", "label": "South of Camp"}], "narration": "Atlas drew a master map! The lake and mountain are north of camp. The forest and desert are south. Sort where Wren ends up!"}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1"], "g1": ["g1i0", "g1i1"]}}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'map_skills'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Atlas drew a master map! The lake and mountain are north of camp. The forest and desert are south. Sort where Wren ends up!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'trace', 'Only a master can find the safe way! Trace the curvy path around the mountain to the observatory.', '{"trace": "the curvy mountain path", "narration": "Only a master can find the safe way! Trace the curvy path around the mountain to the observatory."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'map_skills'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Only a master can find the safe way! Trace the curvy path around the mountain to the observatory.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'Teach Wren the direction song, master explorer! Sing it with Atlas.', '{"script": "North, south, east, west", "narration": "Teach Wren the direction song, master explorer! Sing it with Atlas."}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'map_skills'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Teach Wren the direction song, master explorer! Sing it with Atlas.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'Wren just landed in Spain! Say hello in Spanish with her.', '{"script": "Hola", "narration": "Wren just landed in Spain! Say hello in Spanish with her."}'::jsonb, '{}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'cultures'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren just landed in Spain! Say hello in Spanish with her.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Wren fluttered to France! How do friends there say hello?', '{"options": [{"id": "o1", "label": "hola"}, {"id": "o3", "label": "aloha"}, {"id": "o0", "label": "bonjour"}, {"id": "o2", "label": "ciao"}], "narration": "Wren fluttered to France! How do friends there say hello?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'cultures'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren fluttered to France! How do friends there say hello?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Atlas heard many hellos! ''Tap the word that means hello in Hawaiian.''', '{"targets": [{"id": "o3", "label": "ciao"}, {"id": "o2", "label": "bonjour"}, {"id": "o0", "label": "aloha"}, {"id": "o1", "label": "hola"}], "narration": "Atlas heard many hellos. Tap the word that means hello in Hawaiian."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'cultures'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Atlas heard many hellos! ''Tap the word that means hello in Hawaiian.''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'Wren is collecting hellos! ''How many has she learned: hola, bonjour, ciao?''', '{"thing": "hellos", "total": 3, "narration": "Wren is collecting hellos! ''How many has she learned: hola, bonjour, ciao?''"}'::jsonb, '{"count": 3}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'cultures'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren is collecting hellos! ''How many has she learned: hola, bonjour, ciao?''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'An invitation arrived! ''Come to Diwali, the festival of lights!'' Which country sent it?', '{"options": [{"id": "o2", "label": "Brazil"}, {"id": "o3", "label": "Mexico"}, {"id": "o0", "label": "India"}, {"id": "o1", "label": "China"}], "narration": "An invitation arrived! ''Come to Diwali, the festival of lights!'' Which country sent it?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'cultures'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'An invitation arrived! ''Come to Diwali, the festival of lights!'' Which country sent it?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'Wren is decorating for Lunar New Year! ''Tap the red lanterns.''', '{"targets": [{"id": "o2", "label": "a sombrero"}, {"id": "o0", "label": "red lanterns"}, {"id": "o1", "label": "maracas"}, {"id": "o3", "label": "a trumpet"}], "narration": "Wren is decorating for Lunar New Year. Tap the red lanterns."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'cultures'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren is decorating for Lunar New Year! ''Tap the red lanterns.''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'Wren''s festival day! Put it in the order it happens.', '{"items": [{"id": "s0", "label": "the parade"}, {"id": "s1", "label": "the feast"}, {"id": "s2", "label": "the fireworks"}], "narration": "Wren''s festival day! Put it in the order it happens."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'cultures'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren''s festival day! Put it in the order it happens.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'listen_repeat', 'Wren is off to Japan! Say hello in Japanese with her.', '{"script": "Konnichiwa", "narration": "Wren is off to Japan! Say hello in Japanese with her."}'::jsonb, '{}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'cultures'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren is off to Japan! Say hello in Japanese with her.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sort', 'Wren is packing snacks for her trip! Help her match each food to its country.', '{"items": [{"id": "g2i0", "label": "pizza", "group": "Italy"}, {"id": "g1i0", "label": "sushi", "group": "Japan"}, {"id": "g3i0", "label": "curry", "group": "India"}, {"id": "g0i0", "label": "tacos", "group": "Mexico"}], "groups": [{"id": "g0", "label": "Mexico"}, {"id": "g1", "label": "Japan"}, {"id": "g2", "label": "Italy"}, {"id": "g3", "label": "India"}], "narration": "Wren is packing snacks for her trip! Help her match each food to its country."}'::jsonb, '{"groups": {"g0": ["g0i0"], "g1": ["g1i0"], "g2": ["g2i0"], "g3": ["g3i0"]}}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'cultures'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren is packing snacks for her trip! Help her match each food to its country.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Wren just landed in Japan and is very hungry! Which food should she try?', '{"options": [{"id": "o3", "label": "curry"}, {"id": "o0", "label": "sushi"}, {"id": "o1", "label": "tacos"}, {"id": "o2", "label": "pizza"}], "narration": "Wren just landed in Japan and is very hungry! Which food should she try?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'cultures'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren just landed in Japan and is very hungry! Which food should she try?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'A friend in Brazil invited Wren to Carnival! What will she see there?', '{"options": [{"id": "o0", "label": "a giant street parade"}, {"id": "o2", "label": "a lantern festival"}, {"id": "o1", "label": "a dragon dance"}, {"id": "o3", "label": "a tomato fight"}], "narration": "A friend in Brazil invited Wren to Carnival! What will she see there?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'cultures'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'A friend in Brazil invited Wren to Carnival! What will she see there?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'trace', 'The Lunar New Year dragon is ready to dance! Trace its curvy parade path.', '{"trace": "the curvy dragon path", "narration": "The Lunar New Year dragon is ready to dance! Trace its curvy parade path."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'cultures'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The Lunar New Year dragon is ready to dance! Trace its curvy parade path.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Mystery house! It is built from blocks of ice and snow. Where would Wren find it?', '{"options": [{"id": "o2", "label": "the rainforest"}, {"id": "o0", "label": "the Arctic"}, {"id": "o3", "label": "the savanna"}, {"id": "o1", "label": "the desert"}], "narration": "Mystery house! It is built from blocks of ice and snow. Where would Wren find it?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'cultures'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Mystery house! It is built from blocks of ice and snow. Where would Wren find it?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'A postcard shows a round tent that traveling families carry across the grasslands. What is it called?', '{"options": [{"id": "o3", "label": "a castle"}, {"id": "o0", "label": "a yurt"}, {"id": "o2", "label": "a teepee"}, {"id": "o1", "label": "an igloo"}], "narration": "A postcard shows a round tent that traveling families carry across the grasslands. What is it called?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'cultures'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'A postcard shows a round tent that traveling families carry across the grasslands. What is it called?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_target', 'Wren is visiting a village over the water! ''Tap the home standing on tall stilts.''', '{"targets": [{"id": "o0", "label": "the stilt house"}, {"id": "o1", "label": "the igloo"}, {"id": "o2", "label": "the yurt"}, {"id": "o3", "label": "the log cabin"}], "narration": "Wren visits a village over the water. Tap the home standing on tall stilts."}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'cultures'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren is visiting a village over the water! ''Tap the home standing on tall stilts.''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'Wren''s invitations arrived in a pile! Put the festivals in the order she opened them.', '{"items": [{"id": "s1", "label": "Lunar New Year"}, {"id": "s2", "label": "Carnival"}, {"id": "s0", "label": "Diwali"}], "narration": "Wren''s invitations arrived in a pile! Put the festivals in the order she opened them."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'cultures'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren''s invitations arrived in a pile! Put the festivals in the order she opened them.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'You are the culture master! Which festival honors loved ones who have passed away?', '{"options": [{"id": "o2", "label": "Carnival"}, {"id": "o1", "label": "Diwali"}, {"id": "o3", "label": "Lunar New Year"}, {"id": "o0", "label": "Day of the Dead"}], "narration": "You are the culture master! Which festival honors loved ones who have passed away?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'cultures'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'You are the culture master! Which festival honors loved ones who have passed away?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sort', 'Only a master can match every celebration to its country!', '{"items": [{"id": "g1i0", "label": "Lunar New Year", "group": "China"}, {"id": "g2i0", "label": "Carnival", "group": "Brazil"}, {"id": "g3i0", "label": "Day of the Dead", "group": "Mexico"}, {"id": "g0i0", "label": "Diwali", "group": "India"}], "groups": [{"id": "g0", "label": "India"}, {"id": "g1", "label": "China"}, {"id": "g2", "label": "Brazil"}, {"id": "g3", "label": "Mexico"}], "narration": "Only a master can match every celebration to its country!"}'::jsonb, '{"groups": {"g0": ["g0i0"], "g1": ["g1i0"], "g2": ["g2i0"], "g3": ["g3i0"]}}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'cultures'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Only a master can match every celebration to its country!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'Teach Wren like a true master! Say all the hellos you know.', '{"script": "Hola, bonjour, konnichiwa", "narration": "Teach Wren like a true master! Say all the hellos you know."}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'cultures'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Teach Wren like a true master! Say all the hellos you know.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_count', 'Wren hung lanterns for the festival! ''How many lanterns are glowing, explorer?''', '{"thing": "lanterns", "total": 8, "narration": "Wren hung lanterns for the festival! ''How many lanterns are glowing, explorer?''"}'::jsonb, '{"count": 8}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'cultures'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren hung lanterns for the festival! ''How many lanterns are glowing, explorer?''');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'sequence', 'BEEP! Milo woke up but his morning is all jumbled. Can you put his routine in order?', '{"items": [{"id": "s0", "label": "Wake up"}, {"id": "s1", "label": "Brush gears"}, {"id": "s2", "label": "Drink oil-juice"}], "narration": "BEEP! Milo woke up but his morning is all jumbled. Can you put his routine in order?"}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'sequencing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Milo woke up but his morning is all jumbled. Can you put his routine in order?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'sequence', 'WHIRR! Sprocket wants toast but the steps are mixed up. Line them up for him!', '{"items": [{"id": "s2", "label": "Spread jam"}, {"id": "s0", "label": "Put bread in the toaster"}, {"id": "s1", "label": "Wait for the POP"}], "narration": "WHIRR! Sprocket wants toast but the steps are mixed up. Line them up for him!"}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'sequencing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Sprocket wants toast but the steps are mixed up. Line them up for him!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'BEEP! Milo wants to fly his kite. What should he do FIRST?', '{"options": [{"id": "o2", "label": "Let go of the string"}, {"id": "o0", "label": "Run with the string"}, {"id": "o3", "label": "Fold the kite up"}, {"id": "o1", "label": "Reel it all in"}], "narration": "BEEP! Milo wants to fly his kite. What should he do FIRST?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'sequencing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Milo wants to fly his kite. What should he do FIRST?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'sequence', 'WHIRR! Sprocket is planting a moon-seed for the sprites. Show him the steps in order!', '{"items": [{"id": "s1", "label": "Drop in the seed"}, {"id": "s0", "label": "Dig a hole"}, {"id": "s2", "label": "Water it"}], "narration": "WHIRR! Sprocket is planting a moon-seed for the sprites. Show him the steps in order!"}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'sequencing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Sprocket is planting a moon-seed for the sprites. Show him the steps in order!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'BEEP! The cloud bridge needs its steps in order or it won''t open. Line them up!', '{"items": [{"id": "s1", "label": "Turn the key"}, {"id": "s3", "label": "March across"}, {"id": "s0", "label": "Find the brass key"}, {"id": "s2", "label": "Push the gate"}], "narration": "BEEP! The cloud bridge needs its steps in order or it won''t open. Line them up!"}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'sequencing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! The cloud bridge needs its steps in order or it won''t open. Line them up!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'WHIRR! Sprocket''s rocket is ready but the launch code is scrambled. Fix the order!', '{"items": [{"id": "s0", "label": "Fill the fuel tank"}, {"id": "s3", "label": "Press the red button"}, {"id": "s1", "label": "Bolt on the fins"}, {"id": "s2", "label": "Count down 3-2-1"}], "narration": "WHIRR! Sprocket''s rocket is ready but the launch code is scrambled. Fix the order!"}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'sequencing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Sprocket''s rocket is ready but the launch code is scrambled. Fix the order!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'BEEP! Milo''s bubble bath is ready. What is the LAST thing he should do?', '{"options": [{"id": "o0", "label": "Dry off with a towel"}, {"id": "o2", "label": "Turn on the water"}, {"id": "o3", "label": "Add bubble soap"}, {"id": "o1", "label": "Climb into the tub"}], "narration": "BEEP! Milo''s bubble bath is ready. What is the LAST thing he should do?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'sequencing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Milo''s bubble bath is ready. What is the LAST thing he should do?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'WHIRR! The sprites are baking star-cookies for Milo. Put their recipe in order!', '{"items": [{"id": "s2", "label": "Bake them golden"}, {"id": "s0", "label": "Stir the dough"}, {"id": "s3", "label": "Cool on the rack"}, {"id": "s1", "label": "Scoop little balls"}], "narration": "WHIRR! The sprites are baking star-cookies for Milo. Put their recipe in order!"}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'sequencing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! The sprites are baking star-cookies for Milo. Put their recipe in order!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sequence', 'BEEP! Sprocket''s tea party is a muddle! Order the steps so his friends get tea.', '{"items": [{"id": "s3", "label": "Pass the cups around"}, {"id": "s1", "label": "Drop in the tea leaf"}, {"id": "s2", "label": "Pour the hot water"}, {"id": "s0", "label": "Boil the kettle"}], "narration": "BEEP! Sprocket''s tea party is a muddle! Order the steps so his friends get tea."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sequencing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Sprocket''s tea party is a muddle! Order the steps so his friends get tea.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'WHIRR! Sprocket lost his kite steps. After he runs with the kite, what comes NEXT?', '{"options": [{"id": "o3", "label": "Cut the string"}, {"id": "o1", "label": "Fold the kite up"}, {"id": "o2", "label": "Run back indoors"}, {"id": "o0", "label": "Let out more string"}], "narration": "WHIRR! Sprocket lost his kite steps. After he runs with the kite, what comes NEXT?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sequencing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Sprocket lost his kite steps. After he runs with the kite, what comes NEXT?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sequence', 'BEEP! Sprocket must deliver lunchboxes before noon. Order his delivery route!', '{"items": [{"id": "s1", "label": "Ring Mia''s bell"}, {"id": "s3", "label": "Wave goodbye"}, {"id": "s2", "label": "Hand over the box"}, {"id": "s0", "label": "Pack the lunchbox"}], "narration": "BEEP! Sprocket must deliver lunchboxes before noon. Order his delivery route!"}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sequencing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Sprocket must deliver lunchboxes before noon. Order his delivery route!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sequence', 'WHIRR! The Loom sprites are thirsty! Order the steps to water the moonflower.', '{"items": [{"id": "s2", "label": "Tuck in the seed"}, {"id": "s0", "label": "Carry water up the cloud"}, {"id": "s3", "label": "Sing a growing song"}, {"id": "s1", "label": "Dig the soft soil"}], "narration": "WHIRR! The Loom sprites are thirsty! Order the steps to water the moonflower."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sequencing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! The Loom sprites are thirsty! Order the steps to water the moonflower.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'BEEP! Someone nibbled Milo''s midnight cookie! Order the clues to solve the mystery.', '{"items": [{"id": "s2", "label": "Sprocket was polishing tools"}, {"id": "s0", "label": "Crumbs led to the pantry"}, {"id": "s1", "label": "A tiny gear lay nearby"}, {"id": "s3", "label": "Sprocket confessed: one nibble!"}], "narration": "BEEP! Someone nibbled Milo''s midnight cookie! Order the clues to solve the mystery."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sequencing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Someone nibbled Milo''s midnight cookie! Order the clues to solve the mystery.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'WHIRR! The red thread snapped and the weaving drooped! Order what happened.', '{"items": [{"id": "s2", "label": "The weaving drooped low"}, {"id": "s0", "label": "The red thread snapped at dawn"}, {"id": "s1", "label": "Blue threads tangled by lunch"}, {"id": "s3", "label": "Milo found the loose knot"}], "narration": "WHIRR! The red thread snapped and the weaving drooped! Order what happened."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sequencing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! The red thread snapped and the weaving drooped! Order what happened.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'BEEP! The cloud fountain stopped and the pipes are dry! What should Milo check FIRST?', '{"options": [{"id": "o3", "label": "The drain plug"}, {"id": "o2", "label": "The inlet hose"}, {"id": "o0", "label": "The water tank"}, {"id": "o1", "label": "The pump switch"}], "narration": "BEEP! The cloud fountain stopped and the pipes are dry! What should Milo check FIRST?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sequencing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! The cloud fountain stopped and the pipes are dry! What should Milo check FIRST?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'WHIRR! The cloud race is over! The signal flags tell the order — line up what happened.', '{"items": [{"id": "s3", "label": "The green sprite won by a whisker"}, {"id": "s0", "label": "The horn blew to start"}, {"id": "s1", "label": "The red sprite zoomed ahead"}, {"id": "s2", "label": "The blue sprite caught up"}], "narration": "WHIRR! The cloud race is over! The signal flags tell the order — line up what happened."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'sequencing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! The cloud race is over! The signal flags tell the order — line up what happened.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'BEEP! You are the master builder now! Program the breakfast machine — six steps, perfect order.', '{"items": [{"id": "s0", "label": "Crack two eggs"}, {"id": "s2", "label": "Heat the pan"}, {"id": "s1", "label": "Whisk them fluffy"}, {"id": "s3", "label": "Pour the eggs in"}, {"id": "s5", "label": "Slide it onto the plate"}, {"id": "s4", "label": "Flip the omelet"}], "narration": "BEEP! You are the master builder now! Program the breakfast machine — six steps, perfect order."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3", "s4", "s5"]}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'sequencing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! You are the master builder now! Program the breakfast machine — six steps, perfect order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'WHIRR! The cloudship launches at dawn! Order the master launch code.', '{"items": [{"id": "s1", "label": "Load the star maps"}, {"id": "s3", "label": "Shout ALL ABOARD"}, {"id": "s0", "label": "Check the wind dial"}, {"id": "s4", "label": "Release the mooring ropes"}, {"id": "s2", "label": "Buckle every seatbelt"}], "narration": "WHIRR! The cloudship launches at dawn! Order the master launch code."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3", "s4"]}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'sequencing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! The cloudship launches at dawn! Order the master launch code.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'BEEP! Master coder, Milo''s parade needs a plan. Which step must come FIRST in any parade?', '{"options": [{"id": "o0", "label": "Line everyone up"}, {"id": "o3", "label": "Take a bow"}, {"id": "o2", "label": "Play the drums"}, {"id": "o1", "label": "Wave to the crowd"}], "narration": "BEEP! Master coder, Milo''s parade needs a plan. Which step must come FIRST in any parade?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'sequencing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Master coder, Milo''s parade needs a plan. Which step must come FIRST in any parade?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'WHIRR! Write Milo''s bedtime shutdown code! Order it so he dreams sweetly.', '{"items": [{"id": "s1", "label": "Fold the arms in"}, {"id": "s2", "label": "Hum the sleep song"}, {"id": "s3", "label": "Power down softly"}, {"id": "s0", "label": "Dim the eye-lights"}, {"id": "s4", "label": "Dream of tomorrow"}], "narration": "WHIRR! Write Milo''s bedtime shutdown code! Order it so he dreams sweetly."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3", "s4"]}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'sequencing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Write Milo''s bedtime shutdown code! Order it so he dreams sweetly.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'BEEP! The Loom sprites are weaving: red, blue, red, blue... The pattern snagged! Which color comes next?', '{"options": [{"id": "o2", "label": "green"}, {"id": "o0", "label": "red"}, {"id": "o1", "label": "blue"}, {"id": "o3", "label": "yellow"}], "narration": "BEEP! The Loom sprites are weaving: red, blue, red, blue... The pattern snagged! Which color comes next?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'patterns_coding'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! The Loom sprites are weaving: red, blue, red, blue... The pattern snagged! Which color comes next?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'WHIRR! The sprites dance: clap, stomp, clap, stomp... Show them the next move!', '{"options": [{"id": "o2", "label": "spin"}, {"id": "o1", "label": "stomp"}, {"id": "o0", "label": "clap"}, {"id": "o3", "label": "hop"}], "narration": "WHIRR! The sprites dance: clap, stomp, clap, stomp... Show them the next move!"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'patterns_coding'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! The sprites dance: clap, stomp, clap, stomp... Show them the next move!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'BEEP! Sprocket''s bead string goes: star, heart, star, heart... Tap the bead that comes next!', '{"targets": [{"id": "o1", "label": "heart"}, {"id": "o3", "label": "square"}, {"id": "o0", "label": "star"}, {"id": "o2", "label": "circle"}], "narration": "BEEP! Sprocket''s bead string goes: star, heart, star, heart... Tap the bead that comes next!"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'patterns_coding'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Sprocket''s bead string goes: star, heart, star, heart... Tap the bead that comes next!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'WHIRR! Milo''s music box plays: ding, dong, ding, dong... What plays next?', '{"options": [{"id": "o3", "label": "beep"}, {"id": "o0", "label": "ding"}, {"id": "o1", "label": "dong"}, {"id": "o2", "label": "buzz"}], "narration": "WHIRR! Milo''s music box plays: ding, dong, ding, dong... What plays next?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'patterns_coding'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Milo''s music box plays: ding, dong, ding, dong... What plays next?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'BEEP! The weaving changed: red, red, blue, red, red... Which color keeps the pattern?', '{"options": [{"id": "o2", "label": "green"}, {"id": "o0", "label": "blue"}, {"id": "o1", "label": "red"}, {"id": "o3", "label": "yellow"}], "narration": "BEEP! The weaving changed: red, red, blue, red, red... Which color keeps the pattern?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'patterns_coding'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! The weaving changed: red, red, blue, red, red... Which color keeps the pattern?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'WHIRR! The sprites stomp a new dance: stomp, stomp, clap, stomp, stomp... Next move?', '{"options": [{"id": "o3", "label": "hop"}, {"id": "o2", "label": "spin"}, {"id": "o1", "label": "stomp"}, {"id": "o0", "label": "clap"}], "narration": "WHIRR! The sprites stomp a new dance: stomp, stomp, clap, stomp, stomp... Next move?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'patterns_coding'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! The sprites stomp a new dance: stomp, stomp, clap, stomp, stomp... Next move?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'BEEP! Sprocket''s flags wave: circle, square, triangle, circle, square... Which shape is next?', '{"options": [{"id": "o2", "label": "square"}, {"id": "o1", "label": "circle"}, {"id": "o3", "label": "star"}, {"id": "o0", "label": "triangle"}], "narration": "BEEP! Sprocket''s flags wave: circle, square, triangle, circle, square... Which shape is next?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'patterns_coding'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Sprocket''s flags wave: circle, square, triangle, circle, square... Which shape is next?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'WHIRR! Milo''s drum plays: tap, tap, BANG, tap, tap... Tap the drum sound that comes next!', '{"targets": [{"id": "o2", "label": "clap"}, {"id": "o3", "label": "buzz"}, {"id": "o0", "label": "BANG"}, {"id": "o1", "label": "tap"}], "narration": "WHIRR! Milo''s drum plays: tap, tap, BANG, tap, tap... Tap the drum sound that comes next!"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'patterns_coding'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Milo''s drum plays: tap, tap, BANG, tap, tap... Tap the drum sound that comes next!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'BEEP! The sprites'' blanket is unraveling in the MIDDLE: red, blue, ___, red, blue. Which color fills the hole?', '{"options": [{"id": "o2", "label": "green"}, {"id": "o1", "label": "blue"}, {"id": "o3", "label": "yellow"}, {"id": "o0", "label": "red"}], "narration": "BEEP! The sprites'' blanket is unraveling in the MIDDLE: red, blue, ___, red, blue. Which color fills the hole?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'patterns_coding'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! The sprites'' blanket is unraveling in the MIDDLE: red, blue, ___, red, blue. Which color fills the hole?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'WHIRR! Teach Sprocket''s toy drum: tap, tap, BANG, tap, tap... What comes next?', '{"options": [{"id": "o0", "label": "BANG"}, {"id": "o1", "label": "tap"}, {"id": "o2", "label": "rest"}, {"id": "o3", "label": "clap"}], "narration": "WHIRR! Teach Sprocket''s toy drum: tap, tap, BANG, tap, tap... What comes next?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'patterns_coding'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Teach Sprocket''s toy drum: tap, tap, BANG, tap, tap... What comes next?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_count', 'BEEP! The sprites danced clap-stomp four times. How many CLAPS did they do? Count with me!', '{"thing": "claps", "total": 4, "narration": "BEEP! The sprites danced clap-stomp four times. How many CLAPS did they do? Count with me!"}'::jsonb, '{"count": 4}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'patterns_coding'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! The sprites danced clap-stomp four times. How many CLAPS did they do? Count with me!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'WHIRR! Mia''s bracelet goes: heart, star, star, heart, star... Which bead comes next?', '{"options": [{"id": "o0", "label": "star"}, {"id": "o3", "label": "diamond"}, {"id": "o2", "label": "circle"}, {"id": "o1", "label": "heart"}], "narration": "WHIRR! Mia''s bracelet goes: heart, star, star, heart, star... Which bead comes next?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'patterns_coding'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Mia''s bracelet goes: heart, star, star, heart, star... Which bead comes next?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'BEEP! A mystery pattern grows: 1 clap, 2 claps, 3 claps... How many claps come next?', '{"options": [{"id": "o0", "label": "4 claps"}, {"id": "o3", "label": "1 clap"}, {"id": "o1", "label": "3 claps"}, {"id": "o2", "label": "5 claps"}], "narration": "BEEP! A mystery pattern grows: 1 clap, 2 claps, 3 claps... How many claps come next?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'patterns_coding'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! A mystery pattern grows: 1 clap, 2 claps, 3 claps... How many claps come next?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'WHIRR! The weaving has a SNAG: red, blue, red, GREEN, red, blue... Which thread broke the pattern?', '{"options": [{"id": "o0", "label": "green"}, {"id": "o3", "label": "yellow"}, {"id": "o2", "label": "red"}, {"id": "o1", "label": "blue"}], "narration": "WHIRR! The weaving has a SNAG: red, blue, red, GREEN, red, blue... Which thread broke the pattern?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'patterns_coding'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! The weaving has a SNAG: red, blue, red, GREEN, red, blue... Which thread broke the pattern?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'BEEP! Sprocket''s singing stairs grow: small, medium... What size step comes next?', '{"options": [{"id": "o3", "label": "tiny"}, {"id": "o2", "label": "medium"}, {"id": "o0", "label": "large"}, {"id": "o1", "label": "small"}], "narration": "BEEP! Sprocket''s singing stairs grow: small, medium... What size step comes next?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'patterns_coding'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Sprocket''s singing stairs grow: small, medium... What size step comes next?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'WHIRR! The pattern machine printed its tower code out of order. Rebuild the growing tower!', '{"items": [{"id": "s2", "label": "3 blocks"}, {"id": "s3", "label": "4 blocks"}, {"id": "s0", "label": "1 block"}, {"id": "s1", "label": "2 blocks"}], "narration": "WHIRR! The pattern machine printed its tower code out of order. Rebuild the growing tower!"}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'patterns_coding'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! The pattern machine printed its tower code out of order. Rebuild the growing tower!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'BEEP! Master weaver! The royal blanket grows: 2 red, 4 red, 6 red... How many red threads in the next row?', '{"options": [{"id": "o3", "label": "10 red threads"}, {"id": "o0", "label": "8 red threads"}, {"id": "o1", "label": "7 red threads"}, {"id": "o2", "label": "6 red threads"}], "narration": "BEEP! Master weaver! The royal blanket grows: 2 red, 4 red, 6 red... How many red threads in the next row?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'patterns_coding'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Master weaver! The royal blanket grows: 2 red, 4 red, 6 red... How many red threads in the next row?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'WHIRR! The sprites dance TWO patterns at once: clap, red, stomp, blue, clap, red... What comes next?', '{"options": [{"id": "o3", "label": "spin"}, {"id": "o2", "label": "blue"}, {"id": "o1", "label": "clap"}, {"id": "o0", "label": "stomp"}], "narration": "WHIRR! The sprites dance TWO patterns at once: clap, red, stomp, blue, clap, red... What comes next?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'patterns_coding'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! The sprites dance TWO patterns at once: clap, red, stomp, blue, clap, red... What comes next?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'BEEP! You invented a pattern: circle, circle, square... What comes next to keep YOUR rule?', '{"options": [{"id": "o2", "label": "triangle"}, {"id": "o1", "label": "square"}, {"id": "o3", "label": "star"}, {"id": "o0", "label": "circle"}], "narration": "BEEP! You invented a pattern: circle, circle, square... What comes next to keep YOUR rule?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'patterns_coding'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! You invented a pattern: circle, circle, square... What comes next to keep YOUR rule?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'WHIRR! The grand parade needs YOUR pattern code! Lay the parade order.', '{"items": [{"id": "s1", "label": "Flags next"}, {"id": "s0", "label": "Drums first"}, {"id": "s2", "label": "Drums again"}, {"id": "s3", "label": "Flags to finish"}], "narration": "WHIRR! The grand parade needs YOUR pattern code! Lay the parade order."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'patterns_coding'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! The grand parade needs YOUR pattern code! Lay the parade order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'BEEP! Milo''s hop-loop is stuck! He hops 3 times. Tap once for each hop!', '{"thing": "hops", "total": 3, "narration": "BEEP! Milo''s hop-loop is stuck! He hops 3 times. Tap once for each hop!"}'::jsonb, '{"count": 3}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'loops'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Milo''s hop-loop is stuck! He hops 3 times. Tap once for each hop!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'WHIRR! The breakfast machine toasts 4 slices. Count the slices with me!', '{"thing": "slices", "total": 4, "narration": "WHIRR! The breakfast machine toasts 4 slices. Count the slices with me!"}'::jsonb, '{"count": 4}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'loops'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! The breakfast machine toasts 4 slices. Count the slices with me!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'BEEP! Sprocket winds his toy: turn, turn, turn, turn. How many turns did the loop do?', '{"options": [{"id": "o2", "label": "5 turns"}, {"id": "o1", "label": "3 turns"}, {"id": "o3", "label": "1 turn"}, {"id": "o0", "label": "4 turns"}], "narration": "BEEP! Sprocket winds his toy: turn, turn, turn, turn. How many turns did the loop do?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'loops'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Sprocket winds his toy: turn, turn, turn, turn. How many turns did the loop do?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'WHIRR! Chant Milo''s loop song with him! Say it loud and proud!', '{"script": "Round and round the gears go!", "narration": "WHIRR! Chant Milo''s loop song with him! Say it loud and proud!"}'::jsonb, '{}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'loops'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Chant Milo''s loop song with him! Say it loud and proud!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_count', 'BEEP! The breakfast machine runs 2 rounds, pouring 3 pancakes each round. How many pancakes in all?', '{"thing": "pancakes", "total": 6, "narration": "BEEP! The breakfast machine runs 2 rounds, pouring 3 pancakes each round. How many pancakes in all?"}'::jsonb, '{"count": 6}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'loops'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! The breakfast machine runs 2 rounds, pouring 3 pancakes each round. How many pancakes in all?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_count', 'WHIRR! Milo''s dance loop is spin, hop, and he does it 3 times. Tap once for EVERY move he makes!', '{"thing": "moves", "total": 6, "narration": "WHIRR! Milo''s dance loop is spin, hop, and he does it 3 times. Tap once for EVERY move he makes!"}'::jsonb, '{"count": 6}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'loops'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Milo''s dance loop is spin, hop, and he does it 3 times. Tap once for EVERY move he makes!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_count', 'BEEP! Sprocket''s sprinkler puffs 2 times in each of 4 rounds. Count all the puffs!', '{"thing": "puffs", "total": 8, "narration": "BEEP! Sprocket''s sprinkler puffs 2 times in each of 4 rounds. Count all the puffs!"}'::jsonb, '{"count": 8}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'loops'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Sprocket''s sprinkler puffs 2 times in each of 4 rounds. Count all the puffs!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'WHIRR! Program the toast loop! Order the steps the machine repeats.', '{"items": [{"id": "s2", "label": "Pop it up"}, {"id": "s1", "label": "Toast it golden"}, {"id": "s0", "label": "Drop the bread"}], "narration": "WHIRR! Program the toast loop! Order the steps the machine repeats."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'loops'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Program the toast loop! Order the steps the machine repeats.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_count', 'BEEP! Sprocket''s kite needs 5 tugs on the string, 2 rounds. How many tugs will fly it?', '{"thing": "tugs", "total": 10, "narration": "BEEP! Sprocket''s kite needs 5 tugs on the string, 2 rounds. How many tugs will fly it?"}'::jsonb, '{"count": 10}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'loops'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Sprocket''s kite needs 5 tugs on the string, 2 rounds. How many tugs will fly it?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'WHIRR! The Loom sprites weave 4 threads, 3 rounds. How many threads did they weave?', '{"options": [{"id": "o0", "label": "12 threads"}, {"id": "o3", "label": "8 threads"}, {"id": "o1", "label": "7 threads"}, {"id": "o2", "label": "9 threads"}], "narration": "WHIRR! The Loom sprites weave 4 threads, 3 rounds. How many threads did they weave?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'loops'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! The Loom sprites weave 4 threads, 3 rounds. How many threads did they weave?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sort', 'BEEP! Sprocket''s machine does some steps ONCE and some on REPEAT. Sort them!', '{"items": [{"id": "g0i1", "label": "Open the lid", "group": "Do once"}, {"id": "g0i0", "label": "Press the green button", "group": "Do once"}, {"id": "g1i0", "label": "Stir the soup", "group": "Repeat"}, {"id": "g1i1", "label": "Sprinkle the salt", "group": "Repeat"}], "groups": [{"id": "g0", "label": "Do once"}, {"id": "g1", "label": "Repeat"}], "narration": "BEEP! Sprocket''s machine does some steps ONCE and some on REPEAT. Sort them!"}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1"], "g1": ["g1i0", "g1i1"]}}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'loops'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Sprocket''s machine does some steps ONCE and some on REPEAT. Sort them!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'WHIRR! Milo waters the moonflowers: 2 cups per flower, 5 flowers. How many cups?', '{"options": [{"id": "o3", "label": "12 cups"}, {"id": "o1", "label": "7 cups"}, {"id": "o2", "label": "5 cups"}, {"id": "o0", "label": "10 cups"}], "narration": "WHIRR! Milo waters the moonflowers: 2 cups per flower, 5 flowers. How many cups?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'loops'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Milo waters the moonflowers: 2 cups per flower, 5 flowers. How many cups?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'BEEP! Mystery! The cookie machine was set for 3 rounds of 4, but 16 cookies came out. How many rounds REALLY ran?', '{"options": [{"id": "o2", "label": "5 rounds"}, {"id": "o3", "label": "2 rounds"}, {"id": "o0", "label": "4 rounds"}, {"id": "o1", "label": "3 rounds"}], "narration": "BEEP! Mystery! The cookie machine was set for 3 rounds of 4, but 16 cookies came out. How many rounds REALLY ran?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'loops'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Mystery! The cookie machine was set for 3 rounds of 4, but 16 cookies came out. How many rounds REALLY ran?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_count', 'WHIRR! The loop counter broke! The bell rings once per round. Count the rings to find the rounds!', '{"thing": "rings", "total": 5, "narration": "WHIRR! The loop counter broke! The bell rings once per round. Count the rings to find the rounds!"}'::jsonb, '{"count": 5}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'loops'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! The loop counter broke! The bell rings once per round. Count the rings to find the rounds!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'BEEP! Sprocket''s toy hopped 12 times in hops of 3. How many loops did it do?', '{"options": [{"id": "o0", "label": "4 loops"}, {"id": "o2", "label": "6 loops"}, {"id": "o3", "label": "9 loops"}, {"id": "o1", "label": "3 loops"}], "narration": "BEEP! Sprocket''s toy hopped 12 times in hops of 3. How many loops did it do?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'loops'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Sprocket''s toy hopped 12 times in hops of 3. How many loops did it do?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'trace', 'WHIRR! Draw the loop arrow! Trace the circle that tells Milo''s arm to stir again and again.', '{"trace": "a round loop arrow", "narration": "WHIRR! Draw the loop arrow! Trace the circle that tells Milo''s arm to stir again and again."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'loops'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Draw the loop arrow! Trace the circle that tells Milo''s arm to stir again and again.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'BEEP! Master coder! The loom weaves 6 threads per round for 5 rounds, then 2 extra threads. How many threads in all?', '{"options": [{"id": "o2", "label": "13 threads"}, {"id": "o1", "label": "30 threads"}, {"id": "o0", "label": "32 threads"}, {"id": "o3", "label": "42 threads"}], "narration": "BEEP! Master coder! The loom weaves 6 threads per round for 5 rounds, then 2 extra threads. How many threads in all?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'loops'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Master coder! The loom weaves 6 threads per round for 5 rounds, then 2 extra threads. How many threads in all?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_count', 'WHIRR! Count the master loop! The parade drum beats 4 times per round, 6 rounds. Count every beat!', '{"thing": "drum beats", "total": 24, "narration": "WHIRR! Count the master loop! The parade drum beats 4 times per round, 6 rounds. Count every beat!"}'::jsonb, '{"count": 24}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'loops'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Count the master loop! The parade drum beats 4 times per round, 6 rounds. Count every beat!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'BEEP! Milo''s rocket test runs 3 countdowns of 10, 9, 8. How many numbers does he say in all?', '{"options": [{"id": "o2", "label": "10 numbers"}, {"id": "o1", "label": "3 numbers"}, {"id": "o0", "label": "9 numbers"}, {"id": "o3", "label": "30 numbers"}], "narration": "BEEP! Milo''s rocket test runs 3 countdowns of 10, 9, 8. How many numbers does he say in all?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'loops'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Milo''s rocket test runs 3 countdowns of 10, 9, 8. How many numbers does he say in all?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'WHIRR! Write the master weaving loop! Order it so it never tangles.', '{"items": [{"id": "s0", "label": "Start with a red thread"}, {"id": "s1", "label": "Loop: weave under, then over"}, {"id": "s2", "label": "Check the pattern"}, {"id": "s3", "label": "Tie the knot to finish"}], "narration": "WHIRR! Write the master weaving loop! Order it so it never tangles."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'loops'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Write the master weaving loop! Order it so it never tangles.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'BEEP! Milo''s rule: IF it rains, Sprocket takes the umbrella. Look outside — it''s raining! What does Sprocket take?', '{"options": [{"id": "o2", "label": "The kite"}, {"id": "o3", "label": "The sandwich"}, {"id": "o1", "label": "The sunglasses"}, {"id": "o0", "label": "The umbrella"}], "narration": "BEEP! Milo''s rule: IF it rains, Sprocket takes the umbrella. Look outside — it''s raining! What does Sprocket take?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'conditions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Milo''s rule: IF it rains, Sprocket takes the umbrella. Look outside — it''s raining! What does Sprocket take?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'WHIRR! Milo''s rule: IF the light is green, the cloudship goes. The light is green! What happens?', '{"options": [{"id": "o3", "label": "The cloudship turns back"}, {"id": "o2", "label": "The cloudship waits"}, {"id": "o1", "label": "The cloudship stops"}, {"id": "o0", "label": "The cloudship goes"}], "narration": "WHIRR! Milo''s rule: IF the light is green, the cloudship goes. The light is green! What happens?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'conditions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Milo''s rule: IF the light is green, the cloudship goes. The light is green! What happens?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'BEEP! Milo''s rule: IF you''re hungry, grab the snack! Sprocket''s tummy is rumbling. Tap his snack!', '{"targets": [{"id": "o0", "label": "apple"}, {"id": "o3", "label": "hat"}, {"id": "o2", "label": "book"}, {"id": "o1", "label": "toy car"}], "narration": "BEEP! Milo''s rule: IF you''re hungry, grab the snack! Sprocket''s tummy is rumbling. Tap his snack!"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'conditions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Milo''s rule: IF you''re hungry, grab the snack! Sprocket''s tummy is rumbling. Tap his snack!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'WHIRR! Milo''s rule: IF Milo is beeping, his battery is low. Milo is beeping! What does he need?', '{"options": [{"id": "o0", "label": "A battery charge"}, {"id": "o3", "label": "A polish"}, {"id": "o2", "label": "A quick nap"}, {"id": "o1", "label": "More oil"}], "narration": "WHIRR! Milo''s rule: IF Milo is beeping, his battery is low. Milo is beeping! What does he need?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'conditions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Milo''s rule: IF Milo is beeping, his battery is low. Milo is beeping! What does he need?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'BEEP! The bridge rule: IF you hold the brass key, the bridge opens. Sprocket holds the brass key! What happens?', '{"options": [{"id": "o1", "label": "The bridge stays shut"}, {"id": "o2", "label": "The bridge asks again"}, {"id": "o3", "label": "Nothing happens yet"}, {"id": "o0", "label": "The bridge opens"}], "narration": "BEEP! The bridge rule: IF you hold the brass key, the bridge opens. Sprocket holds the brass key! What happens?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'conditions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! The bridge rule: IF you hold the brass key, the bridge opens. Sprocket holds the brass key! What happens?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'WHIRR! Milo''s oven rule: IF the bell dings, the cookies are done. DING DING! What do we do?', '{"options": [{"id": "o2", "label": "Wait longer"}, {"id": "o1", "label": "Put them in"}, {"id": "o0", "label": "Take the cookies out"}, {"id": "o3", "label": "Turn up the heat"}], "narration": "WHIRR! Milo''s oven rule: IF the bell dings, the cookies are done. DING DING! What do we do?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'conditions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Milo''s oven rule: IF the bell dings, the cookies are done. DING DING! What do we do?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'BEEP! Sprocket''s rule: IF the tank is full, the rocket can launch. The tank is only half full! Can it launch?', '{"options": [{"id": "o2", "label": "Yes, with half power"}, {"id": "o0", "label": "Not yet — fill the tank"}, {"id": "o3", "label": "No, never again"}, {"id": "o1", "label": "Yes, blast off!"}], "narration": "BEEP! Sprocket''s rule: IF the tank is full, the rocket can launch. The tank is only half full! Can it launch?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'conditions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Sprocket''s rule: IF the tank is full, the rocket can launch. The tank is only half full! Can it launch?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'WHIRR! Milo''s rule: IF the sprite is sleepy, bring its blanket! Which sprite is yawning? Tap its blanket!', '{"targets": [{"id": "o2", "label": "hungry sprite''s apple"}, {"id": "o1", "label": "dancing sprite''s drum"}, {"id": "o3", "label": "singing sprite''s bell"}, {"id": "o0", "label": "sleepy sprite''s blanket"}], "narration": "WHIRR! Milo''s rule: IF the sprite is sleepy, bring its blanket! Which sprite is yawning? Tap its blanket!"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'conditions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Milo''s rule: IF the sprite is sleepy, bring its blanket! Which sprite is yawning? Tap its blanket!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'BEEP! Picnic rule: IF the sun shines, Sprocket packs the basket. The sun is shining! Help him — what does he pack?', '{"options": [{"id": "o1", "label": "The umbrella"}, {"id": "o0", "label": "The picnic basket"}, {"id": "o2", "label": "The snow boots"}, {"id": "o3", "label": "The flashlight"}], "narration": "BEEP! Picnic rule: IF the sun shines, Sprocket packs the basket. The sun is shining! Help him — what does he pack?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'conditions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Picnic rule: IF the sun shines, Sprocket packs the basket. The sun is shining! Help him — what does he pack?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'WHIRR! Milo''s rule: IF the music plays, the sprites dance. The music stopped! What do the sprites do?', '{"options": [{"id": "o2", "label": "They dance faster"}, {"id": "o0", "label": "They rest"}, {"id": "o3", "label": "They never stop"}, {"id": "o1", "label": "They keep dancing"}], "narration": "WHIRR! Milo''s rule: IF the music plays, the sprites dance. The music stopped! What do the sprites do?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'conditions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Milo''s rule: IF the music plays, the sprites dance. The music stopped! What do the sprites do?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'BEEP! Sprocket is shivering! His rule: IF I''m cold, I wear my scarf. What should you hand him?', '{"options": [{"id": "o2", "label": "His rain boots"}, {"id": "o0", "label": "His red scarf"}, {"id": "o1", "label": "His sunglasses"}, {"id": "o3", "label": "His party hat"}], "narration": "BEEP! Sprocket is shivering! His rule: IF I''m cold, I wear my scarf. What should you hand him?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'conditions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Sprocket is shivering! His rule: IF I''m cold, I wear my scarf. What should you hand him?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sequence', 'WHIRR! Teach the baby sprites Milo''s rainy-day rule! Put the rule in order.', '{"items": [{"id": "s1", "label": "grab the big umbrella"}, {"id": "s2", "label": "THEN march outside"}, {"id": "s0", "label": "IF dark clouds gather"}], "narration": "WHIRR! Teach the baby sprites Milo''s rainy-day rule! Put the rule in order."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'conditions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Teach the baby sprites Milo''s rainy-day rule! Put the rule in order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'BEEP! Picnic rule: IF it is sunny AND the basket is packed, they picnic. It is sunny, but the basket is EMPTY! Do they picnic?', '{"options": [{"id": "o3", "label": "No picnics ever"}, {"id": "o0", "label": "Not yet — pack first"}, {"id": "o2", "label": "Yes, but indoors"}, {"id": "o1", "label": "Yes, picnic now!"}], "narration": "BEEP! Picnic rule: IF it is sunny AND the basket is packed, they picnic. It is sunny, but the basket is EMPTY! Do they picnic?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'conditions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Picnic rule: IF it is sunny AND the basket is packed, they picnic. It is sunny, but the basket is EMPTY! Do they picnic?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'WHIRR! The gate rule: IF you know the password OR you have the key, it opens. Mia forgot the password but HAS the key! Does it open?', '{"options": [{"id": "o2", "label": "No — password only"}, {"id": "o3", "label": "No — she must wait"}, {"id": "o1", "label": "No — needs both"}, {"id": "o0", "label": "Yes — the key works"}], "narration": "WHIRR! The gate rule: IF you know the password OR you have the key, it opens. Mia forgot the password but HAS the key! Does it open?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'conditions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! The gate rule: IF you know the password OR you have the key, it opens. Mia forgot the password but HAS the key! Does it open?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'BEEP! Mystery! The bridge stayed shut. The rule: IF brass key, it opens. What MUST be true?', '{"options": [{"id": "o2", "label": "The key was shiny"}, {"id": "o3", "label": "The lock was new"}, {"id": "o1", "label": "Everyone held the key"}, {"id": "o0", "label": "Nobody held the brass key"}], "narration": "BEEP! Mystery! The bridge stayed shut. The rule: IF brass key, it opens. What MUST be true?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'conditions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Mystery! The bridge stayed shut. The rule: IF brass key, it opens. What MUST be true?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_count', 'WHIRR! Milo''s rule: IF the bell dings three times, class starts. It dinged twice! How many MORE dings?', '{"thing": "more dings", "total": 1, "narration": "WHIRR! Milo''s rule: IF the bell dings three times, class starts. It dinged twice! How many MORE dings?"}'::jsonb, '{"count": 1}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'conditions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Milo''s rule: IF the bell dings three times, class starts. It dinged twice! How many MORE dings?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'BEEP! Master rule-writer! The vault opens IF you turn the key AND say the word. Sam turned the key but stayed silent! Does it open?', '{"options": [{"id": "o3", "label": "No — turn it again"}, {"id": "o1", "label": "Yes — the key is enough"}, {"id": "o2", "label": "Yes — silence counts"}, {"id": "o0", "label": "No — say the word too"}], "narration": "BEEP! Master rule-writer! The vault opens IF you turn the key AND say the word. Sam turned the key but stayed silent! Does it open?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'conditions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Master rule-writer! The vault opens IF you turn the key AND say the word. Sam turned the key but stayed silent! Does it open?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'WHIRR! Program the cloudship: IF storm clouds gather OR the wind howls, land now! The wind howls on a clear day! What does the ship do?', '{"options": [{"id": "o0", "label": "It lands"}, {"id": "o2", "label": "It speeds up"}, {"id": "o3", "label": "It lands tomorrow"}, {"id": "o1", "label": "It keeps flying"}], "narration": "WHIRR! Program the cloudship: IF storm clouds gather OR the wind howls, land now! The wind howls on a clear day! What does the ship do?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'conditions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Program the cloudship: IF storm clouds gather OR the wind howls, land now! The wind howls on a clear day! What does the ship do?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'BEEP! Write Milo''s bedtime code! Order the rule that keeps his dreams safe.', '{"items": [{"id": "s2", "label": "AND hum the sleep song"}, {"id": "s3", "label": "ELSE keep watch"}, {"id": "s1", "label": "THEN dim the eye-lights"}, {"id": "s0", "label": "IF the moon rises"}], "narration": "BEEP! Write Milo''s bedtime code! Order the rule that keeps his dreams safe."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'conditions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Write Milo''s bedtime code! Order the rule that keeps his dreams safe.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'WHIRR! Sprocket''s plant rule: IF the soil is dry, water it. The soil is damp! Should you water it?', '{"options": [{"id": "o1", "label": "Yes — water it now"}, {"id": "o2", "label": "Yes — twice as much"}, {"id": "o0", "label": "No — wait until dry"}, {"id": "o3", "label": "Repot it instead"}], "narration": "WHIRR! Sprocket''s plant rule: IF the soil is dry, water it. The soil is damp! Should you water it?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'conditions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Sprocket''s plant rule: IF the soil is dry, water it. The soil is damp! Should you water it?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'BEEP! Milo''s toast program: 1 Freeze the bread, 2 Toast it golden, 3 Spread jam. Which step is BROKEN?', '{"options": [{"id": "o0", "label": "Freeze the bread"}, {"id": "o3", "label": "All steps are fine"}, {"id": "o2", "label": "Spread jam"}, {"id": "o1", "label": "Toast it golden"}], "narration": "BEEP! Milo''s toast program: 1 Freeze the bread, 2 Toast it golden, 3 Spread jam. Which step is BROKEN?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'debugging'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Milo''s toast program: 1 Freeze the bread, 2 Toast it golden, 3 Spread jam. Which step is BROKEN?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'WHIRR! Sprocket''s kite code: 1 Run with the kite, 2 Let go of the string, 3 Watch it soar. Which step breaks it?', '{"options": [{"id": "o0", "label": "Let go of the string"}, {"id": "o3", "label": "All steps are fine"}, {"id": "o2", "label": "Watch it soar"}, {"id": "o1", "label": "Run with the kite"}], "narration": "WHIRR! Sprocket''s kite code: 1 Run with the kite, 2 Let go of the string, 3 Watch it soar. Which step breaks it?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'debugging'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Sprocket''s kite code: 1 Run with the kite, 2 Let go of the string, 3 Watch it soar. Which step breaks it?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'BEEP! The sprite dance code says: clap, stomp, NAP, clap, stomp. Tap the move that does NOT belong!', '{"targets": [{"id": "o3", "label": "spin"}, {"id": "o0", "label": "nap"}, {"id": "o2", "label": "stomp"}, {"id": "o1", "label": "clap"}], "narration": "BEEP! The sprite dance code says: clap, stomp, NAP, clap, stomp. Tap the move that does NOT belong!"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'debugging'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! The sprite dance code says: clap, stomp, NAP, clap, stomp. Tap the move that does NOT belong!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'WHIRR! Milo''s bath program: 1 Fill the tub, 2 Drain the tub, 3 Climb in. Which step is in the WRONG place?', '{"options": [{"id": "o0", "label": "Drain the tub"}, {"id": "o3", "label": "All steps are fine"}, {"id": "o2", "label": "Climb in"}, {"id": "o1", "label": "Fill the tub"}], "narration": "WHIRR! Milo''s bath program: 1 Fill the tub, 2 Drain the tub, 3 Climb in. Which step is in the WRONG place?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'debugging'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Milo''s bath program: 1 Fill the tub, 2 Drain the tub, 3 Climb in. Which step is in the WRONG place?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'BEEP! Sprocket''s sandwich machine mixed up the order! Fix the code.', '{"items": [{"id": "s3", "label": "Take a big bite"}, {"id": "s1", "label": "Add cheese and tomato"}, {"id": "s2", "label": "Close the sandwich"}, {"id": "s0", "label": "Lay the bread down"}], "narration": "BEEP! Sprocket''s sandwich machine mixed up the order! Fix the code."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'debugging'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Sprocket''s sandwich machine mixed up the order! Fix the code.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'WHIRR! The loom wove: red, blue, red, blue, YELLOW, red, blue. Tap the thread that broke the weaving!', '{"targets": [{"id": "o3", "label": "green"}, {"id": "o2", "label": "red"}, {"id": "o1", "label": "blue"}, {"id": "o0", "label": "yellow"}], "narration": "WHIRR! The loom wove: red, blue, red, blue, YELLOW, red, blue. Tap the thread that broke the weaving!"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'debugging'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! The loom wove: red, blue, red, blue, YELLOW, red, blue. Tap the thread that broke the weaving!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'BEEP! Milo''s counting code prints: 1, 2, 3, 5... Which number should come right after 3?', '{"options": [{"id": "o3", "label": "6"}, {"id": "o0", "label": "4"}, {"id": "o2", "label": "3"}, {"id": "o1", "label": "5"}], "narration": "BEEP! Milo''s counting code prints: 1, 2, 3, 5... Which number should come right after 3?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'debugging'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Milo''s counting code prints: 1, 2, 3, 5... Which number should come right after 3?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'WHIRR! The watering robot: 1 Check the soil, 2 Flood the pot, 3 Walk away. Sprocket''s plant drooped! Which step drowned it?', '{"options": [{"id": "o2", "label": "Walk away"}, {"id": "o1", "label": "Check the soil"}, {"id": "o0", "label": "Flood the pot"}, {"id": "o3", "label": "All steps are fine"}], "narration": "WHIRR! The watering robot: 1 Check the soil, 2 Flood the pot, 3 Walk away. Sprocket''s plant drooped! Which step drowned it?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'debugging'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! The watering robot: 1 Check the soil, 2 Flood the pot, 3 Walk away. Sprocket''s plant drooped! Which step drowned it?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sequence', 'BEEP! Sprocket''s toy marches BACKWARD! Reorder its steps so it marches forward.', '{"items": [{"id": "s0", "label": "Lift the left foot"}, {"id": "s2", "label": "Lift the right foot"}, {"id": "s3", "label": "Put it down in front"}, {"id": "s1", "label": "Put it down in front"}], "narration": "BEEP! Sprocket''s toy marches BACKWARD! Reorder its steps so it marches forward."}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'debugging'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Sprocket''s toy marches BACKWARD! Reorder its steps so it marches forward.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'WHIRR! The music box plays: ding, dong, BANG, ding, dong. Sprocket covers his ears! Which sound is the bug?', '{"options": [{"id": "o2", "label": "dong"}, {"id": "o0", "label": "BANG"}, {"id": "o1", "label": "ding"}, {"id": "o3", "label": "the pause"}], "narration": "WHIRR! The music box plays: ding, dong, BANG, ding, dong. Sprocket covers his ears! Which sound is the bug?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'debugging'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! The music box plays: ding, dong, BANG, ding, dong. Sprocket covers his ears! Which sound is the bug?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'BEEP! Milo''s morning code: 1 Wake up, 2 Brush gears, 3 Go back to sleep, 4 Drink oil-juice. Sprocket says step 3 is sneaky! Is he right?', '{"options": [{"id": "o2", "label": "Move it to step 1"}, {"id": "o0", "label": "Yes — delete step 3"}, {"id": "o1", "label": "No — keep it"}, {"id": "o3", "label": "Add another nap"}], "narration": "BEEP! Milo''s morning code: 1 Wake up, 2 Brush gears, 3 Go back to sleep, 4 Drink oil-juice. Sprocket says step 3 is sneaky! Is he right?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'debugging'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Milo''s morning code: 1 Wake up, 2 Brush gears, 3 Go back to sleep, 4 Drink oil-juice. Sprocket says step 3 is sneaky! Is he right?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_count', 'WHIRR! Count the bugs! Sprocket''s kite string has 5 knots, but only 2 should be there. How many EXTRA knots?', '{"thing": "extra knots", "total": 3, "narration": "WHIRR! Count the bugs! Sprocket''s kite string has 5 knots, but only 2 should be there. How many EXTRA knots?"}'::jsonb, '{"count": 3}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'debugging'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Count the bugs! Sprocket''s kite string has 5 knots, but only 2 should be there. How many EXTRA knots?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'BEEP! Mystery! The weaving unraveled overnight, but the code was perfect! What should Milo check FIRST?', '{"options": [{"id": "o1", "label": "Rewrite all the code"}, {"id": "o2", "label": "Buy a new loom"}, {"id": "o0", "label": "What changed overnight"}, {"id": "o3", "label": "The weather"}], "narration": "BEEP! Mystery! The weaving unraveled overnight, but the code was perfect! What should Milo check FIRST?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'debugging'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Mystery! The weaving unraveled overnight, but the code was perfect! What should Milo check FIRST?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'WHIRR! The parade code tangled! The drums play when the flags should wave. Untangle it!', '{"items": [{"id": "s1", "label": "Flags wave"}, {"id": "s2", "label": "Drums boom"}, {"id": "s0", "label": "Drums boom"}, {"id": "s3", "label": "Flags wave"}], "narration": "WHIRR! The parade code tangled! The drums play when the flags should wave. Untangle it!"}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'debugging'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! The parade code tangled! The drums play when the flags should wave. Untangle it!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'BEEP! Sprocket''s bridge code: IF key THEN open. He HAS a key, but the bridge stays shut! What''s the most likely bug?', '{"options": [{"id": "o3", "label": "Wait until tomorrow"}, {"id": "o2", "label": "The rule needs deleting"}, {"id": "o0", "label": "He holds the wrong key"}, {"id": "o1", "label": "The bridge needs paint"}], "narration": "BEEP! Sprocket''s bridge code: IF key THEN open. He HAS a key, but the bridge stays shut! What''s the most likely bug?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'debugging'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Sprocket''s bridge code: IF key THEN open. He HAS a key, but the bridge stays shut! What''s the most likely bug?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'WHIRR! Milo''s loop stirs the soup 10 times, but it''s still lumpy! The code is fine — what''s the REAL bug?', '{"options": [{"id": "o1", "label": "Stir faster"}, {"id": "o2", "label": "Count higher"}, {"id": "o0", "label": "The spoon fell out"}, {"id": "o3", "label": "A bigger pot"}], "narration": "WHIRR! Milo''s loop stirs the soup 10 times, but it''s still lumpy! The code is fine — what''s the REAL bug?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'debugging'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Milo''s loop stirs the soup 10 times, but it''s still lumpy! The code is fine — what''s the REAL bug?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'BEEP! Master debugger! Sprocket''s rocket code is scrambled. Fix all five steps!', '{"items": [{"id": "s4", "label": "Wave it goodbye"}, {"id": "s1", "label": "Bolt the fins tight"}, {"id": "s2", "label": "Count down 3-2-1"}, {"id": "s3", "label": "Press the red button"}, {"id": "s0", "label": "Load the fuel"}], "narration": "BEEP! Master debugger! Sprocket''s rocket code is scrambled. Fix all five steps!"}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3", "s4"]}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'debugging'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Master debugger! Sprocket''s rocket code is scrambled. Fix all five steps!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'WHIRR! The grand loom stopped mid-blanket. A GREEN thread sits in the red-blue pattern, and a red end hangs LOOSE. Which bug do you fix FIRST?', '{"options": [{"id": "o2", "label": "Both at once"}, {"id": "o3", "label": "Neither — start over"}, {"id": "o0", "label": "The loose red end"}, {"id": "o1", "label": "The green thread"}], "narration": "WHIRR! The grand loom stopped mid-blanket. A GREEN thread sits in the red-blue pattern, and a red end hangs LOOSE. Which bug do you fix FIRST?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'debugging'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! The grand loom stopped mid-blanket. A GREEN thread sits in the red-blue pattern, and a red end hangs LOOSE. Which bug do you fix FIRST?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'BEEP! Milo''s rule: IF the bell dings THEN the cookies are done. The bell dinged, but the cookies are raw! The bell works fine. What''s broken?', '{"options": [{"id": "o0", "label": "The bell rang too early"}, {"id": "o2", "label": "The oven forgot how"}, {"id": "o3", "label": "Bake them less"}, {"id": "o1", "label": "The bell is broken"}], "narration": "BEEP! Milo''s rule: IF the bell dings THEN the cookies are done. The bell dinged, but the cookies are raw! The bell works fine. What''s broken?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'debugging'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'BEEP! Milo''s rule: IF the bell dings THEN the cookies are done. The bell dinged, but the cookies are raw! The bell works fine. What''s broken?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'WHIRR! Teach the baby sprites Milo''s debugger chant! Say it with me, master debugger!', '{"script": "Find the bug, fix it with a hug!", "narration": "WHIRR! Teach the baby sprites Milo''s debugger chant! Say it with me, master debugger!"}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'debugging'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'WHIRR! Teach the baby sprites Milo''s debugger chant! Say it with me, master debugger!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'Hop to it! The concert is tonight and Riff needs a beat buddy. Riff claps: clap, CLAP. Clap it back with him!', '{"script": "Clap with Riff: clap, CLAP. Your turn - clap it back!", "narration": "Hop to it! The concert is tonight and Riff needs a beat buddy. Riff claps: clap, CLAP. Clap it back with him!"}'::jsonb, '{}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'rhythm'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hop to it! The concert is tonight and Riff needs a beat buddy. Riff claps: clap, CLAP. Clap it back with him!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'Pip the mouse is warming up his drum: boom, boom, boom. Count Pip''s drumbeats with him!', '{"thing": "drumbeats", "total": 3, "narration": "Pip the mouse is warming up his drum: boom, boom, boom. Count Pip''s drumbeats with him!"}'::jsonb, '{"count": 3}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'rhythm'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip the mouse is warming up his drum: boom, boom, boom. Count Pip''s drumbeats with him!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Riff stomps LOUD, then tiptoes soft, soft. Which word shows the LOUD part?', '{"options": [{"id": "o1", "label": "clap"}, {"id": "o2", "label": "tap"}, {"id": "o3", "label": "pat"}, {"id": "o0", "label": "STOMP"}], "narration": "Riff stomps LOUD, then tiptoes soft, soft. Which word shows the LOUD part?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'rhythm'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Riff stomps LOUD, then tiptoes soft, soft. Which word shows the LOUD part?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Pip needs his drum to keep the beat! Tap the drum in Riff''s band corner.', '{"targets": [{"id": "o3", "label": "flute"}, {"id": "o2", "label": "violin"}, {"id": "o1", "label": "trumpet"}, {"id": "o0", "label": "drum"}], "narration": "Pip needs his drum to keep the beat! Tap the drum in Riff''s band corner."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'rhythm'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip needs his drum to keep the beat! Tap the drum in Riff''s band corner.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'listen_repeat', 'Oh no - Riff lost his drumsticks! No worries, use your hands: clap, clap, STOMP. Clap it back!', '{"script": "Riff claps: clap, clap, STOMP. Clap it back, nice and bouncy!", "narration": "Oh no - Riff lost his drumsticks! No worries, use your hands: clap, clap, STOMP. Clap it back!"}'::jsonb, '{}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'rhythm'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Oh no - Riff lost his drumsticks! No worries, use your hands: clap, clap, STOMP. Clap it back!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Hop to it! The parade needs a beat: STOMP, clap, clap, STOMP, clap, clap... What comes next?', '{"options": [{"id": "o3", "label": "rest"}, {"id": "o2", "label": "snap"}, {"id": "o0", "label": "STOMP"}, {"id": "o1", "label": "clap"}], "narration": "Hop to it! The parade needs a beat: STOMP, clap, clap, STOMP, clap, clap... What comes next?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'rhythm'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hop to it! The parade needs a beat: STOMP, clap, clap, STOMP, clap, clap... What comes next?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_count', 'Hoot is humming the beat while Riff hunts for drumsticks: STOMP, STOMP, STOMP, STOMP. Count the stomps!', '{"thing": "stomps", "total": 4, "narration": "Hoot is humming the beat while Riff hunts for drumsticks: STOMP, STOMP, STOMP, STOMP. Count the stomps!"}'::jsonb, '{"count": 4}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'rhythm'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot is humming the beat while Riff hunts for drumsticks: STOMP, STOMP, STOMP, STOMP. Count the stomps!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'Riff invented a one-drumstick beat: tap, clap, STOMP! Line the sounds up in order.', '{"items": [{"id": "s0", "label": "tap"}, {"id": "s1", "label": "clap"}, {"id": "s2", "label": "STOMP"}], "narration": "Riff invented a one-drumstick beat: tap, clap, STOMP! Line the sounds up in order."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'rhythm'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Riff invented a one-drumstick beat: tap, clap, STOMP! Line the sounds up in order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'listen_repeat', 'Pip the mouse keeps rushing the drum part. Slow it down for him: slow, slow, FAST. Play it back!', '{"script": "Riff plays: slow, slow, FAST. Now play it back to teach Pip!", "narration": "Pip the mouse keeps rushing the drum part. Slow it down for him: slow, slow, FAST. Play it back!"}'::jsonb, '{}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'rhythm'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip the mouse keeps rushing the drum part. Slow it down for him: slow, slow, FAST. Play it back!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Pip played boom, boom, BANG, boom, boom... He forgot what comes next. Help him!', '{"options": [{"id": "o3", "label": "rest"}, {"id": "o0", "label": "BANG"}, {"id": "o1", "label": "boom"}, {"id": "o2", "label": "tap"}], "narration": "Pip played boom, boom, BANG, boom, boom... He forgot what comes next. Help him!"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'rhythm'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip played boom, boom, BANG, boom, boom... He forgot what comes next. Help him!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_target', 'Hoot mixed up the beat cards! Tap the card showing Riff''s parade beat: STOMP, clap, clap.', '{"targets": [{"id": "o0", "label": "STOMP, clap, clap"}, {"id": "o3", "label": "STOMP, STOMP, clap"}, {"id": "o2", "label": "clap, clap, STOMP"}, {"id": "o1", "label": "clap, STOMP, clap"}], "narration": "Hoot mixed up the beat cards! Tap the card showing Riff''s parade beat: STOMP, clap, clap."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'rhythm'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot mixed up the beat cards! Tap the card showing Riff''s parade beat: STOMP, clap, clap.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sequence', 'Teach the Loom sprites Riff''s beat! Line up the sounds: tip, tap, BANG.', '{"items": [{"id": "s0", "label": "tip"}, {"id": "s2", "label": "BANG"}, {"id": "s1", "label": "tap"}], "narration": "Teach the Loom sprites Riff''s beat! Line up the sounds: tip, tap, BANG."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'rhythm'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Teach the Loom sprites Riff''s beat! Line up the sounds: tip, tap, BANG.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'listen_repeat', 'Spooky! The Echo Cave copies every sound. Riff claps: STOMP, clap, clap. Echo it back, cave-style!', '{"script": "The cave echoes: STOMP, clap, clap. Echo it back just like the cave!", "narration": "Spooky! The Echo Cave copies every sound. Riff claps: STOMP, clap, clap. Echo it back, cave-style!"}'::jsonb, '{}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'rhythm'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Spooky! The Echo Cave copies every sound. Riff claps: STOMP, clap, clap. Echo it back, cave-style!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'The cave jumbled Riff''s beat! It sang clap, clap, STOMP - but Riff''s REAL parade beat starts with...?', '{"options": [{"id": "o2", "label": "snap"}, {"id": "o1", "label": "clap"}, {"id": "o0", "label": "STOMP"}, {"id": "o3", "label": "tap"}], "narration": "The cave jumbled Riff''s beat! It sang clap, clap, STOMP - but Riff''s REAL parade beat starts with...?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'rhythm'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The cave jumbled Riff''s beat! It sang clap, clap, STOMP - but Riff''s REAL parade beat starts with...?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_count', 'Echoes are bouncing off the cave walls! Count every echo as it flies past you.', '{"thing": "echoes", "total": 5, "narration": "Echoes are bouncing off the cave walls! Count every echo as it flies past you."}'::jsonb, '{"count": 5}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'rhythm'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Echoes are bouncing off the cave walls! Count every echo as it flies past you.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'trace', 'Draw the echo''s bouncing path! Trace the zigzag line to help the echo escape the cave.', '{"trace": "zigzag echo path", "narration": "Draw the echo''s bouncing path! Trace the zigzag line to help the echo escape the cave."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'rhythm'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Draw the echo''s bouncing path! Trace the zigzag line to help the echo escape the cave.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'Showtime! YOU lead the band now. Play your own beat: loud, soft, soft, LOUD. The band follows you!', '{"script": "You''re the leader! Play your beat: loud, soft, soft, LOUD. The band follows you!", "narration": "Showtime! YOU lead the band now. Play your own beat: loud, soft, soft, LOUD. The band follows you!"}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'rhythm'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Showtime! YOU lead the band now. Play your own beat: loud, soft, soft, LOUD. The band follows you!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'The crowd wants an encore: tap, tap, REST, tap, tap... What comes next in the tricky beat?', '{"options": [{"id": "o3", "label": "clap"}, {"id": "o2", "label": "STOMP"}, {"id": "o0", "label": "REST"}, {"id": "o1", "label": "tap"}], "narration": "The crowd wants an encore: tap, tap, REST, tap, tap... What comes next in the tricky beat?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'rhythm'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The crowd wants an encore: tap, tap, REST, tap, tap... What comes next in the tricky beat?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'Line up the concert program, maestro: warm-up beat first, parade march next, grand finale last!', '{"items": [{"id": "s2", "label": "grand finale"}, {"id": "s1", "label": "parade march"}, {"id": "s0", "label": "warm-up beat"}], "narration": "Line up the concert program, maestro: warm-up beat first, parade march next, grand finale last!"}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'rhythm'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Line up the concert program, maestro: warm-up beat first, parade march next, grand finale last!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sort', 'Sort the band''s sounds before the show: LOUD sounds in one pile, soft sounds in another!', '{"items": [{"id": "g0i1", "label": "BANG", "group": "LOUD sounds"}, {"id": "g1i0", "label": "tap", "group": "soft sounds"}, {"id": "g1i1", "label": "tip", "group": "soft sounds"}, {"id": "g1i2", "label": "pat", "group": "soft sounds"}, {"id": "g0i0", "label": "STOMP", "group": "LOUD sounds"}, {"id": "g0i2", "label": "CRASH", "group": "LOUD sounds"}], "groups": [{"id": "g0", "label": "LOUD sounds"}, {"id": "g1", "label": "soft sounds"}], "narration": "Sort the band''s sounds before the show: LOUD sounds in one pile, soft sounds in another!"}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'rhythm'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sort the band''s sounds before the show: LOUD sounds in one pile, soft sounds in another!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'Meet Hoot the owlet! He hums HIGH like a tiny bird: wee-ee-ee! Hum it back with him!', '{"script": "Hoot hums high like a bird: wee-ee-ee! Hum it back with Hoot!", "narration": "Meet Hoot the owlet! He hums HIGH like a tiny bird: wee-ee-ee! Hum it back with him!"}'::jsonb, '{}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'pitch'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Meet Hoot the owlet! He hums HIGH like a tiny bird: wee-ee-ee! Hum it back with him!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Hoot sings two notes: one like a bird, one like a bear. Which note is HIGH?', '{"options": [{"id": "o3", "label": "the middle note"}, {"id": "o0", "label": "the bird''s note"}, {"id": "o1", "label": "the bear''s note"}, {"id": "o2", "label": "the quiet note"}], "narration": "Hoot sings two notes: one like a bird, one like a bear. Which note is HIGH?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'pitch'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot sings two notes: one like a bird, one like a bear. Which note is HIGH?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Hoot wants to sing with the HIGHEST singer in the meadow. Tap it!', '{"targets": [{"id": "o2", "label": "frog"}, {"id": "o0", "label": "bird"}, {"id": "o1", "label": "bear"}, {"id": "o3", "label": "turtle"}], "narration": "Hoot wants to sing with the HIGHEST singer in the meadow. Tap it!"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'pitch'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot wants to sing with the HIGHEST singer in the meadow. Tap it!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Riff plinks the piano: plink means HIGH, plunk means LOW. Which word is the HIGH note?', '{"options": [{"id": "o3", "label": "plank"}, {"id": "o0", "label": "plink"}, {"id": "o1", "label": "plunk"}, {"id": "o2", "label": "plonk"}], "narration": "Riff plinks the piano: plink means HIGH, plunk means LOW. Which word is the HIGH note?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'pitch'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Riff plinks the piano: plink means HIGH, plunk means LOW. Which word is the HIGH note?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'listen_repeat', 'Hoot is hopping up the music stairs: low, higher, HIGHEST! Sing the climb back with him!', '{"script": "Sing with Hoot up the stairs: low... higher... HIGHEST! Now sing it back!", "narration": "Hoot is hopping up the music stairs: low, higher, HIGHEST! Sing the climb back with him!"}'::jsonb, '{}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'pitch'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot is hopping up the music stairs: low, higher, HIGHEST! Sing the climb back with him!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Hoot sang low, then middle, then high. Which note was the HIGHEST of the three?', '{"options": [{"id": "o2", "label": "the middle one"}, {"id": "o3", "label": "they were all the same"}, {"id": "o1", "label": "the first one"}, {"id": "o0", "label": "the last one"}], "narration": "Hoot sang low, then middle, then high. Which note was the HIGHEST of the three?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'pitch'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot sang low, then middle, then high. Which note was the HIGHEST of the three?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'Hoot''s hums tumbled down the music stairs! Put them back from LOWEST to HIGHEST.', '{"items": [{"id": "s0", "label": "low hum"}, {"id": "s1", "label": "middle hum"}, {"id": "s2", "label": "high hum"}], "narration": "Hoot''s hums tumbled down the music stairs! Put them back from LOWEST to HIGHEST."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'pitch'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot''s hums tumbled down the music stairs! Put them back from LOWEST to HIGHEST.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'The Echo Cave echoed Hoot''s high note. Tap the HIGH echo, the one like a bird!', '{"targets": [{"id": "o0", "label": "high wee-ee"}, {"id": "o3", "label": "rumbly hum"}, {"id": "o1", "label": "low whoo"}, {"id": "o2", "label": "middle laa"}], "narration": "The Echo Cave echoed Hoot''s high note. Tap the HIGH echo, the one like a bird!"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'pitch'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The Echo Cave echoed Hoot''s high note. Tap the HIGH echo, the one like a bird!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'listen_repeat', 'Pip the mouse mixes up high and low! Teach him: HIGH like a bird, then LOW like a bear.', '{"script": "Teach Pip! First HIGH like a bird: wee! Then LOW like a bear: whoo. Sing it for Pip!", "narration": "Pip the mouse mixes up high and low! Teach him: HIGH like a bird, then LOW like a bear."}'::jsonb, '{}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'pitch'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip the mouse mixes up high and low! Teach him: HIGH like a bird, then LOW like a bear.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Pip asks: is my drum HIGH like a bird or LOW like a bear? Help Pip get it right!', '{"options": [{"id": "o1", "label": "high like a bird"}, {"id": "o3", "label": "soft like a whisper"}, {"id": "o0", "label": "low like a bear"}, {"id": "o2", "label": "squeaky like a mouse"}], "narration": "Pip asks: is my drum HIGH like a bird or LOW like a bear? Help Pip get it right!"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'pitch'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip asks: is my drum HIGH like a bird or LOW like a bear? Help Pip get it right!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'trace', 'Draw Hoot''s hum! Trace the line that climbs UP, up, up like his note rising to the sky.', '{"trace": "rising hum line", "narration": "Draw Hoot''s hum! Trace the line that climbs UP, up, up like his note rising to the sky."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'pitch'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Draw Hoot''s hum! Trace the line that climbs UP, up, up like his note rising to the sky.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Hoot hums Pip a lullaby: high, low, high. Which note does Pip hear FIRST?', '{"options": [{"id": "o0", "label": "high"}, {"id": "o2", "label": "middle"}, {"id": "o3", "label": "both at once"}, {"id": "o1", "label": "low"}], "narration": "Hoot hums Pip a lullaby: high, low, high. Which note does Pip hear FIRST?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'pitch'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot hums Pip a lullaby: high, low, high. Which note does Pip hear FIRST?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'listen_repeat', 'Mystery! Someone scrambled Hoot''s music box. Hum the notes back slowly: low... high... low...', '{"script": "The music box plays: low... high... low... Hum it back slowly with Hoot!", "narration": "Mystery! Someone scrambled Hoot''s music box. Hum the notes back slowly: low... high... low..."}'::jsonb, '{}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'pitch'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Mystery! Someone scrambled Hoot''s music box. Hum the notes back slowly: low... high... low...');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'The box played high, high, LOW, high. One sneaky LOW note is hiding! Which one was it?', '{"options": [{"id": "o3", "label": "the fourth note"}, {"id": "o0", "label": "the third note"}, {"id": "o2", "label": "the second note"}, {"id": "o1", "label": "the first note"}], "narration": "The box played high, high, LOW, high. One sneaky LOW note is hiding! Which one was it?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'pitch'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The box played high, high, LOW, high. One sneaky LOW note is hiding! Which one was it?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'Fix the music box! Line the notes up from HIGHEST to LOWEST.', '{"items": [{"id": "s1", "label": "middle note"}, {"id": "s0", "label": "bird-high note"}, {"id": "s2", "label": "bear-low note"}], "narration": "Fix the music box! Line the notes up from HIGHEST to LOWEST."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'pitch'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Fix the music box! Line the notes up from HIGHEST to LOWEST.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_target', 'One echo in the cave is Hoot''s REAL high hum. Tap the HIGHEST echo!', '{"targets": [{"id": "o0", "label": "the tippy-top echo"}, {"id": "o1", "label": "the middle echo"}, {"id": "o3", "label": "the soft quiet echo"}, {"id": "o2", "label": "the low rumbly echo"}], "narration": "One echo in the cave is Hoot''s REAL high hum. Tap the HIGHEST echo!"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'pitch'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'One echo in the cave is Hoot''s REAL high hum. Tap the HIGHEST echo!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'You''re the composer now! Teach the band YOUR lullaby: high, low, low, high. Sing it!', '{"script": "Sing your lullaby for the band: high... low... low... high! They''ll sing it back!", "narration": "You''re the composer now! Teach the band YOUR lullaby: high, low, low, high. Sing it!"}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'pitch'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'You''re the composer now! Teach the band YOUR lullaby: high, low, low, high. Sing it!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Hoot''s finale climbs low, middle, high... The last note must soar even HIGHER. Which ending is right?', '{"options": [{"id": "o3", "label": "the same high again"}, {"id": "o0", "label": "higher than high"}, {"id": "o2", "label": "a middle hum"}, {"id": "o1", "label": "low like a bear"}], "narration": "Hoot''s finale climbs low, middle, high... The last note must soar even HIGHER. Which ending is right?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'pitch'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot''s finale climbs low, middle, high... The last note must soar even HIGHER. Which ending is right?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'Line up the whole lullaby for the concert: lowest bear note first, up to the star-high note!', '{"items": [{"id": "s1", "label": "middle"}, {"id": "s0", "label": "bear-low"}, {"id": "s3", "label": "star-high"}, {"id": "s2", "label": "bird-high"}], "narration": "Line up the whole lullaby for the concert: lowest bear note first, up to the star-high note!"}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'pitch'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Line up the whole lullaby for the concert: lowest bear note first, up to the star-high note!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sort', 'Sort the band''s sounds by pitch for the big show: HIGH sounds here, LOW sounds there!', '{"items": [{"id": "g0i2", "label": "Hoot''s wee", "group": "HIGH sounds"}, {"id": "g1i2", "label": "piano''s low plunk", "group": "LOW sounds"}, {"id": "g0i0", "label": "flute''s toot", "group": "HIGH sounds"}, {"id": "g1i0", "label": "drum''s boom", "group": "LOW sounds"}, {"id": "g0i1", "label": "bird''s chirp", "group": "HIGH sounds"}, {"id": "g1i1", "label": "bear''s growl", "group": "LOW sounds"}], "groups": [{"id": "g0", "label": "HIGH sounds"}, {"id": "g1", "label": "LOW sounds"}], "narration": "Sort the band''s sounds by pitch for the big show: HIGH sounds here, LOW sounds there!"}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'pitch'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sort the band''s sounds by pitch for the big show: HIGH sounds here, LOW sounds there!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'The band is tuning up! Tap the DRUM so Pip can start the concert.', '{"targets": [{"id": "o1", "label": "trumpet"}, {"id": "o2", "label": "violin"}, {"id": "o0", "label": "drum"}, {"id": "o3", "label": "flute"}], "narration": "The band is tuning up! Tap the DRUM so Pip can start the concert."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'instruments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The band is tuning up! Tap the DRUM so Pip can start the concert.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Hoot wants a buddy to hum with. Which instrument do you play by BLOWING?', '{"options": [{"id": "o3", "label": "piano"}, {"id": "o1", "label": "drum"}, {"id": "o2", "label": "violin"}, {"id": "o0", "label": "flute"}], "narration": "Hoot wants a buddy to hum with. Which instrument do you play by BLOWING?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'instruments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot wants a buddy to hum with. Which instrument do you play by BLOWING?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'The band is warming up! Strum along on the guitar: strum, strum, STRUM! Strum it back!', '{"script": "Strum with the band: strum, strum, STRUM! Strum it back!", "narration": "The band is warming up! Strum along on the guitar: strum, strum, STRUM! Strum it back!"}'::jsonb, '{}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'instruments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The band is warming up! Strum along on the guitar: strum, strum, STRUM! Strum it back!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Pip shakes something that goes chicka-chicka-chick! Which instrument is Pip playing?', '{"options": [{"id": "o2", "label": "xylophone"}, {"id": "o1", "label": "drum"}, {"id": "o0", "label": "maracas"}, {"id": "o3", "label": "trumpet"}], "narration": "Pip shakes something that goes chicka-chicka-chick! Which instrument is Pip playing?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'instruments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip shakes something that goes chicka-chicka-chick! Which instrument is Pip playing?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'The parade lineup got mixed up! Tap the TRUMPET - the band needs its loud parade horn.', '{"targets": [{"id": "o2", "label": "violin"}, {"id": "o3", "label": "drum"}, {"id": "o0", "label": "trumpet"}, {"id": "o1", "label": "flute"}], "narration": "The parade lineup got mixed up! Tap the TRUMPET - the band needs its loud parade horn."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'instruments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The parade lineup got mixed up! Tap the TRUMPET - the band needs its loud parade horn.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Riff''s drumsticks are STILL missing! Which instrument can keep the beat by SHAKING?', '{"options": [{"id": "o0", "label": "maracas"}, {"id": "o3", "label": "piano"}, {"id": "o2", "label": "flute"}, {"id": "o1", "label": "violin"}], "narration": "Riff''s drumsticks are STILL missing! Which instrument can keep the beat by SHAKING?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'instruments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Riff''s drumsticks are STILL missing! Which instrument can keep the beat by SHAKING?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_count', 'The band lined up their instruments for the parade. Count every instrument you see!', '{"thing": "instruments", "total": 5, "narration": "The band lined up their instruments for the parade. Count every instrument you see!"}'::jsonb, '{"count": 5}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'instruments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The band lined up their instruments for the parade. Count every instrument you see!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'The parade master needs the band in playing order: drums first, then horns, then strings. Line them up!', '{"items": [{"id": "s2", "label": "violin"}, {"id": "s0", "label": "drum"}, {"id": "s1", "label": "trumpet"}], "narration": "The parade master needs the band in playing order: drums first, then horns, then strings. Line them up!"}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'instruments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The parade master needs the band in playing order: drums first, then horns, then strings. Line them up!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Pip wants an instrument he can SHAKE while he marches. Which one fits him best?', '{"options": [{"id": "o1", "label": "violin"}, {"id": "o0", "label": "maracas"}, {"id": "o3", "label": "piano"}, {"id": "o2", "label": "flute"}], "narration": "Pip wants an instrument he can SHAKE while he marches. Which one fits him best?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'instruments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip wants an instrument he can SHAKE while he marches. Which one fits him best?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'listen_repeat', 'Hoot wants to learn the flute! Blow along with him: whooo, whooo, WHEEE! Blow it back!', '{"script": "Blow with Hoot: whooo... whooo... WHEEE! Now you blow it back!", "narration": "Hoot wants to learn the flute! Blow along with him: whooo, whooo, WHEEE! Blow it back!"}'::jsonb, '{}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'instruments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hoot wants to learn the flute! Blow along with him: whooo, whooo, WHEEE! Blow it back!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_target', 'Riff needs a beat-keeper while his drumsticks are missing. Tap the instrument you play by SHAKING!', '{"targets": [{"id": "o1", "label": "drum"}, {"id": "o3", "label": "piano"}, {"id": "o2", "label": "violin"}, {"id": "o0", "label": "maracas"}], "narration": "Riff needs a beat-keeper while his drumsticks are missing. Tap the instrument you play by SHAKING!"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'instruments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Riff needs a beat-keeper while his drumsticks are missing. Tap the instrument you play by SHAKING!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Which instrument has STRINGS that you play with a bow?', '{"options": [{"id": "o3", "label": "flute"}, {"id": "o2", "label": "piano"}, {"id": "o1", "label": "guitar"}, {"id": "o0", "label": "violin"}], "narration": "Which instrument has STRINGS that you play with a bow?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'instruments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Which instrument has STRINGS that you play with a bow?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Mystery! The Echo Cave hums a lonely plink... plink... Which instrument is lost in the cave?', '{"options": [{"id": "o1", "label": "xylophone"}, {"id": "o2", "label": "drum"}, {"id": "o3", "label": "trumpet"}, {"id": "o0", "label": "piano"}], "narration": "Mystery! The Echo Cave hums a lonely plink... plink... Which instrument is lost in the cave?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'instruments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Mystery! The Echo Cave hums a lonely plink... plink... Which instrument is lost in the cave?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_target', 'Something shiny is hiding in the Echo Cave. Tap the instrument with STRINGS!', '{"targets": [{"id": "o1", "label": "flute"}, {"id": "o0", "label": "violin"}, {"id": "o2", "label": "trumpet"}, {"id": "o3", "label": "drum"}], "narration": "Something shiny is hiding in the Echo Cave. Tap the instrument with STRINGS!"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'instruments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Something shiny is hiding in the Echo Cave. Tap the instrument with STRINGS!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'listen_repeat', 'The cave echoes a mystery beat: BOOM-chicka-BOOM! Echo it back so we can guess the instrument!', '{"script": "Echo the mystery sound: BOOM-chicka-BOOM! Echo it back!", "narration": "The cave echoes a mystery beat: BOOM-chicka-BOOM! Echo it back so we can guess the instrument!"}'::jsonb, '{}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'instruments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The cave echoes a mystery beat: BOOM-chicka-BOOM! Echo it back so we can guess the instrument!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'That BOOM-chicka-BOOM is big and boomy with a shaky chicka. Which instrument makes it?', '{"options": [{"id": "o2", "label": "violin"}, {"id": "o0", "label": "drum"}, {"id": "o1", "label": "maracas"}, {"id": "o3", "label": "flute"}], "narration": "That BOOM-chicka-BOOM is big and boomy with a shaky chicka. Which instrument makes it?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'instruments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'That BOOM-chicka-BOOM is big and boomy with a shaky chicka. Which instrument makes it?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sort', 'The grand parade is here! Sort every instrument into its family. Riff''s rule: strings inside count as STRINGS - even the piano!', '{"items": [{"id": "g0i0", "label": "drum", "group": "things you HIT"}, {"id": "g2i0", "label": "trumpet", "group": "things you BLOW"}, {"id": "g2i1", "label": "flute", "group": "things you BLOW"}, {"id": "g1i2", "label": "piano", "group": "things with STRINGS"}, {"id": "g1i1", "label": "guitar", "group": "things with STRINGS"}, {"id": "g1i0", "label": "violin", "group": "things with STRINGS"}, {"id": "g0i1", "label": "xylophone", "group": "things you HIT"}, {"id": "g0i2", "label": "maracas", "group": "things you HIT"}], "groups": [{"id": "g0", "label": "things you HIT"}, {"id": "g1", "label": "things with STRINGS"}, {"id": "g2", "label": "things you BLOW"}], "narration": "The grand parade is here! Sort every instrument into its family. Riff''s rule: strings inside count as STRINGS - even the piano!"}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"], "g2": ["g2i0", "g2i1"]}}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'instruments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The grand parade is here! Sort every instrument into its family. Riff''s rule: strings inside count as STRINGS - even the piano!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'For the grand finale, Riff needs the LOUDEST instrument. Which one shakes the whole stage?', '{"options": [{"id": "o0", "label": "drum"}, {"id": "o1", "label": "flute"}, {"id": "o3", "label": "maracas"}, {"id": "o2", "label": "violin"}], "narration": "For the grand finale, Riff needs the LOUDEST instrument. Which one shakes the whole stage?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'instruments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'For the grand finale, Riff needs the LOUDEST instrument. Which one shakes the whole stage?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_count', 'Every instrument family is marching in the grand parade! Count all the instruments.', '{"thing": "instruments", "total": 8, "narration": "Every instrument family is marching in the grand parade! Count all the instruments."}'::jsonb, '{"count": 8}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'instruments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Every instrument family is marching in the grand parade! Count all the instruments.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'You''re leading the parade! Call the beat for each family: BOOM for drums, TOOT for horns, STRUM for strings!', '{"script": "Lead the parade! Shout: BOOM! TOOT! STRUM! The band follows you - call it again!", "narration": "You''re leading the parade! Call the beat for each family: BOOM for drums, TOOT for horns, STRUM for strings!"}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'instruments'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'You''re leading the parade! Call the beat for each family: BOOM for drums, TOOT for horns, STRUM for strings!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'Hop to it! Riff is doing his bunny hop: hop, hop, HOP! Dance it with him!', '{"script": "Dance with Riff: hop, hop, HOP! Your turn - hop it back!", "narration": "Hop to it! Riff is doing his bunny hop: hop, hop, HOP! Dance it with him!"}'::jsonb, '{}'::jsonb, 10, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'dance'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Hop to it! Riff is doing his bunny hop: hop, hop, HOP! Dance it with him!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Riff showed you two moves: first a twirl, then a hop. Which move came FIRST?', '{"options": [{"id": "o1", "label": "hop"}, {"id": "o0", "label": "twirl"}, {"id": "o3", "label": "clap"}, {"id": "o2", "label": "stomp"}], "narration": "Riff showed you two moves: first a twirl, then a hop. Which move came FIRST?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'dance'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Riff showed you two moves: first a twirl, then a hop. Which move came FIRST?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Riff is striking dance poses on stage! Tap the bunny doing the TWIRL.', '{"targets": [{"id": "o1", "label": "hopping bunny"}, {"id": "o3", "label": "stomping bunny"}, {"id": "o0", "label": "twirling bunny"}, {"id": "o2", "label": "sleeping bunny"}], "narration": "Riff is striking dance poses on stage! Tap the bunny doing the TWIRL."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'dance'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Riff is striking dance poses on stage! Tap the bunny doing the TWIRL.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'Riff hopped all the way across the stage: hop, hop, hop, hop. Count his hops!', '{"thing": "hops", "total": 4, "narration": "Riff hopped all the way across the stage: hop, hop, hop, hop. Count his hops!"}'::jsonb, '{"count": 4}'::jsonb, 10, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'dance'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Riff hopped all the way across the stage: hop, hop, hop, hop. Count his hops!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'listen_repeat', 'The Loom sprites want to dance! Teach them Riff''s move: stomp, stomp, TWIRL! Do it with him!', '{"script": "Teach the sprites: stomp, stomp, TWIRL! Do it with Riff so they can copy you!", "narration": "The Loom sprites want to dance! Teach them Riff''s move: stomp, stomp, TWIRL! Do it with him!"}'::jsonb, '{}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'dance'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The Loom sprites want to dance! Teach them Riff''s move: stomp, stomp, TWIRL! Do it with him!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'The sprites learned three moves but forgot the order! Line them up: hop, stomp, twirl.', '{"items": [{"id": "s2", "label": "twirl"}, {"id": "s0", "label": "hop"}, {"id": "s1", "label": "stomp"}], "narration": "The sprites learned three moves but forgot the order! Line them up: hop, stomp, twirl."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'dance'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The sprites learned three moves but forgot the order! Line them up: hop, stomp, twirl.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'A sprite danced hop, hop, hop... then froze. Riff''s dance goes hop, hop, TWIRL. What comes next?', '{"options": [{"id": "o1", "label": "hop"}, {"id": "o2", "label": "stomp"}, {"id": "o3", "label": "clap"}, {"id": "o0", "label": "twirl"}], "narration": "A sprite danced hop, hop, hop... then froze. Riff''s dance goes hop, hop, TWIRL. What comes next?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'dance'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'A sprite danced hop, hop, hop... then froze. Riff''s dance goes hop, hop, TWIRL. What comes next?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_count', 'The Loom sprites are hopping in a line behind Riff. Count every hopping sprite!', '{"thing": "sprites", "total": 5, "narration": "The Loom sprites are hopping in a line behind Riff. Count every hopping sprite!"}'::jsonb, '{"count": 5}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'dance'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The Loom sprites are hopping in a line behind Riff. Count every hopping sprite!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'listen_repeat', 'Pip the sprite keeps doing the moves backwards! Show him slowly: hop, stomp, TWIRL.', '{"script": "Slow it down for Pip: hop... stomp... TWIRL! Do it slowly so Pip can follow!", "narration": "Pip the sprite keeps doing the moves backwards! Show him slowly: hop, stomp, TWIRL."}'::jsonb, '{}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'dance'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip the sprite keeps doing the moves backwards! Show him slowly: hop, stomp, TWIRL.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Pip danced twirl, stomp, hop. Riff''s dance is hop, stomp, twirl. Which move is in the WRONG spot?', '{"options": [{"id": "o2", "label": "stomp"}, {"id": "o0", "label": "twirl"}, {"id": "o1", "label": "hop"}, {"id": "o3", "label": "all of them"}], "narration": "Pip danced twirl, stomp, hop. Riff''s dance is hop, stomp, twirl. Which move is in the WRONG spot?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'dance'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pip danced twirl, stomp, hop. Riff''s dance is hop, stomp, twirl. Which move is in the WRONG spot?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'trace', 'Draw the dance path! Trace the curvy line so the sprite can twirl all the way across the stage.', '{"trace": "curvy twirl path", "narration": "Draw the dance path! Trace the curvy line so the sprite can twirl all the way across the stage."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'dance'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Draw the dance path! Trace the curvy line so the sprite can twirl all the way across the stage.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sequence', 'Riff taught Pip a brand-new dance! Line it up: stomp first, then hop, then twirl.', '{"items": [{"id": "s1", "label": "hop"}, {"id": "s0", "label": "stomp"}, {"id": "s2", "label": "twirl"}], "narration": "Riff taught Pip a brand-new dance! Line it up: stomp first, then hop, then twirl."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'dance'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Riff taught Pip a brand-new dance! Line it up: stomp first, then hop, then twirl.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'listen_repeat', 'Mystery! The Echo Cave copies Riff''s dance - but backwards! Copy the cave: TWIRL, stomp, hop!', '{"script": "The cave dances backwards: TWIRL... stomp... hop! Copy the cave''s silly dance!", "narration": "Mystery! The Echo Cave copies Riff''s dance - but backwards! Copy the cave: TWIRL, stomp, hop!"}'::jsonb, '{}'::jsonb, 20, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'dance'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Mystery! The Echo Cave copies Riff''s dance - but backwards! Copy the cave: TWIRL, stomp, hop!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'The cave jumbled Riff''s dance: hop, twirl, stomp. His REAL dance is hop, stomp, twirl. What''s wrong?', '{"options": [{"id": "o3", "label": "a move is missing"}, {"id": "o1", "label": "hop is in the wrong spot"}, {"id": "o2", "label": "nothing is wrong"}, {"id": "o0", "label": "twirl and stomp swapped spots"}], "narration": "The cave jumbled Riff''s dance: hop, twirl, stomp. His REAL dance is hop, stomp, twirl. What''s wrong?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'dance'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The cave jumbled Riff''s dance: hop, twirl, stomp. His REAL dance is hop, stomp, twirl. What''s wrong?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_count', 'Bunny echoes are bouncing all over the cave! Count every hopping echo you see.', '{"thing": "hopping echoes", "total": 6, "narration": "Bunny echoes are bouncing all over the cave! Count every hopping echo you see."}'::jsonb, '{"count": 6}'::jsonb, 20, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'dance'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Bunny echoes are bouncing all over the cave! Count every hopping echo you see.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'trace', 'The cave mixed up the dance map! Trace the dotted path to lead Riff OUT of the Echo Cave.', '{"trace": "dotted cave path", "narration": "The cave mixed up the dance map! Trace the dotted path to lead Riff OUT of the Echo Cave."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 20, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'dance'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The cave mixed up the dance map! Trace the dotted path to lead Riff OUT of the Echo Cave.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'You''re the dance captain now! Make up YOUR finale: hop, hop, stomp, TWIRL! Teach everyone!', '{"script": "Dance captain, show your finale: hop, hop, stomp, TWIRL! The whole stage copies YOU!", "narration": "You''re the dance captain now! Make up YOUR finale: hop, hop, stomp, TWIRL! Teach everyone!"}'::jsonb, '{}'::jsonb, 25, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'dance'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'You''re the dance captain now! Make up YOUR finale: hop, hop, stomp, TWIRL! Teach everyone!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'The crowd voted on the finale! Line it up: twirl first, then hop, then stomp, then FREEZE!', '{"items": [{"id": "s3", "label": "FREEZE"}, {"id": "s1", "label": "hop"}, {"id": "s2", "label": "stomp"}, {"id": "s0", "label": "twirl"}], "narration": "The crowd voted on the finale! Line it up: twirl first, then hop, then stomp, then FREEZE!"}'::jsonb, '{"sequence": ["s0", "s1", "s2", "s3"]}'::jsonb, 25, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'dance'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The crowd voted on the finale! Line it up: twirl first, then hop, then stomp, then FREEZE!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'For the biggest finish ever, the last move must be BOLD. Which ending is the boldest?', '{"options": [{"id": "o1", "label": "a tiny hop"}, {"id": "o2", "label": "a slow tiptoe"}, {"id": "o0", "label": "FREEZE with arms up"}, {"id": "o3", "label": "a little bow"}], "narration": "For the biggest finish ever, the last move must be BOLD. Which ending is the boldest?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'dance'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'For the biggest finish ever, the last move must be BOLD. Which ending is the boldest?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sort', 'Sort the finale moves, dance captain: BOUNCY moves in one group, SPINNY moves in another!', '{"items": [{"id": "g0i0", "label": "hop", "group": "BOUNCY moves"}, {"id": "g1i1", "label": "spin", "group": "SPINNY moves"}, {"id": "g1i0", "label": "twirl", "group": "SPINNY moves"}, {"id": "g1i2", "label": "whirl", "group": "SPINNY moves"}, {"id": "g0i1", "label": "stomp", "group": "BOUNCY moves"}, {"id": "g0i2", "label": "jump", "group": "BOUNCY moves"}], "groups": [{"id": "g0", "label": "BOUNCY moves"}, {"id": "g1", "label": "SPINNY moves"}], "narration": "Sort the finale moves, dance captain: BOUNCY moves in one group, SPINNY moves in another!"}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 25, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'dance'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Sort the finale moves, dance captain: BOUNCY moves in one group, SPINNY moves in another!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'trace', 'Ahoy, artist! The Paint sprites want to play dots. Can you make a big dot for them?', '{"trace": "a big dot", "narration": "Ahoy, artist! The Paint sprites want to play dots. Can you make a big dot for them?"}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 10, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'brush_control'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Ahoy, artist! The Paint sprites want to play dots. Can you make a big dot for them?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'trace', 'Curio''s ship needs a mast before it can sail! Trace a straight line — it''s the mast.', '{"trace": "a straight line", "narration": "Curio''s ship needs a mast before it can sail! Trace a straight line — it''s the mast."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 10, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'brush_control'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Curio''s ship needs a mast before it can sail! Trace a straight line — it''s the mast.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'Oh no — the Paint sprites spilled! How many blue blobs do you see?', '{"thing": "blue paint blobs", "total": 3, "narration": "Oh no — the Paint sprites spilled! How many blue blobs do you see?"}'::jsonb, '{"count": 3}'::jsonb, 10, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'brush_control'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Oh no — the Paint sprites spilled! How many blue blobs do you see?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Quill mixed up the practice strokes. Which one is a straight line?', '{"options": [{"id": "o0", "label": "a straight line"}, {"id": "o3", "label": "a curly line"}, {"id": "o1", "label": "a wavy line"}, {"id": "o2", "label": "a zigzag line"}], "narration": "Quill mixed up the practice strokes. Which one is a straight line?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'brush_control'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill mixed up the practice strokes. Which one is a straight line?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'trace', 'The ship is ready, but the sea is empty! Trace a wavy line — waves for Curio''s ship.', '{"trace": "a wavy line", "narration": "The ship is ready, but the sea is empty! Trace a wavy line — waves for Curio''s ship."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'brush_control'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The ship is ready, but the sea is empty! Trace a wavy line — waves for Curio''s ship.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'Quill''s practice sheet is a jumble. Tap the line that waves like the sea.', '{"targets": [{"id": "o0", "label": "the wavy line"}, {"id": "o3", "label": "the curly line"}, {"id": "o1", "label": "the straight line"}, {"id": "o2", "label": "the zigzag line"}], "narration": "Quill''s practice sheet is a jumble. Tap the line that waves like the sea."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'brush_control'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill''s practice sheet is a jumble. Tap the line that waves like the sea.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Quill''s tail feathers need zigzag edges. Which line is a zigzag?', '{"options": [{"id": "o2", "label": "the straight line"}, {"id": "o1", "label": "the wavy line"}, {"id": "o0", "label": "the zigzag line"}, {"id": "o3", "label": "the curly line"}], "narration": "Quill''s tail feathers need zigzag edges. Which line is a zigzag?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'brush_control'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill''s tail feathers need zigzag edges. Which line is a zigzag?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'listen_repeat', 'Say it with Curio, artist to artist — and make your voice wavy!', '{"script": "Wavy lines dance like sea waves!", "narration": "Say it with Curio, artist to artist — and make your voice wavy!"}'::jsonb, '{}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'brush_control'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Say it with Curio, artist to artist — and make your voice wavy!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'trace', 'The wind curled Quill''s tail feathers! Trace a spiral to smooth one out for him.', '{"trace": "a spiral", "narration": "The wind curled Quill''s tail feathers! Trace a spiral to smooth one out for him."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'brush_control'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The wind curled Quill''s tail feathers! Trace a spiral to smooth one out for him.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'trace', 'A Paint sprite lost its kite string! Trace a long smooth line — it''s the new string.', '{"trace": "a long smooth line", "narration": "A Paint sprite lost its kite string! Trace a long smooth line — it''s the new string."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'brush_control'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'A Paint sprite lost its kite string! Trace a long smooth line — it''s the new string.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sequence', 'Curio''s flag needs painting in order. Put the steps in order, artist!', '{"items": [{"id": "s1", "label": "paint the stripes"}, {"id": "s2", "label": "paint the star"}, {"id": "s0", "label": "paint the pole"}], "narration": "Curio''s flag needs painting in order. Put the steps in order, artist!"}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'brush_control'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Curio''s flag needs painting in order. Put the steps in order, artist!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Which stroke makes the strongest rope for the ship?', '{"options": [{"id": "o0", "label": "a long smooth line"}, {"id": "o1", "label": "a bumpy line"}, {"id": "o2", "label": "a short dotty line"}, {"id": "o3", "label": "a zigzag line"}], "narration": "Which stroke makes the strongest rope for the ship?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '5-6'
+FROM public.skills s WHERE s.code = 'brush_control'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Which stroke makes the strongest rope for the ship?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_target', 'A mysterious trail winds across the Atelier floor! Tap the trail that curls like a snake.', '{"targets": [{"id": "o3", "label": "the dotted trail"}, {"id": "o0", "label": "the wavy trail"}, {"id": "o2", "label": "the zigzag trail"}, {"id": "o1", "label": "the straight trail"}], "narration": "A mysterious trail winds across the Atelier floor! Tap the trail that curls like a snake."}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'brush_control'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'A mysterious trail winds across the Atelier floor! Tap the trail that curls like a snake.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'trace', 'The trail leads behind the easel! Trace the wiggly path to follow it, detective.', '{"trace": "a wiggly path", "narration": "The trail leads behind the easel! Trace the wiggly path to follow it, detective."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 20, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'brush_control'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The trail leads behind the easel! Trace the wiggly path to follow it, detective.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'The mystery trail is smooth and curvy. Which stroke could have made it?', '{"options": [{"id": "o2", "label": "a zigzag line"}, {"id": "o1", "label": "a straight line"}, {"id": "o0", "label": "a wavy line"}, {"id": "o3", "label": "a row of dots"}], "narration": "The mystery trail is smooth and curvy. Which stroke could have made it?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'brush_control'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The mystery trail is smooth and curvy. Which stroke could have made it?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_count', 'The trail was made by painty footprints! How many footprints lead to the easel?', '{"thing": "paint footprints", "total": 4, "narration": "The trail was made by painty footprints! How many footprints lead to the easel?"}'::jsonb, '{"count": 4}'::jsonb, 20, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'brush_control'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The trail was made by painty footprints! How many footprints lead to the easel?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'trace', 'The gallery needs a rainbow, master artist! Trace a graceful curve for its top arc.', '{"trace": "a graceful curve", "narration": "The gallery needs a rainbow, master artist! Trace a graceful curve for its top arc."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 25, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'brush_control'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The gallery needs a rainbow, master artist! Trace a graceful curve for its top arc.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'trace', 'Quill wants to sign his portrait. Trace the letter S — slow and smooth, like a captain.', '{"trace": "the letter S", "narration": "Quill wants to sign his portrait. Trace the letter S — slow and smooth, like a captain."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 25, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'brush_control'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill wants to sign his portrait. Trace the letter S — slow and smooth, like a captain.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'A young Paint sprite asks: which stroke takes the steadiest hand?', '{"options": [{"id": "o0", "label": "a long smooth curve"}, {"id": "o2", "label": "a bumpy zigzag"}, {"id": "o3", "label": "a short straight dash"}, {"id": "o1", "label": "a quick dot"}], "narration": "A young Paint sprite asks: which stroke takes the steadiest hand?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'brush_control'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'A young Paint sprite asks: which stroke takes the steadiest hand?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'Teach the little sprites like a true master. Say it proud!', '{"script": "Slow hands make smooth lines!", "narration": "Teach the little sprites like a true master. Say it proud!"}'::jsonb, '{}'::jsonb, 25, '5-6', '5-6'
+FROM public.skills s WHERE s.code = 'brush_control'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Teach the little sprites like a true master. Say it proud!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Ahoy, artist! Pip''s cheese turned blue in his portrait! What color is cheese really?', '{"options": [{"id": "o1", "label": "blue"}, {"id": "o2", "label": "green"}, {"id": "o0", "label": "yellow"}, {"id": "o3", "label": "purple"}], "narration": "Ahoy, artist! Pip''s cheese turned blue in his portrait! What color is cheese really?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'coloring'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Ahoy, artist! Pip''s cheese turned blue in his portrait! What color is cheese really?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'The Paint sprites are lined up to help. Tap the yellow sprite!', '{"targets": [{"id": "o2", "label": "the blue sprite"}, {"id": "o3", "label": "the green sprite"}, {"id": "o1", "label": "the red sprite"}, {"id": "o0", "label": "the yellow sprite"}], "narration": "The Paint sprites are lined up to help. Tap the yellow sprite!"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'coloring'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The Paint sprites are lined up to help. Tap the yellow sprite!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Curio painted the sky green by mistake! What color should the sky be?', '{"options": [{"id": "o2", "label": "yellow"}, {"id": "o0", "label": "blue"}, {"id": "o3", "label": "purple"}, {"id": "o1", "label": "green"}], "narration": "Curio painted the sky green by mistake! What color should the sky be?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'coloring'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Curio painted the sky green by mistake! What color should the sky be?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'How many red Paint sprites are bouncing by the easel?', '{"thing": "red Paint sprites", "total": 3, "narration": "How many red Paint sprites are bouncing by the easel?"}'::jsonb, '{"count": 3}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'coloring'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'How many red Paint sprites are bouncing by the easel?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sort', 'Oh no — the Paint sprites lost their colors in the wind! Sort them into warm and cool colors.', '{"items": [{"id": "g0i0", "label": "red", "group": "warm colors"}, {"id": "g1i2", "label": "purple", "group": "cool colors"}, {"id": "g1i0", "label": "blue", "group": "cool colors"}, {"id": "g0i2", "label": "yellow", "group": "warm colors"}, {"id": "g0i1", "label": "orange", "group": "warm colors"}, {"id": "g1i1", "label": "green", "group": "cool colors"}], "groups": [{"id": "g0", "label": "warm colors"}, {"id": "g1", "label": "cool colors"}], "narration": "Oh no — the Paint sprites lost their colors in the wind! Sort them into warm and cool colors."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'coloring'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Oh no — the Paint sprites lost their colors in the wind! Sort them into warm and cool colors.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'A sprite feels chilly and wants a warm color. Which one should it pick?', '{"options": [{"id": "o3", "label": "purple"}, {"id": "o2", "label": "green"}, {"id": "o0", "label": "orange"}, {"id": "o1", "label": "blue"}], "narration": "A sprite feels chilly and wants a warm color. Which one should it pick?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'coloring'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'A sprite feels chilly and wants a warm color. Which one should it pick?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'trace', 'One pale sprite has no color at all! Trace a big circle — you''re painting it a brand-new red coat.', '{"trace": "a big circle", "narration": "One pale sprite has no color at all! Trace a big circle — you''re painting it a brand-new red coat."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'coloring'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'One pale sprite has no color at all! Trace a big circle — you''re painting it a brand-new red coat.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'listen_repeat', 'Say it with Curio — warm colors first, like sunshine!', '{"script": "Red, orange, yellow — warm like the sun!", "narration": "Say it with Curio — warm colors first, like sunshine!"}'::jsonb, '{}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'coloring'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Say it with Curio — warm colors first, like sunshine!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Wren wants a sunset postcard for her travels. Which color belongs in a sunset sky?', '{"options": [{"id": "o2", "label": "green"}, {"id": "o1", "label": "blue"}, {"id": "o0", "label": "pink"}, {"id": "o3", "label": "gray"}], "narration": "Wren wants a sunset postcard for her travels. Which color belongs in a sunset sky?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'coloring'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren wants a sunset postcard for her travels. Which color belongs in a sunset sky?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_target', 'Wren''s forest postcard needs leaves. Tap the sprite holding the leaf color!', '{"targets": [{"id": "o2", "label": "the yellow sprite"}, {"id": "o0", "label": "the green sprite"}, {"id": "o1", "label": "the brown sprite"}, {"id": "o3", "label": "the blue sprite"}], "narration": "Wren''s forest postcard needs leaves. Tap the sprite holding the leaf color!"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'coloring'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren''s forest postcard needs leaves. Tap the sprite holding the leaf color!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'trace', 'Quill splashed paint across his portrait sky! Trace a wavy line — fresh blue sky to cover the spill.', '{"trace": "a wavy line", "narration": "Quill splashed paint across his portrait sky! Trace a wavy line — fresh blue sky to cover the spill."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'coloring'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill splashed paint across his portrait sky! Trace a wavy line — fresh blue sky to cover the spill.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sequence', 'Curio teaches layering like a real painter. Put the painting steps in order!', '{"items": [{"id": "s1", "label": "paint the sun"}, {"id": "s0", "label": "paint the sky"}, {"id": "s2", "label": "paint the birds"}], "narration": "Curio teaches layering like a real painter. Put the painting steps in order!"}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'coloring'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Curio teaches layering like a real painter. Put the painting steps in order!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Mystery! The gallery''s red painting turned orange overnight. What got mixed into the red?', '{"options": [{"id": "o1", "label": "blue"}, {"id": "o3", "label": "black"}, {"id": "o2", "label": "white"}, {"id": "o0", "label": "yellow"}], "narration": "Mystery! The gallery''s red painting turned orange overnight. What got mixed into the red?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'coloring'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Mystery! The gallery''s red painting turned orange overnight. What got mixed into the red?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sort', 'The night painting lost its stars! Sort the colors into night-sky colors and daytime colors.', '{"items": [{"id": "g0i0", "label": "dark blue", "group": "night sky"}, {"id": "g1i2", "label": "white", "group": "daytime"}, {"id": "g0i1", "label": "purple", "group": "night sky"}, {"id": "g1i1", "label": "yellow", "group": "daytime"}, {"id": "g0i2", "label": "black", "group": "night sky"}, {"id": "g1i0", "label": "light blue", "group": "daytime"}], "groups": [{"id": "g0", "label": "night sky"}, {"id": "g1", "label": "daytime"}], "narration": "The night painting lost its stars! Sort the colors into night-sky colors and daytime colors."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'coloring'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The night painting lost its stars! Sort the colors into night-sky colors and daytime colors.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_target', 'One sneaky sprite is hiding the stolen yellow! Tap the sprite that glows yellow.', '{"targets": [{"id": "o2", "label": "the glowing red sprite"}, {"id": "o3", "label": "the glowing green sprite"}, {"id": "o1", "label": "the glowing blue sprite"}, {"id": "o0", "label": "the glowing yellow sprite"}], "narration": "One sneaky sprite is hiding the stolen yellow! Tap the sprite that glows yellow."}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'coloring'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'One sneaky sprite is hiding the stolen yellow! Tap the sprite that glows yellow.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_count', 'The color thief spilled paint while escaping! How many paint drops do you see?', '{"thing": "paint drops", "total": 5, "narration": "The color thief spilled paint while escaping! How many paint drops do you see?"}'::jsonb, '{"count": 5}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'coloring'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The color thief spilled paint while escaping! How many paint drops do you see?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Master artist! The sun shines from the left. Which side of the apple is lighter?', '{"options": [{"id": "o3", "label": "the bottom"}, {"id": "o0", "label": "the left side"}, {"id": "o2", "label": "the top"}, {"id": "o1", "label": "the right side"}], "narration": "Master artist! The sun shines from the left. Which side of the apple is lighter?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'coloring'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Master artist! The sun shines from the left. Which side of the apple is lighter?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Quill wants his portrait to look round, not flat. What should you add?', '{"options": [{"id": "o2", "label": "extra bright dots"}, {"id": "o3", "label": "a thick frame"}, {"id": "o1", "label": "hard black lines"}, {"id": "o0", "label": "soft shadows"}], "narration": "Quill wants his portrait to look round, not flat. What should you add?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'coloring'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill wants his portrait to look round, not flat. What should you add?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'trace', 'The gallery''s grand finale needs YOU! Trace a big circle — it''s the moon for the night painting.', '{"trace": "a big circle", "narration": "The gallery''s grand finale needs YOU! Trace a big circle — it''s the moon for the night painting."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'coloring'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The gallery''s grand finale needs YOU! Trace a big circle — it''s the moon for the night painting.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'Teach the sprites the master''s secret of light. Say it like a pro!', '{"script": "Light colors shine, dark colors hide!", "narration": "Teach the sprites the master''s secret of light. Say it like a pro!"}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'coloring'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Teach the sprites the master''s secret of light. Say it like a pro!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'trace', 'Ahoy, artist! Pip wants his portrait, but the sun is missing! Trace a big circle — it''s the sun!', '{"trace": "a big circle", "narration": "Ahoy, artist! Pip wants his portrait, but the sun is missing! Trace a big circle — it''s the sun!"}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'shape_drawing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Ahoy, artist! Pip wants his portrait, but the sun is missing! Trace a big circle — it''s the sun!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Quill dropped the shape blocks! Which shape rolls like a ball?', '{"options": [{"id": "o2", "label": "a triangle"}, {"id": "o0", "label": "a circle"}, {"id": "o1", "label": "a square"}, {"id": "o3", "label": "a rectangle"}], "narration": "Quill dropped the shape blocks! Which shape rolls like a ball?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'shape_drawing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill dropped the shape blocks! Which shape rolls like a ball?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'A circle is hiding among the shapes! Tap the circle.', '{"targets": [{"id": "o1", "label": "the square"}, {"id": "o2", "label": "the triangle"}, {"id": "o3", "label": "the star"}, {"id": "o0", "label": "the circle"}], "narration": "A circle is hiding among the shapes! Tap the circle."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'shape_drawing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'A circle is hiding among the shapes! Tap the circle.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'How many round cookies are on Pip''s portrait table?', '{"thing": "round cookies", "total": 3, "narration": "How many round cookies are on Pip''s portrait table?"}'::jsonb, '{"count": 3}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'shape_drawing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'How many round cookies are on Pip''s portrait table?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Curio''s ship needs a brand-new sail. Which shape makes a strong sail?', '{"options": [{"id": "o0", "label": "a triangle"}, {"id": "o1", "label": "a circle"}, {"id": "o2", "label": "a square"}, {"id": "o3", "label": "a star"}], "narration": "Curio''s ship needs a brand-new sail. Which shape makes a strong sail?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'shape_drawing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Curio''s ship needs a brand-new sail. Which shape makes a strong sail?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sequence', 'Build a snowman for the winter painting! Order the circles from small to big.', '{"items": [{"id": "s1", "label": "the middle circle"}, {"id": "s0", "label": "the small circle"}, {"id": "s2", "label": "the big circle"}], "narration": "Build a snowman for the winter painting! Order the circles from small to big."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'shape_drawing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Build a snowman for the winter painting! Order the circles from small to big.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'trace', 'The new sail is blank! Trace a triangle — it''s the sail for Curio''s ship.', '{"trace": "a triangle", "narration": "The new sail is blank! Trace a triangle — it''s the sail for Curio''s ship."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'shape_drawing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The new sail is blank! Trace a triangle — it''s the sail for Curio''s ship.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'The sail pattern needs triangles. Tap the triangle!', '{"targets": [{"id": "o3", "label": "the oval"}, {"id": "o0", "label": "the triangle"}, {"id": "o2", "label": "the square"}, {"id": "o1", "label": "the circle"}], "narration": "The sail pattern needs triangles. Tap the triangle!"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'shape_drawing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The sail pattern needs triangles. Tap the triangle!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Wren needs a map of the Atelier! What shapes make a house?', '{"options": [{"id": "o1", "label": "a circle and a star"}, {"id": "o3", "label": "a rectangle and a circle"}, {"id": "o0", "label": "a square and a triangle"}, {"id": "o2", "label": "an oval and a diamond"}], "narration": "Wren needs a map of the Atelier! What shapes make a house?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'shape_drawing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren needs a map of the Atelier! What shapes make a house?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'trace', 'Wren can''t find the treasure! Trace a straight line — it''s the path on her map.', '{"trace": "a straight line", "narration": "Wren can''t find the treasure! Trace a straight line — it''s the path on her map."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'shape_drawing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren can''t find the treasure! Trace a straight line — it''s the path on her map.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'What shape is Wren''s round compass?', '{"options": [{"id": "o1", "label": "an oval"}, {"id": "o2", "label": "a square"}, {"id": "o3", "label": "a diamond"}, {"id": "o0", "label": "a circle"}], "narration": "What shape is Wren''s round compass?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'shape_drawing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'What shape is Wren''s round compass?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'listen_repeat', 'Say it with Curio — shapes are the building blocks of every picture!', '{"script": "Circles, squares, triangles — shapes build everything!", "narration": "Say it with Curio — shapes are the building blocks of every picture!"}'::jsonb, '{}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'shape_drawing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Say it with Curio — shapes are the building blocks of every picture!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sort', 'The shape box tumbled everywhere! Sort the shapes into round ones and pointy ones.', '{"items": [{"id": "g1i1", "label": "star", "group": "pointy shapes"}, {"id": "g1i0", "label": "triangle", "group": "pointy shapes"}, {"id": "g1i2", "label": "diamond", "group": "pointy shapes"}, {"id": "g0i1", "label": "oval", "group": "round shapes"}, {"id": "g0i0", "label": "circle", "group": "round shapes"}], "groups": [{"id": "g0", "label": "round shapes"}, {"id": "g1", "label": "pointy shapes"}], "narration": "The shape box tumbled everywhere! Sort the shapes into round ones and pointy ones."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'shape_drawing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The shape box tumbled everywhere! Sort the shapes into round ones and pointy ones.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_target', 'One shape snuck into the wrong family! Tap the shape that is NOT round.', '{"targets": [{"id": "o3", "label": "the ring"}, {"id": "o1", "label": "the circle"}, {"id": "o0", "label": "the triangle"}, {"id": "o2", "label": "the oval"}], "narration": "One shape snuck into the wrong family! Tap the shape that is NOT round."}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'shape_drawing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'One shape snuck into the wrong family! Tap the shape that is NOT round.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'The gallery''s square painting went missing! Which shape has four equal sides?', '{"options": [{"id": "o2", "label": "a diamond"}, {"id": "o3", "label": "a triangle"}, {"id": "o1", "label": "a rectangle"}, {"id": "o0", "label": "a square"}], "narration": "The gallery''s square painting went missing! Which shape has four equal sides?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'shape_drawing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The gallery''s square painting went missing! Which shape has four equal sides?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_count', 'The thief left triangle footprints! How many corners does each triangle have?', '{"thing": "corners", "total": 3, "narration": "The thief left triangle footprints! How many corners does each triangle have?"}'::jsonb, '{"count": 3}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'shape_drawing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The thief left triangle footprints! How many corners does each triangle have?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Master artist! Quill wants a portrait but the Paint sprites mixed up. What shapes make a cat''s head?', '{"options": [{"id": "o0", "label": "a circle"}, {"id": "o2", "label": "a square"}, {"id": "o3", "label": "a star"}, {"id": "o1", "label": "a triangle"}], "narration": "Master artist! Quill wants a portrait but the Paint sprites mixed up. What shapes make a cat''s head?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'shape_drawing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Master artist! Quill wants a portrait but the Paint sprites mixed up. What shapes make a cat''s head?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Quill wants a portrait of his fish friend! What shapes make a fish?', '{"options": [{"id": "o3", "label": "a diamond and a rectangle"}, {"id": "o1", "label": "a square and a star"}, {"id": "o2", "label": "a circle and a square"}, {"id": "o0", "label": "an oval and a triangle"}], "narration": "Quill wants a portrait of his fish friend! What shapes make a fish?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'shape_drawing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill wants a portrait of his fish friend! What shapes make a fish?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'trace', 'The gallery wall needs YOUR masterpiece! Trace a big circle — it''s the cat''s head for Pip''s portrait.', '{"trace": "a big circle", "narration": "The gallery wall needs YOUR masterpiece! Trace a big circle — it''s the cat''s head for Pip''s portrait."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'shape_drawing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The gallery wall needs YOUR masterpiece! Trace a big circle — it''s the cat''s head for Pip''s portrait.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'Teach the sprites your master method! Put the drawing steps in order.', '{"items": [{"id": "s2", "label": "paint the colors"}, {"id": "s1", "label": "add the small details"}, {"id": "s0", "label": "draw the big shapes"}], "narration": "Teach the sprites your master method! Put the drawing steps in order."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'shape_drawing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Teach the sprites your master method! Put the drawing steps in order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Ahoy, artist! The gallery wall needs a sunny picture. Where does the sun go?', '{"options": [{"id": "o2", "label": "behind the hill"}, {"id": "o0", "label": "in the sky"}, {"id": "o1", "label": "under the sea"}, {"id": "o3", "label": "on the ground"}], "narration": "Ahoy, artist! The gallery wall needs a sunny picture. Where does the sun go?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'scene_composition'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Ahoy, artist! The gallery wall needs a sunny picture. Where does the sun go?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'The picture is almost done! Tap where the sun should shine.', '{"targets": [{"id": "o0", "label": "the sky"}, {"id": "o1", "label": "the sea"}, {"id": "o3", "label": "the cave"}, {"id": "o2", "label": "the ground"}], "narration": "The picture is almost done! Tap where the sun should shine."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'scene_composition'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The picture is almost done! Tap where the sun should shine.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'trace', 'The picture needs clouds too! Trace a wavy line — it''s a soft cloud for the sky.', '{"trace": "a wavy line", "narration": "The picture needs clouds too! Trace a wavy line — it''s a soft cloud for the sky."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'scene_composition'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The picture needs clouds too! Trace a wavy line — it''s a soft cloud for the sky.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'How many birds are flying in Curio''s sky painting?', '{"thing": "birds", "total": 2, "narration": "How many birds are flying in Curio''s sky painting?"}'::jsonb, '{"count": 2}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'scene_composition'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'How many birds are flying in Curio''s sky painting?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sort', 'The gallery pictures got all jumbled! Sort things into sky things and ground things.', '{"items": [{"id": "g0i2", "label": "bird", "group": "in the sky"}, {"id": "g1i1", "label": "flower", "group": "on the ground"}, {"id": "g1i2", "label": "house", "group": "on the ground"}, {"id": "g1i0", "label": "tree", "group": "on the ground"}, {"id": "g0i0", "label": "sun", "group": "in the sky"}, {"id": "g0i1", "label": "cloud", "group": "in the sky"}], "groups": [{"id": "g0", "label": "in the sky"}, {"id": "g1", "label": "on the ground"}], "narration": "The gallery pictures got all jumbled! Sort things into sky things and ground things."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'scene_composition'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The gallery pictures got all jumbled! Sort things into sky things and ground things.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Quill painted a fish in the sky! What''s wrong with his picture?', '{"options": [{"id": "o3", "label": "fish need friends"}, {"id": "o0", "label": "fish live in the sea"}, {"id": "o2", "label": "the sky is blue"}, {"id": "o1", "label": "fish are too small"}], "narration": "Quill painted a fish in the sky! What''s wrong with his picture?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'scene_composition'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill painted a fish in the sky! What''s wrong with his picture?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'trace', 'Wren''s postcard is missing the sea! Trace a wavy line — it''s the ocean under her sky.', '{"trace": "a wavy line", "narration": "Wren''s postcard is missing the sea! Trace a wavy line — it''s the ocean under her sky."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'scene_composition'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Wren''s postcard is missing the sea! Trace a wavy line — it''s the ocean under her sky.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'listen_repeat', 'Say it with Curio — every picture needs a place for everything!', '{"script": "Sky on top, ground below — every picture needs a place to go!", "narration": "Say it with Curio — every picture needs a place for everything!"}'::jsonb, '{}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'scene_composition'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Say it with Curio — every picture needs a place for everything!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sequence', 'Help Curio paint the ship''s sail! Put the painting steps in order.', '{"items": [{"id": "s1", "label": "paint the ship"}, {"id": "s0", "label": "paint the background"}, {"id": "s2", "label": "paint the flag on top"}], "narration": "Help Curio paint the ship''s sail! Put the painting steps in order."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'scene_composition'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Help Curio paint the ship''s sail! Put the painting steps in order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'The sail needs something brave at the very top. What should fly highest?', '{"options": [{"id": "o1", "label": "an anchor"}, {"id": "o2", "label": "a treasure chest"}, {"id": "o0", "label": "Curio''s fox flag"}, {"id": "o3", "label": "a seagull"}], "narration": "The sail needs something brave at the very top. What should fly highest?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'scene_composition'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The sail needs something brave at the very top. What should fly highest?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'trace', 'The sail''s flag is blank! Trace a straight line — it''s the flagpole for Curio''s flag.', '{"trace": "a straight line", "narration": "The sail''s flag is blank! Trace a straight line — it''s the flagpole for Curio''s flag."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'scene_composition'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The sail''s flag is blank! Trace a straight line — it''s the flagpole for Curio''s flag.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_target', 'The ship painting needs its flag! Tap the flag at the top of the ship.', '{"targets": [{"id": "o3", "label": "the seagull"}, {"id": "o0", "label": "the flag"}, {"id": "o2", "label": "the treasure chest"}, {"id": "o1", "label": "the anchor"}], "narration": "The ship painting needs its flag! Tap the flag at the top of the ship."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'scene_composition'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The ship painting needs its flag! Tap the flag at the top of the ship.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sort', 'The gallery''s big painting fell apart! Sort the pieces into background and foreground.', '{"items": [{"id": "g1i0", "label": "big flowers", "group": "foreground"}, {"id": "g0i2", "label": "sun", "group": "background"}, {"id": "g1i1", "label": "Pip the mouse", "group": "foreground"}, {"id": "g0i1", "label": "clouds", "group": "background"}, {"id": "g0i0", "label": "distant mountains", "group": "background"}, {"id": "g1i2", "label": "fence", "group": "foreground"}], "groups": [{"id": "g0", "label": "background"}, {"id": "g1", "label": "foreground"}], "narration": "The gallery''s big painting fell apart! Sort the pieces into background and foreground."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'scene_composition'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The gallery''s big painting fell apart! Sort the pieces into background and foreground.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Mystery! The night painting''s moon is missing. A note says: look behind the clouds. Where do you paint it?', '{"options": [{"id": "o2", "label": "under the ground"}, {"id": "o1", "label": "in front of the clouds"}, {"id": "o3", "label": "on top of the sun"}, {"id": "o0", "label": "behind the clouds"}], "narration": "Mystery! The night painting''s moon is missing. A note says: look behind the clouds. Where do you paint it?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'scene_composition'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Mystery! The night painting''s moon is missing. A note says: look behind the clouds. Where do you paint it?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_count', 'How many stars are hiding in the night painting?', '{"thing": "stars", "total": 5, "narration": "How many stars are hiding in the night painting?"}'::jsonb, '{"count": 5}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'scene_composition'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'How many stars are hiding in the night painting?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'listen_repeat', 'Describe the clue like a true art detective!', '{"script": "I see the moon behind the clouds!", "narration": "Describe the clue like a true art detective!"}'::jsonb, '{}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'scene_composition'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Describe the clue like a true art detective!');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Master artist! The gallery''s grand wall is empty. Which scene is complete?', '{"options": [{"id": "o2", "label": "sky and sea but no sun"}, {"id": "o1", "label": "only a ship"}, {"id": "o3", "label": "a sun floating alone"}, {"id": "o0", "label": "sky, sea, ship, and sun"}], "narration": "Master artist! The gallery''s grand wall is empty. Which scene is complete?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'scene_composition'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Master artist! The gallery''s grand wall is empty. Which scene is complete?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'trace', 'This is YOUR master quest! Trace a spiral — it''s the swirling wind filling your grand sky painting.', '{"trace": "a spiral", "narration": "This is YOUR master quest! Trace a spiral — it''s the swirling wind filling your grand sky painting."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'scene_composition'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'This is YOUR master quest! Trace a spiral — it''s the swirling wind filling your grand sky painting.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'Teach the sprites the master''s order! Put the scene steps in order.', '{"items": [{"id": "s2", "label": "add the close-up details"}, {"id": "s1", "label": "paint the middle"}, {"id": "s0", "label": "paint the background"}], "narration": "Teach the sprites the master''s order! Put the scene steps in order."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'scene_composition'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Teach the sprites the master''s order! Put the scene steps in order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Quill asks: in your painting, why do the far mountains look small?', '{"options": [{"id": "o3", "label": "clouds squished them"}, {"id": "o1", "label": "the mountains are shrinking"}, {"id": "o2", "label": "the paint faded"}, {"id": "o0", "label": "far things look smaller"}], "narration": "Quill asks: in your painting, why do the far mountains look small?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'scene_composition'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Quill asks: in your painting, why do the far mountains look small?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Pebble the crab found his favorite shell on the soft Calm Cloud. How is Pebble feeling?', '{"options": [{"id": "o2", "label": "mad"}, {"id": "o0", "label": "happy"}, {"id": "o3", "label": "scared"}, {"id": "o1", "label": "sad"}], "narration": "Pebble the crab found his favorite shell on the soft Calm Cloud. How is Pebble feeling?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'emotions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble the crab found his favorite shell on the soft Calm Cloud. How is Pebble feeling?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'A gray cloud rained on Pebble''s sandcastle and it melted away. Tap the face that shows how he feels.', '{"targets": [{"id": "o2", "label": "mad"}, {"id": "o0", "label": "sad"}, {"id": "o3", "label": "surprised"}, {"id": "o1", "label": "happy"}], "narration": "A gray cloud rained on Pebble''s sandcastle and it melted away. Tap the face that shows how he feels."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'emotions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'A gray cloud rained on Pebble''s sandcastle and it melted away. Tap the face that shows how he feels.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Tuno is resting on the Calm Cloud with a warm, sleepy smile. What feeling is Tuno showing you?', '{"options": [{"id": "o3", "label": "surprised"}, {"id": "o2", "label": "sad"}, {"id": "o0", "label": "calm"}, {"id": "o1", "label": "happy"}], "narration": "Tuno is resting on the Calm Cloud with a warm, sleepy smile. What feeling is Tuno showing you?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'emotions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Tuno is resting on the Calm Cloud with a warm, sleepy smile. What feeling is Tuno showing you?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'Pebble is learning feeling words. Say ''happy'' with Tuno, slow and soft, so Pebble can copy you.', '{"script": "Happy... hap-py...", "narration": "Pebble is learning feeling words. Say ''happy'' with Tuno, slow and soft, so Pebble can copy you."}'::jsonb, '{}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'emotions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble is learning feeling words. Say ''happy'' with Tuno, slow and soft, so Pebble can copy you.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'The Feeling Weather is here! Dark clouds rumble and Pebble''s claws are shaking. What is Pebble feeling?', '{"options": [{"id": "o2", "label": "mad"}, {"id": "o1", "label": "sad"}, {"id": "o0", "label": "scared"}, {"id": "o3", "label": "surprised"}], "narration": "The Feeling Weather is here! Dark clouds rumble and Pebble''s claws are shaking. What is Pebble feeling?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'emotions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The Feeling Weather is here! Dark clouds rumble and Pebble''s claws are shaking. What is Pebble feeling?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'Pebble built a tall tower and his brother knocked it down. Tap the face that matches Pebble now.', '{"targets": [{"id": "o1", "label": "sad"}, {"id": "o2", "label": "scared"}, {"id": "o0", "label": "mad"}, {"id": "o3", "label": "happy"}], "narration": "Pebble built a tall tower and his brother knocked it down. Tap the face that matches Pebble now."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'emotions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble built a tall tower and his brother knocked it down. Tap the face that matches Pebble now.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Surprise! The Calm Cloud just puffed into a heart shape for Pebble. Which feeling just arrived?', '{"options": [{"id": "o0", "label": "surprised"}, {"id": "o3", "label": "sad"}, {"id": "o1", "label": "happy"}, {"id": "o2", "label": "scared"}], "narration": "Surprise! The Calm Cloud just puffed into a heart shape for Pebble. Which feeling just arrived?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'emotions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Surprise! The Calm Cloud just puffed into a heart shape for Pebble. Which feeling just arrived?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sort', 'Feelings are like weather — some loud, some soft. Help Tuno sort them.', '{"items": [{"id": "g1i0", "label": "sad", "group": "Soft feelings"}, {"id": "g1i1", "label": "calm", "group": "Soft feelings"}, {"id": "g0i1", "label": "surprised", "group": "Loud feelings"}, {"id": "g0i0", "label": "mad", "group": "Loud feelings"}], "groups": [{"id": "g0", "label": "Loud feelings"}, {"id": "g1", "label": "Soft feelings"}], "narration": "Feelings are like weather — some loud, some soft. Help Tuno sort them."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1"], "g1": ["g1i0", "g1i1"]}}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'emotions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Feelings are like weather — some loud, some soft. Help Tuno sort them.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Pebble lost his favorite shell and his tummy feels wobbly. Tuno says: first, name it. What is Pebble feeling?', '{"options": [{"id": "o1", "label": "scared"}, {"id": "o2", "label": "mad"}, {"id": "o0", "label": "sad"}, {"id": "o3", "label": "happy"}], "narration": "Pebble lost his favorite shell and his tummy feels wobbly. Tuno says: first, name it. What is Pebble feeling?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'emotions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble lost his favorite shell and his tummy feels wobbly. Tuno says: first, name it. What is Pebble feeling?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_target', 'Pebble wants to hide because the thunder is so loud. Tap the face that shows his feeling.', '{"targets": [{"id": "o1", "label": "sad"}, {"id": "o0", "label": "scared"}, {"id": "o3", "label": "surprised"}, {"id": "o2", "label": "mad"}], "narration": "Pebble wants to hide because the thunder is so loud. Tap the face that shows his feeling."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'emotions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble wants to hide because the thunder is so loud. Tap the face that shows his feeling.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sequence', 'Pebble''s bad day got all mixed up. Put the three moments in order so Tuno can understand.', '{"items": [{"id": "s1", "label": "Pebble felt sad and wobbly"}, {"id": "s2", "label": "Tuno gave a slow hug"}, {"id": "s0", "label": "The wave took Pebble''s shell"}], "narration": "Pebble''s bad day got all mixed up. Put the three moments in order so Tuno can understand."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'emotions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble''s bad day got all mixed up. Put the three moments in order so Tuno can understand.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Pebble got a kind note from a friend and his heart feels warm and glowy. Help him name this feeling.', '{"options": [{"id": "o1", "label": "calm"}, {"id": "o2", "label": "surprised"}, {"id": "o3", "label": "proud"}, {"id": "o0", "label": "happy"}], "narration": "Pebble got a kind note from a friend and his heart feels warm and glowy. Help him name this feeling."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'emotions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble got a kind note from a friend and his heart feels warm and glowy. Help him name this feeling.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Pebble is excited for the party but nervous about the loud music. What can Tuno tell him?', '{"options": [{"id": "o3", "label": "Hide the nervous one"}, {"id": "o0", "label": "Both feelings can be true"}, {"id": "o2", "label": "Feelings are wrong"}, {"id": "o1", "label": "Pick only one feeling"}], "narration": "Pebble is excited for the party but nervous about the loud music. What can Tuno tell him?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'emotions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble is excited for the party but nervous about the loud music. What can Tuno tell him?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_target', 'Someone laughed when Pebble fell. He smiles, but his eyes look watery. Tap the face showing his REAL feeling.', '{"targets": [{"id": "o3", "label": "surprised"}, {"id": "o0", "label": "sad"}, {"id": "o1", "label": "happy"}, {"id": "o2", "label": "mad"}], "narration": "Someone laughed when Pebble fell. He smiles, but his eyes look watery. Tap the face showing his REAL feeling."}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'emotions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Someone laughed when Pebble fell. He smiles, but his eyes look watery. Tap the face showing his REAL feeling.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sort', 'The Feeling Weather always passes, like rain. Sort the storm feelings and the sunshine feelings.', '{"items": [{"id": "g1i1", "label": "calm", "group": "Sunshine feelings"}, {"id": "g0i0", "label": "mad", "group": "Storm feelings"}, {"id": "g0i2", "label": "sad", "group": "Storm feelings"}, {"id": "g1i0", "label": "happy", "group": "Sunshine feelings"}, {"id": "g0i1", "label": "scared", "group": "Storm feelings"}, {"id": "g1i2", "label": "surprised", "group": "Sunshine feelings"}], "groups": [{"id": "g0", "label": "Storm feelings"}, {"id": "g1", "label": "Sunshine feelings"}], "narration": "The Feeling Weather always passes, like rain. Sort the storm feelings and the sunshine feelings."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'emotions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The Feeling Weather always passes, like rain. Sort the storm feelings and the sunshine feelings.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'Every storm on the Quiet Cloud passes in order. Put the storm''s three moments in order.', '{"items": [{"id": "s2", "label": "The sun peeks back out"}, {"id": "s0", "label": "A dark feeling cloud arrives"}, {"id": "s1", "label": "The rain falls for a while"}], "narration": "Every storm on the Quiet Cloud passes in order. Put the storm''s three moments in order."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'emotions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Every storm on the Quiet Cloud passes in order. Put the storm''s three moments in order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'A new little crab is crying on the Calm Cloud. You are the feelings expert now. What do you do first?', '{"options": [{"id": "o2", "label": "Walk away quietly"}, {"id": "o1", "label": "Tell them to stop crying"}, {"id": "o0", "label": "Ask how they are feeling"}, {"id": "o3", "label": "Give them your shell"}], "narration": "A new little crab is crying on the Calm Cloud. You are the feelings expert now. What do you do first?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'emotions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'A new little crab is crying on the Calm Cloud. You are the feelings expert now. What do you do first?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_target', 'Pebble''s friend hides a sad face behind a big smile. Tap the clue that shows the REAL feeling.', '{"targets": [{"id": "o2", "label": "a happy dance"}, {"id": "o3", "label": "a loud laugh"}, {"id": "o1", "label": "a big smile"}, {"id": "o0", "label": "watery eyes"}], "narration": "Pebble''s friend hides a sad face behind a big smile. Tap the clue that shows the REAL feeling."}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'emotions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble''s friend hides a sad face behind a big smile. Tap the clue that shows the REAL feeling.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'Teach Pebble the feelings song with Tuno: name it, feel it, let it pass.', '{"script": "Name it... feel it... let it pass...", "narration": "Teach Pebble the feelings song with Tuno: name it, feel it, let it pass."}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'emotions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Teach Pebble the feelings song with Tuno: name it, feel it, let it pass.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Mia feels left out at the tide pool. What would a true feelings expert do?', '{"options": [{"id": "o0", "label": "Invite them to play"}, {"id": "o1", "label": "Tell them it is fine"}, {"id": "o2", "label": "Keep playing alone"}, {"id": "o3", "label": "Laugh it off"}], "narration": "Mia feels left out at the tide pool. What would a true feelings expert do?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'emotions'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Mia feels left out at the tide pool. What would a true feelings expert do?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'Welcome to the Breathing Cave — it echoes your breath back. Let''s take one slow breath with Tuno.', '{"script": "Breathe in... 2... 3... Breathe out... 2... 3...", "narration": "Welcome to the Breathing Cave — it echoes your breath back. Let''s take one slow breath with Tuno."}'::jsonb, '{}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'breathing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Welcome to the Breathing Cave — it echoes your breath back. Let''s take one slow breath with Tuno.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'The cave echoes every breath you take. Take 3 slow breaths with Tuno and tap for each one.', '{"thing": "slow breaths", "total": 3, "narration": "The cave echoes every breath you take. Take 3 slow breaths with Tuno and tap for each one."}'::jsonb, '{"count": 3}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'breathing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The cave echoes every breath you take. Take 3 slow breaths with Tuno and tap for each one.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Tuno smells the soup to breathe in, then blows cool to breathe out. Which part comes first?', '{"options": [{"id": "o1", "label": "Breathe out"}, {"id": "o3", "label": "Hold it tight"}, {"id": "o0", "label": "Breathe in"}, {"id": "o2", "label": "Breathe fast"}], "narration": "Tuno smells the soup to breathe in, then blows cool to breathe out. Which part comes first?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'breathing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Tuno smells the soup to breathe in, then blows cool to breathe out. Which part comes first?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Pebble forgot how a calm breath starts. Tap the picture that shows the very first step.', '{"targets": [{"id": "o0", "label": "smelling the soup"}, {"id": "o3", "label": "talking loud"}, {"id": "o1", "label": "blowing fast"}, {"id": "o2", "label": "holding breath"}], "narration": "Pebble forgot how a calm breath starts. Tap the picture that shows the very first step."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'breathing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble forgot how a calm breath starts. Tap the picture that shows the very first step.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'listen_repeat', 'Pebble is scared of the thunder. Let''s breathe with Tuno together — slow in, slow out.', '{"script": "Breathe in... 2... 3... Breathe out... 2... 3... Breathe in... 2... 3... Breathe out... 2... 3...", "narration": "Pebble is scared of the thunder. Let''s breathe with Tuno together — slow in, slow out."}'::jsonb, '{}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'breathing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble is scared of the thunder. Let''s breathe with Tuno together — slow in, slow out.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_count', 'Thunder rumbled 4 times outside the cave. Take 4 slow breaths with Tuno — one for each rumble.', '{"thing": "slow breaths", "total": 4, "narration": "Thunder rumbled 4 times outside the cave. Take 4 slow breaths with Tuno — one for each rumble."}'::jsonb, '{"count": 4}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'breathing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Thunder rumbled 4 times outside the cave. Take 4 slow breaths with Tuno — one for each rumble.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Pebble''s breath is fast and shaky. What should his breathing become so he feels calm?', '{"options": [{"id": "o2", "label": "Held in tight"}, {"id": "o3", "label": "Loud and puffy"}, {"id": "o1", "label": "Fast and quick"}, {"id": "o0", "label": "Slow and deep"}], "narration": "Pebble''s breath is fast and shaky. What should his breathing become so he feels calm?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'breathing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble''s breath is fast and shaky. What should his breathing become so he feels calm?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'The cave echoes best when breaths are slow and deep. Tap the breath for Pebble to copy.', '{"targets": [{"id": "o3", "label": "a sneezy breath"}, {"id": "o1", "label": "fast panting"}, {"id": "o0", "label": "a slow deep breath"}, {"id": "o2", "label": "a held breath"}], "narration": "The cave echoes best when breaths are slow and deep. Tap the breath for Pebble to copy."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'breathing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The cave echoes best when breaths are slow and deep. Tap the breath for Pebble to copy.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'listen_repeat', 'Pebble''s bad day is back — a wave took his shell again. Breathe with him until he feels steady.', '{"script": "Breathe in... 2... 3... Breathe out... 2... 3... Breathe in... 2... 3... Breathe out... 2... 3...", "narration": "Pebble''s bad day is back — a wave took his shell again. Breathe with him until he feels steady."}'::jsonb, '{}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'breathing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble''s bad day is back — a wave took his shell again. Breathe with him until he feels steady.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_count', 'Pebble needs 5 slow breaths to feel steady again. Count them with Tuno, nice and slow.', '{"thing": "slow breaths", "total": 5, "narration": "Pebble needs 5 slow breaths to feel steady again. Count them with Tuno, nice and slow."}'::jsonb, '{"count": 5}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'breathing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble needs 5 slow breaths to feel steady again. Count them with Tuno, nice and slow.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Pebble wants to breathe fast because he is upset. What can you teach him instead?', '{"options": [{"id": "o0", "label": "Slow breaths calm the body"}, {"id": "o2", "label": "Skip breathing for now"}, {"id": "o1", "label": "Fast breaths fix feelings"}, {"id": "o3", "label": "Breathe only at bedtime"}], "narration": "Pebble wants to breathe fast because he is upset. What can you teach him instead?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'breathing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble wants to breathe fast because he is upset. What can you teach him instead?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sequence', 'Pebble forgot the brave breath steps. Put them in order so he can copy you.', '{"items": [{"id": "s1", "label": "Blow the bubbles (breathe out)"}, {"id": "s2", "label": "Feel your tummy get soft"}, {"id": "s0", "label": "Smell the soup (breathe in)"}], "narration": "Pebble forgot the brave breath steps. Put them in order so he can copy you."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'breathing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble forgot the brave breath steps. Put them in order so he can copy you.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'listen_repeat', 'The cave has gone quiet — its echoes are sleeping. Wake them with long, deep breaths.', '{"script": "Breathe in... 2... 3... 4... Breathe out... 2... 3... 4...", "narration": "The cave has gone quiet — its echoes are sleeping. Wake them with long, deep breaths."}'::jsonb, '{}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'breathing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The cave has gone quiet — its echoes are sleeping. Wake them with long, deep breaths.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_count', 'Six echoes are sleeping deep in the cave. Wake each one with a slow breath — count to 6.', '{"thing": "slow breaths", "total": 6, "narration": "Six echoes are sleeping deep in the cave. Wake each one with a slow breath — count to 6."}'::jsonb, '{"count": 6}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'breathing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Six echoes are sleeping deep in the cave. Wake each one with a slow breath — count to 6.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'The echoes woke up, but they are tiny and shy. What makes a cave echo grow big and strong?', '{"options": [{"id": "o0", "label": "Longer, slower breaths"}, {"id": "o3", "label": "No breathing at all"}, {"id": "o1", "label": "Shorter, faster breaths"}, {"id": "o2", "label": "Louder talking"}], "narration": "The echoes woke up, but they are tiny and shy. What makes a cave echo grow big and strong?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'breathing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The echoes woke up, but they are tiny and shy. What makes a cave echo grow big and strong?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Pebble can only hear the echo when he is very still inside. What helps him get still?', '{"options": [{"id": "o0", "label": "Slow breathing"}, {"id": "o2", "label": "Shouting hello"}, {"id": "o3", "label": "Running in circles"}, {"id": "o1", "label": "Wiggling fast"}], "narration": "Pebble can only hear the echo when he is very still inside. What helps him get still?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'breathing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble can only hear the echo when he is very still inside. What helps him get still?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'You are the breath teacher now! Lead Pebble through the storm breath — he will copy you.', '{"script": "Breathe in... 2... 3... 4... Hold... Breathe out... 2... 3... 4...", "narration": "You are the breath teacher now! Lead Pebble through the storm breath — he will copy you."}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'breathing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'You are the breath teacher now! Lead Pebble through the storm breath — he will copy you.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_count', 'The big storm needs 7 brave breaths. Lead them, breath teacher — Tuno is counting with you.', '{"thing": "brave breaths", "total": 7, "narration": "The big storm needs 7 brave breaths. Lead them, breath teacher — Tuno is counting with you."}'::jsonb, '{"count": 7}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'breathing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The big storm needs 7 brave breaths. Lead them, breath teacher — Tuno is counting with you.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'The storm is coming and Tuno is far away. What can Pebble do all by himself?', '{"options": [{"id": "o0", "label": "Use his brave breath alone"}, {"id": "o1", "label": "Wait for Tuno"}, {"id": "o3", "label": "Yell at the storm"}, {"id": "o2", "label": "Hide until it ends"}], "narration": "The storm is coming and Tuno is far away. What can Pebble do all by himself?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'breathing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The storm is coming and Tuno is far away. What can Pebble do all by himself?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'Teach the whole Quiet Cloud your calm-breath routine. Put the steps in order.', '{"items": [{"id": "s0", "label": "Notice the wobbly feeling"}, {"id": "s1", "label": "Take slow brave breaths"}, {"id": "s2", "label": "Smile — the storm has passed"}], "narration": "Teach the whole Quiet Cloud your calm-breath routine. Put the steps in order."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'breathing'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Teach the whole Quiet Cloud your calm-breath routine. Put the steps in order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Tuno keeps a calm-down toolbox on the Calm Cloud. Which tool should we try first?', '{"options": [{"id": "o0", "label": "Belly breaths"}, {"id": "o3", "label": "Running away"}, {"id": "o2", "label": "Throwing shells"}, {"id": "o1", "label": "Yelling loud"}], "narration": "Tuno keeps a calm-down toolbox on the Calm Cloud. Which tool should we try first?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'calm_down'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Tuno keeps a calm-down toolbox on the Calm Cloud. Which tool should we try first?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'Open the toolbox with Tuno. Tap the tool that fills your belly like a balloon.', '{"targets": [{"id": "o1", "label": "stompy feet"}, {"id": "o0", "label": "belly breaths"}, {"id": "o3", "label": "hiding"}, {"id": "o2", "label": "yelling"}], "narration": "Open the toolbox with Tuno. Tap the tool that fills your belly like a balloon."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'calm_down'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Open the toolbox with Tuno. Tap the tool that fills your belly like a balloon.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'Let''s try belly breaths with Tuno. Put your hand on your tummy and breathe along.', '{"script": "Belly out... breathe in... Belly soft... breathe out...", "narration": "Let''s try belly breaths with Tuno. Put your hand on your tummy and breathe along."}'::jsonb, '{}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'calm_down'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Let''s try belly breaths with Tuno. Put your hand on your tummy and breathe along.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Pebble''s claws are trembling. What is Tuno''s calm-down toolbox for?', '{"options": [{"id": "o0", "label": "Things that help big feelings get smaller"}, {"id": "o2", "label": "Things to throw far"}, {"id": "o3", "label": "Things to hide under"}, {"id": "o1", "label": "Things that make feelings bigger"}], "narration": "Pebble''s claws are trembling. What is Tuno''s calm-down toolbox for?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'calm_down'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble''s claws are trembling. What is Tuno''s calm-down toolbox for?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Pebble''s tower fell and he wants to yell. Tuno kneels down slowly. What could help instead?', '{"options": [{"id": "o1", "label": "Yelling louder"}, {"id": "o2", "label": "Kicking the tower"}, {"id": "o3", "label": "Hiding all day"}, {"id": "o0", "label": "A tight turtle squeeze"}], "narration": "Pebble''s tower fell and he wants to yell. Tuno kneels down slowly. What could help instead?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'calm_down'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble''s tower fell and he wants to yell. Tuno kneels down slowly. What could help instead?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'Pebble''s feelings are buzzing like bees. Tap the tool that gives his body a cozy squeeze.', '{"targets": [{"id": "o0", "label": "a cozy squeeze"}, {"id": "o2", "label": "yelling"}, {"id": "o3", "label": "throwing sand"}, {"id": "o1", "label": "running away"}], "narration": "Pebble''s feelings are buzzing like bees. Tap the tool that gives his body a cozy squeeze."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'calm_down'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble''s feelings are buzzing like bees. Tap the tool that gives his body a cozy squeeze.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'Tuno counts to ten when his mind starts to race. Why does slow counting help?', '{"options": [{"id": "o2", "label": "It scares feelings away"}, {"id": "o3", "label": "It counts your shells"}, {"id": "o1", "label": "It erases every feeling"}, {"id": "o0", "label": "It gives the feeling time to shrink"}], "narration": "Tuno counts to ten when his mind starts to race. Why does slow counting help?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'calm_down'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Tuno counts to ten when his mind starts to race. Why does slow counting help?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'listen_repeat', 'Count to ten with Tuno — slow as a turtle, soft as a cloud.', '{"script": "1... 2... 3... 4... 5... 6... 7... 8... 9... 10...", "narration": "Count to ten with Tuno — slow as a turtle, soft as a cloud."}'::jsonb, '{}'::jsonb, 15, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'calm_down'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Count to ten with Tuno — slow as a turtle, soft as a cloud.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Pebble is MAD his sandcastle fell down. Which tool fits a mad feeling best?', '{"options": [{"id": "o3", "label": "Sitting in the rain"}, {"id": "o1", "label": "Yelling at the waves"}, {"id": "o0", "label": "Stompy march, then belly breaths"}, {"id": "o2", "label": "Smashing the buckets"}], "narration": "Pebble is MAD his sandcastle fell down. Which tool fits a mad feeling best?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'calm_down'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble is MAD his sandcastle fell down. Which tool fits a mad feeling best?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_target', 'Pebble is scared of the dark cave ahead. Tap the tool that helps scared feelings.', '{"targets": [{"id": "o3", "label": "running in circles"}, {"id": "o1", "label": "hiding forever"}, {"id": "o2", "label": "yelling at the dark"}, {"id": "o0", "label": "a cozy squeeze"}], "narration": "Pebble is scared of the dark cave ahead. Tap the tool that helps scared feelings."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'calm_down'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble is scared of the dark cave ahead. Tap the tool that helps scared feelings.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sort', 'Pebble mixed up his toolbox! Sort what helps big feelings and what makes them bigger.', '{"items": [{"id": "g0i0", "label": "belly breaths", "group": "Helps big feelings"}, {"id": "g0i2", "label": "counting to ten", "group": "Helps big feelings"}, {"id": "g1i2", "label": "throwing things", "group": "Makes them bigger"}, {"id": "g0i1", "label": "a tight squeeze", "group": "Helps big feelings"}, {"id": "g1i0", "label": "yelling", "group": "Makes them bigger"}, {"id": "g1i1", "label": "hiding", "group": "Makes them bigger"}], "groups": [{"id": "g0", "label": "Helps big feelings"}, {"id": "g1", "label": "Makes them bigger"}], "narration": "Pebble mixed up his toolbox! Sort what helps big feelings and what makes them bigger."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'calm_down'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble mixed up his toolbox! Sort what helps big feelings and what makes them bigger.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Pebble tried belly breaths and his claws stopped shaking. What should he do now?', '{"options": [{"id": "o0", "label": "Keep breathing until calm"}, {"id": "o2", "label": "Yell just a little"}, {"id": "o1", "label": "Stop after one breath"}, {"id": "o3", "label": "Throw one shell"}], "narration": "Pebble tried belly breaths and his claws stopped shaking. What should he do now?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'calm_down'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble tried belly breaths and his claws stopped shaking. What should he do now?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sequence', 'The toolbox steps got all mixed up! Put Tuno''s calm-down steps in the right order.', '{"items": [{"id": "s2", "label": "Pick a calm tool"}, {"id": "s1", "label": "Take slow breaths"}, {"id": "s0", "label": "Name the feeling"}], "narration": "The toolbox steps got all mixed up! Put Tuno''s calm-down steps in the right order."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'calm_down'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The toolbox steps got all mixed up! Put Tuno''s calm-down steps in the right order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'Pebble tried yelling, but his tummy still feels wobbly. What did Tuno notice?', '{"options": [{"id": "o3", "label": "Tuno yelled too"}, {"id": "o1", "label": "Yelling fixed everything"}, {"id": "o2", "label": "Feelings enjoy yelling"}, {"id": "o0", "label": "Yelling didn''t shrink the feeling"}], "narration": "Pebble tried yelling, but his tummy still feels wobbly. What did Tuno notice?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'calm_down'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble tried yelling, but his tummy still feels wobbly. What did Tuno notice?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sort', 'Some tools fit some feelings best. Sort the tools for mad feelings and scared feelings.', '{"items": [{"id": "g0i1", "label": "belly breaths", "group": "For mad feelings"}, {"id": "g1i0", "label": "a tight squeeze", "group": "For scared feelings"}, {"id": "g1i1", "label": "counting to ten", "group": "For scared feelings"}, {"id": "g0i0", "label": "stompy march", "group": "For mad feelings"}], "groups": [{"id": "g0", "label": "For mad feelings"}, {"id": "g1", "label": "For scared feelings"}], "narration": "Some tools fit some feelings best. Sort the tools for mad feelings and scared feelings."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1"], "g1": ["g1i0", "g1i1"]}}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'calm_down'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Some tools fit some feelings best. Sort the tools for mad feelings and scared feelings.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_target', 'Pebble feels wobbly but cannot say why. Tap the FIRST step Tuno always does.', '{"targets": [{"id": "o1", "label": "pick a tool"}, {"id": "o3", "label": "count to ten"}, {"id": "o0", "label": "name the feeling"}, {"id": "o2", "label": "take a breath"}], "narration": "Pebble feels wobbly but cannot say why. Tap the FIRST step Tuno always does."}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'calm_down'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble feels wobbly but cannot say why. Tap the FIRST step Tuno always does.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'You are the Calm Captain now! A baby turtle is crying at the tide pool. What do you do first?', '{"options": [{"id": "o2", "label": "Hand them a snack fast"}, {"id": "o3", "label": "Carry them away"}, {"id": "o0", "label": "Kneel down and ask how they feel"}, {"id": "o1", "label": "Say big kids don''t cry"}], "narration": "You are the Calm Captain now! A baby turtle is crying at the tide pool. What do you do first?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'calm_down'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'You are the Calm Captain now! A baby turtle is crying at the tide pool. What do you do first?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'Teach Pebble the whole bedtime calm-down routine. Put the steps in order.', '{"items": [{"id": "s0", "label": "Name the day''s biggest feeling"}, {"id": "s1", "label": "Take five slow breaths"}, {"id": "s2", "label": "Pick a cozy sleep tool"}], "narration": "Teach Pebble the whole bedtime calm-down routine. Put the steps in order."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'calm_down'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Teach Pebble the whole bedtime calm-down routine. Put the steps in order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'Pebble is calm now, but storm clouds are gathering again. What does a Calm Captain do?', '{"options": [{"id": "o1", "label": "Wait until it feels huge"}, {"id": "o2", "label": "Hide the toolbox"}, {"id": "o0", "label": "Use the tools BEFORE the big feeling"}, {"id": "o3", "label": "Yell at the clouds"}], "narration": "Pebble is calm now, but storm clouds are gathering again. What does a Calm Captain do?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'calm_down'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble is calm now, but storm clouds are gathering again. What does a Calm Captain do?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_target', 'The Quiet Cloud needs a new keeper of the calm-down toolbox. Tap the one who is ready.', '{"targets": [{"id": "o1", "label": "the grumpy wave"}, {"id": "o0", "label": "Pebble the crab"}, {"id": "o2", "label": "the sleepy echo"}, {"id": "o3", "label": "the loud thunder"}], "narration": "The Quiet Cloud needs a new keeper of the calm-down toolbox. Tap the one who is ready."}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'calm_down'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The Quiet Cloud needs a new keeper of the calm-down toolbox. Tap the one who is ready.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_target', 'The focus fireflies are dancing! Watch ONE firefly — tap the one glowing steady and still.', '{"targets": [{"id": "o3", "label": "the sleepy firefly"}, {"id": "o1", "label": "the zippy firefly"}, {"id": "o0", "label": "the steady firefly"}, {"id": "o2", "label": "the blinky firefly"}], "narration": "The focus fireflies are dancing! Watch ONE firefly — tap the one glowing steady and still."}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'attention'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The focus fireflies are dancing! Watch ONE firefly — tap the one glowing steady and still.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'multiple_choice', 'Tuno watches one firefly for a whole slow breath. What is Tuno doing?', '{"options": [{"id": "o0", "label": "Paying attention"}, {"id": "o2", "label": "Counting clouds"}, {"id": "o1", "label": "Falling asleep"}, {"id": "o3", "label": "Hiding away"}], "narration": "Tuno watches one firefly for a whole slow breath. What is Tuno doing?"}'::jsonb, '{"choice": "o0"}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'attention'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Tuno watches one firefly for a whole slow breath. What is Tuno doing?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'tap_count', 'Three fireflies glow in a row on the Quiet Cloud. Count the steady glows with Tuno.', '{"thing": "steady firefly glows", "total": 3, "narration": "Three fireflies glow in a row on the Quiet Cloud. Count the steady glows with Tuno."}'::jsonb, '{"count": 3}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'attention'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Three fireflies glow in a row on the Quiet Cloud. Count the steady glows with Tuno.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 1, 'listen_repeat', 'Say ''I am watching'' with Tuno, slow and soft, while you watch your one firefly.', '{"script": "I am watching... my firefly...", "narration": "Say ''I am watching'' with Tuno, slow and soft, while you watch your one firefly."}'::jsonb, '{}'::jsonb, 10, '3-4', '7-8'
+FROM public.skills s WHERE s.code = 'attention'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Say ''I am watching'' with Tuno, slow and soft, while you watch your one firefly.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_target', 'The fireflies are dancing and a frog is croaking LOUD. Ignore it — tap YOUR steady firefly.', '{"targets": [{"id": "o2", "label": "the blinky firefly"}, {"id": "o0", "label": "the steady firefly"}, {"id": "o3", "label": "the darting firefly"}, {"id": "o1", "label": "the zippy firefly"}], "narration": "The fireflies are dancing and a frog is croaking LOUD. Ignore it — tap YOUR steady firefly."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'attention'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The fireflies are dancing and a frog is croaking LOUD. Ignore it — tap YOUR steady firefly.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'multiple_choice', 'A shiny beetle just zoomed past your nose! What should your eyes do now?', '{"options": [{"id": "o0", "label": "Keep watching my firefly"}, {"id": "o3", "label": "Watch everything"}, {"id": "o1", "label": "Chase the beetle"}, {"id": "o2", "label": "Close my eyes"}], "narration": "A shiny beetle just zoomed past your nose! What should your eyes do now?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'attention'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'A shiny beetle just zoomed past your nose! What should your eyes do now?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'sort', 'Tuno is sorting what helps us focus. Help him tidy the Quiet Cloud.', '{"items": [{"id": "g0i2", "label": "a quiet spot", "group": "Helps me focus"}, {"id": "g0i0", "label": "one firefly", "group": "Helps me focus"}, {"id": "g1i0", "label": "loud noises", "group": "Steals my focus"}, {"id": "g1i1", "label": "wiggly distractions", "group": "Steals my focus"}, {"id": "g0i1", "label": "slow breathing", "group": "Helps me focus"}, {"id": "g1i2", "label": "too many things", "group": "Steals my focus"}], "groups": [{"id": "g0", "label": "Helps me focus"}, {"id": "g1", "label": "Steals my focus"}], "narration": "Tuno is sorting what helps us focus. Help him tidy the Quiet Cloud."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1", "g0i2"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'attention'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Tuno is sorting what helps us focus. Help him tidy the Quiet Cloud.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 2, 'tap_count', 'Two fireflies glow steady while the others zip around. Count only the steady ones.', '{"thing": "steady fireflies", "total": 2, "narration": "Two fireflies glow steady while the others zip around. Count only the steady ones."}'::jsonb, '{"count": 2}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'attention'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Two fireflies glow steady while the others zip around. Count only the steady ones.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'tap_target', 'Pebble keeps losing his firefly — he watches every zippy one! Tap the steady firefly to show him.', '{"targets": [{"id": "o3", "label": "the swirly firefly"}, {"id": "o1", "label": "the zippy firefly"}, {"id": "o0", "label": "the steady firefly"}, {"id": "o2", "label": "the blinky firefly"}], "narration": "Pebble keeps losing his firefly — he watches every zippy one! Tap the steady firefly to show him."}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'attention'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble keeps losing his firefly — he watches every zippy one! Tap the steady firefly to show him.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'multiple_choice', 'Pebble''s eyes follow every beetle and frog. What can you teach him?', '{"options": [{"id": "o1", "label": "Watch everything at once"}, {"id": "o0", "label": "Pick one firefly and stay with it"}, {"id": "o3", "label": "Chase the beetles"}, {"id": "o2", "label": "Close your eyes tight"}], "narration": "Pebble''s eyes follow every beetle and frog. What can you teach him?"}'::jsonb, '{"choice": "o0"}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'attention'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble''s eyes follow every beetle and frog. What can you teach him?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'trace', 'Pebble''s firefly got lost in the reeds! Trace its glowing path home with your finger.', '{"trace": "the firefly''s glowing path home", "narration": "Pebble''s firefly got lost in the reeds! Trace its glowing path home with your finger."}'::jsonb, '{"min_coverage": 0.6}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'attention'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Pebble''s firefly got lost in the reeds! Trace its glowing path home with your finger.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 3, 'sequence', 'Teach Pebble Tuno''s focus steps. Put them in order.', '{"items": [{"id": "s1", "label": "Watch it for three breaths"}, {"id": "s0", "label": "Pick one firefly"}, {"id": "s2", "label": "Smile — you did it"}], "narration": "Teach Pebble Tuno''s focus steps. Put them in order."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 15, '5-6', '7-8'
+FROM public.skills s WHERE s.code = 'attention'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Teach Pebble Tuno''s focus steps. Put them in order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'multiple_choice', 'One firefly blinks a secret pattern: blink... blink-blink... blink. What should you do?', '{"options": [{"id": "o3", "label": "Chase it to see"}, {"id": "o0", "label": "Watch closely to learn it"}, {"id": "o1", "label": "Look away quickly"}, {"id": "o2", "label": "Guess without watching"}], "narration": "One firefly blinks a secret pattern: blink... blink-blink... blink. What should you do?"}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'attention'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'One firefly blinks a secret pattern: blink... blink-blink... blink. What should you do?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_target', 'Three fireflies look the same, but only one is the true Focus Firefly. Tap the steady one.', '{"targets": [{"id": "o3", "label": "the fading firefly"}, {"id": "o2", "label": "the darting firefly"}, {"id": "o0", "label": "the steady-glowing firefly"}, {"id": "o1", "label": "the flickering firefly"}], "narration": "Three fireflies look the same, but only one is the true Focus Firefly. Tap the steady one."}'::jsonb, '{"choice": "o0"}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'attention'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Three fireflies look the same, but only one is the true Focus Firefly. Tap the steady one.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'sort', 'The Wind Sprite is scattering distractions! Sort what to watch and what to let pass by.', '{"items": [{"id": "g0i1", "label": "the steady glow", "group": "Keep watching"}, {"id": "g1i0", "label": "zippy beetles", "group": "Let pass by"}, {"id": "g1i2", "label": "wiggly leaves", "group": "Let pass by"}, {"id": "g0i0", "label": "my one firefly", "group": "Keep watching"}, {"id": "g1i1", "label": "loud croaks", "group": "Let pass by"}], "groups": [{"id": "g0", "label": "Keep watching"}, {"id": "g1", "label": "Let pass by"}], "narration": "The Wind Sprite is scattering distractions! Sort what to watch and what to let pass by."}'::jsonb, '{"groups": {"g0": ["g0i0", "g0i1"], "g1": ["g1i0", "g1i1", "g1i2"]}}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'attention'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The Wind Sprite is scattering distractions! Sort what to watch and what to let pass by.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 4, 'tap_count', 'The Focus Firefly blinked 5 slow times just for you. Count the slow blinks with Tuno.', '{"thing": "slow blinks", "total": 5, "narration": "The Focus Firefly blinked 5 slow times just for you. Count the slow blinks with Tuno."}'::jsonb, '{"count": 5}'::jsonb, 20, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'attention'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The Focus Firefly blinked 5 slow times just for you. Count the slow blinks with Tuno.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'tap_target', 'You lead the firefly parade! Tap the steadiest glow — every firefly will follow it.', '{"targets": [{"id": "o0", "label": "the steadiest glow"}, {"id": "o1", "label": "the zappiest glow"}, {"id": "o3", "label": "the sleepiest glow"}, {"id": "o2", "label": "the wiggliest glow"}], "narration": "You lead the firefly parade! Tap the steadiest glow — every firefly will follow it."}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'attention'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'You lead the firefly parade! Tap the steadiest glow — every firefly will follow it.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'multiple_choice', 'The parade passes the noisy frog pond and the beetle race. What does the leader do?', '{"options": [{"id": "o1", "label": "Stop to watch the race"}, {"id": "o0", "label": "Keep the glow steady and lead on"}, {"id": "o3", "label": "Scatter the parade"}, {"id": "o2", "label": "Croak with the frogs"}], "narration": "The parade passes the noisy frog pond and the beetle race. What does the leader do?"}'::jsonb, '{"choice": "o0"}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'attention'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'The parade passes the noisy frog pond and the beetle race. What does the leader do?');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'sequence', 'Teach the whole Quiet Cloud your focus parade routine. Put it in order.', '{"items": [{"id": "s0", "label": "Pick your one steady glow"}, {"id": "s2", "label": "Lead the parade home"}, {"id": "s1", "label": "Ignore the zips and croaks"}], "narration": "Teach the whole Quiet Cloud your focus parade routine. Put it in order."}'::jsonb, '{"sequence": ["s0", "s1", "s2"]}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'attention'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Teach the whole Quiet Cloud your focus parade routine. Put it in order.');
+
+INSERT INTO public.activities (skill_id, level, kind, prompt_text, card, answer, points, min_age_band, max_age_band)
+SELECT s.id, 5, 'listen_repeat', 'Lead the focus chant for the whole parade — slow, steady, and proud.', '{"script": "Steady... and slow... I can focus...", "narration": "Lead the focus chant for the whole parade — slow, steady, and proud."}'::jsonb, '{}'::jsonb, 25, '7-8', '7-8'
+FROM public.skills s WHERE s.code = 'attention'
+AND NOT EXISTS (SELECT 1 FROM public.activities x WHERE x.skill_id = s.id AND x.prompt_text = 'Lead the focus chant for the whole parade — slow, steady, and proud.');
+
+COMMIT;

@@ -57,6 +57,7 @@ describe('migration files', () => {
       '20260924000600_pgcrypto_search_path.sql',
       '20260925000100_fix_choice_grading.sql',
       '20260925000200_sticker_awards.sql',
+      '20260925000300_content_refresh.sql',
     ]);
   });
 });
