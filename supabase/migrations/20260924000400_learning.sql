@@ -95,7 +95,7 @@ create or replace function public.fetch_activity_card(
 returns jsonb
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_row public.activities%rowtype;
@@ -139,7 +139,7 @@ create or replace function public.submit_attempt(
 returns jsonb
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_act public.activities%rowtype;
@@ -304,7 +304,7 @@ create or replace function public.log_event(
 returns uuid
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_event_id uuid;

@@ -54,6 +54,7 @@ describe('migration files', () => {
       '20260924000300_activity_bank.sql',
       '20260924000400_learning.sql',
       '20260924000500_storage.sql',
+      '20260924000600_pgcrypto_search_path.sql',
     ]);
   });
 });
@@ -147,8 +148,9 @@ describe('security definer RPCs', () => {
       expect(chunk, `${name} must be SECURITY DEFINER`).toMatch(
         /security definer/i
       );
+      // public first (our tables), extensions second (pgcrypto on Supabase).
       expect(chunk, `${name} must fix search_path`).toMatch(
-        /set search_path = public/i
+        /set search_path = public,\s*extensions/i
       );
     }
   });

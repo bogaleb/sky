@@ -236,7 +236,7 @@ create or replace function public.ensure_parent_profile()
 returns jsonb
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_user_id uuid := auth.uid();
@@ -273,7 +273,7 @@ create or replace function public.get_parent_profile()
 returns jsonb
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_row public.parents%rowtype;
@@ -302,7 +302,7 @@ create or replace function public.set_parent_pin(pin text)
 returns jsonb
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 begin
   if auth.uid() is null then
@@ -329,7 +329,7 @@ create or replace function public.verify_parent_pin(pin text)
 returns boolean
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_row public.parents%rowtype;
@@ -376,7 +376,7 @@ create or replace function public.update_parent_profile(
 returns jsonb
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_row public.parents%rowtype;
@@ -407,7 +407,7 @@ create or replace function public.start_session(p_child_id uuid)
 returns uuid
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_session_id uuid;
@@ -435,7 +435,7 @@ create or replace function public.end_session(
 returns jsonb
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_child_id uuid;
