@@ -55,6 +55,10 @@ export const TROPHIES: Trophy[] = [
   { id: 'showdown-first', name: 'Friendly Rival', description: 'Finished a sibling Star Sprint!', category: 'explorer', starBonus: 15, art: 'cup' },
   { id: 'movie-first', name: 'Movie Director', description: 'Premiered your first cartoon!', category: 'explorer', starBonus: 15, art: 'ribbon' },
   { id: 'homes-first', name: 'Home Explorer', description: 'Visited every character home!', category: 'explorer', starBonus: 20, art: 'crown' },
+  { id: 'feelings-first', name: 'Feelings Friend', description: 'Named big feelings with Tuno!', category: 'explorer', starBonus: 10, art: 'ribbon' },
+  { id: 'color-first', name: 'Color Wizard', description: 'Mixed magical colors in the lab!', category: 'explorer', starBonus: 10, art: 'gem' },
+  { id: 'rhyme-first', name: 'Rhyme Star', description: 'Rhymed words with Luna!', category: 'explorer', starBonus: 10, art: 'star' },
+  { id: 'playground-first', name: 'Playground Pro', description: 'Played every pet playground game!', category: 'explorer', starBonus: 15, art: 'medal' },
   // Learner — practice and mastery
   { id: 'activities-10', name: 'Practice Pro', description: 'Finished 10 activities!', category: 'learner', starBonus: 10, art: 'medal' },
   { id: 'activities-50', name: 'Super Solver', description: 'Finished 50 activities!', category: 'learner', starBonus: 20, art: 'cup' },
@@ -113,4 +117,8 @@ export type TrophyEvent =
   | 'money_done'
   | 'showdown_done'
   | 'movie_done'
-  | 'homes_done';
+  | 'homes_done'
+  | 'feelings_done'
+  | 'color_done'
+  | 'rhyme_done'
+  | 'playground_done';

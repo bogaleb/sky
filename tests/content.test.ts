@@ -8,7 +8,7 @@ import { OUTFIT_ART_IDS } from '../lib/kid/outfit-art';
 
 describe('sticker book', () => {
   it('has 42 collectible stickers', () => {
-    expect(STICKERS.length).toBe(56);
+    expect(STICKERS.length).toBe(60);
   });
 
   it('every sticker resolves and has a character, name, and colors', () => {
@@ -137,8 +137,8 @@ describe('memory cove decks', () => {
 });
 
 describe('sky shop outfits', () => {
-  it('has 18 accessories', () => {
-    expect(OUTFITS.length).toBe(18);
+  it('has 24 accessories', () => {
+    expect(OUTFITS.length).toBe(24);
   });
 
   it('every outfit resolves, has art, a valid slot, and a sensible price', () => {

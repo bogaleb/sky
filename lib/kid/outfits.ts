@@ -141,6 +141,48 @@ export const OUTFITS: Outfit[] = [
     slot: 'extra',
     blurb: 'A floaty balloon for celebration days!',
   },
+  {
+    id: 'cowboy-hat',
+    name: 'Cowboy Hat',
+    cost: 25,
+    slot: 'hat',
+    blurb: 'Howdy, partner! Ride the Sky range.',
+  },
+  {
+    id: 'knight-helmet',
+    name: 'Knight Helmet',
+    cost: 45,
+    slot: 'hat',
+    blurb: 'A shiny helmet for the bravest knights.',
+  },
+  {
+    id: 'detective-cap',
+    name: 'Detective Cap',
+    cost: 30,
+    slot: 'hat',
+    blurb: 'A clever cap for solving every mystery.',
+  },
+  {
+    id: 'snorkel-mask',
+    name: 'Snorkel Mask',
+    cost: 35,
+    slot: 'glasses',
+    blurb: 'Dive down for under-the-sea adventures!',
+  },
+  {
+    id: 'rain-boots',
+    name: 'Rain Boots',
+    cost: 30,
+    slot: 'extra',
+    blurb: 'Sunny yellow boots for splashing in puddles!',
+  },
+  {
+    id: 'rocket-jetpack',
+    name: 'Rocket Jetpack',
+    cost: 60,
+    slot: 'extra',
+    blurb: 'Zoom to the stars at super speed!',
+  },
 ];
 
 export function getOutfit(id: string): Outfit | undefined {

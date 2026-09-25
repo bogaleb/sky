@@ -487,6 +487,207 @@ function PartyBalloon({ className }: { className?: string }) {
   );
 }
 
+function CowboyHat({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 96 96" className={className} role="img" aria-hidden="true" {...P}>
+      <defs>
+        <linearGradient id="cowboy-hat-brown" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#C68B4E" />
+          <stop offset="1" stopColor="#8A5A2B" />
+        </linearGradient>
+      </defs>
+      {/* tall crown with a dent */}
+      <path
+        d="M36,26 C36,12 42,6 48,6 C54,6 60,12 60,26 Z"
+        fill="url(#cowboy-hat-brown)"
+        stroke="#5E3D1A"
+        strokeWidth="3"
+      />
+      <path d="M44,8 C46,12 46,16 45,20" fill="none" stroke="#5E3D1A" strokeWidth="2.5" opacity="0.7" />
+      <path d="M52,8 C50,12 50,16 51,20" fill="none" stroke="#5E3D1A" strokeWidth="2.5" opacity="0.7" />
+      {/* hat band */}
+      <path d="M36,20 L60,20 L60,26 L36,26 Z" fill="#5E3D1A" opacity="0.9" />
+      {/* curled wide brim */}
+      <path
+        d="M14,30 C24,22 34,24 48,26 C62,24 72,22 82,30 C74,36 62,36 48,34 C34,36 22,36 14,30 Z"
+        fill="url(#cowboy-hat-brown)"
+        stroke="#5E3D1A"
+        strokeWidth="3"
+      />
+      {/* star badge */}
+      <path
+        d="M48,22 l1.6,3.2 3.6,0.5 -2.6,2.5 0.6,3.6 -3.2,-1.7 -3.2,1.7 0.6,-3.6 -2.6,-2.5 3.6,-0.5 Z"
+        fill="#FFD968"
+        stroke="#B57E12"
+        strokeWidth="1.5"
+      />
+    </svg>
+  );
+}
+
+function KnightHelmet({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 96 96" className={className} role="img" aria-hidden="true" {...P}>
+      <defs>
+        <linearGradient id="knight-helmet-steel" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#E4EBF5" />
+          <stop offset="1" stopColor="#9FB2C8" />
+        </linearGradient>
+      </defs>
+      {/* dome */}
+      <path
+        d="M30,28 C30,12 38,6 48,6 C58,6 66,12 66,28 Z"
+        fill="url(#knight-helmet-steel)"
+        stroke="#4A5A70"
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+      {/* visor slit */}
+      <rect x="34" y="18" width="28" height="6" rx="3" fill="#2E3A4E" />
+      {/* nose guard */}
+      <rect x="45" y="14" width="6" height="16" rx="3" fill="url(#knight-helmet-steel)" stroke="#4A5A70" strokeWidth="2" />
+      {/* brim */}
+      <ellipse cx="48" cy="29" rx="25" ry="5.5" fill="url(#knight-helmet-steel)" stroke="#4A5A70" strokeWidth="3" />
+      {/* red plume */}
+      <path
+        d="M48,6 C44,-2 50,-6 52,-10 C54,-6 60,-4 58,2 C57,6 52,7 48,6 Z"
+        fill="#E14E4E"
+        stroke="#8E1F1F"
+        strokeWidth="2.5"
+        strokeLinejoin="round"
+      />
+      {/* shine */}
+      <path d="M37,12 C39,9 42,8 45,8" fill="none" stroke="#FFFFFF" strokeWidth="2.5" opacity="0.8" />
+    </svg>
+  );
+}
+
+function DetectiveCap({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 96 96" className={className} role="img" aria-hidden="true" {...P}>
+      <defs>
+        <linearGradient id="detective-cap-tweed" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#B89B6E" />
+          <stop offset="1" stopColor="#8A6F45" />
+        </linearGradient>
+      </defs>
+      {/* front panel */}
+      <path
+        d="M34,24 C34,12 41,8 48,8 C55,8 62,12 62,24 Z"
+        fill="url(#detective-cap-tweed)"
+        stroke="#5E4A2B"
+        strokeWidth="3"
+      />
+      {/* back panel */}
+      <path
+        d="M62,24 C62,12 68,10 72,12 C70,18 66,22 62,24 Z"
+        fill="url(#detective-cap-tweed)"
+        stroke="#5E4A2B"
+        strokeWidth="3"
+      />
+      {/* ear flaps */}
+      <path d="M32,26 L28,38 L36,38 Z" fill="url(#detective-cap-tweed)" stroke="#5E4A2B" strokeWidth="2.5" strokeLinejoin="round" />
+      <path d="M64,26 L68,38 L60,38 Z" fill="url(#detective-cap-tweed)" stroke="#5E4A2B" strokeWidth="2.5" strokeLinejoin="round" />
+      {/* front brim */}
+      <ellipse cx="48" cy="26" rx="20" ry="5" fill="url(#detective-cap-tweed)" stroke="#5E4A2B" strokeWidth="3" />
+      {/* button */}
+      <circle cx="48" cy="9" r="3" fill="#5E4A2B" />
+      {/* magnifier badge */}
+      <circle cx="56" cy="19" r="5" fill="none" stroke="#2E3A4E" strokeWidth="2.5" />
+      <path d="M60,23 L64,27" stroke="#2E3A4E" strokeWidth="2.5" />
+    </svg>
+  );
+}
+
+function SnorkelMask({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 96 96" className={className} role="img" aria-hidden="true" {...P}>
+      {/* snorkel tube */}
+      <path d="M74,44 L74,12" fill="none" stroke="#2EC4B6" strokeWidth="6" strokeLinecap="round" />
+      <path d="M74,44 L74,12" fill="none" stroke="#1A8A80" strokeWidth="6" strokeLinecap="round" strokeDasharray="4 5" opacity="0.4" />
+      <rect x="68" y="4" width="12" height="8" rx="3" fill="#FF6B6B" stroke="#C0392B" strokeWidth="2.5" />
+      {/* mask frame */}
+      <rect x="24" y="42" width="48" height="26" rx="13" fill="#BFE9F7" opacity="0.55" />
+      <rect x="24" y="42" width="48" height="26" rx="13" fill="none" stroke="#1A6E8A" strokeWidth="4" />
+      {/* center bridge */}
+      <rect x="44" y="42" width="8" height="26" fill="#1A6E8A" opacity="0.85" />
+      {/* strap */}
+      <path d="M24,52 L12,48" fill="none" stroke="#1A6E8A" strokeWidth="4" />
+      <path d="M72,52 L84,48" fill="none" stroke="#1A6E8A" strokeWidth="4" />
+      {/* glass shine */}
+      <path d="M32,48 a8,8 0 0 1 5,-5" fill="none" stroke="#FFFFFF" strokeWidth="2.5" opacity="0.9" />
+    </svg>
+  );
+}
+
+function RainBoots({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 96 96" className={className} role="img" aria-hidden="true" {...P}>
+      <defs>
+        <linearGradient id="rain-boots-yellow" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#FFD968" />
+          <stop offset="1" stopColor="#E8A93C" />
+        </linearGradient>
+      </defs>
+      {/* left boot */}
+      <path
+        d="M10,60 L10,88 L26,88 L26,70 L32,70 L32,88 L44,88 L44,60 Z"
+        fill="url(#rain-boots-yellow)"
+        stroke="#B57E12"
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+      {/* right boot */}
+      <path
+        d="M52,60 L52,88 L64,88 L64,70 L70,70 L70,88 L86,88 L86,60 Z"
+        fill="url(#rain-boots-yellow)"
+        stroke="#B57E12"
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+      {/* cuffs */}
+      <rect x="8" y="54" width="38" height="9" rx="4.5" fill="#FF8AC2" stroke="#C2437F" strokeWidth="2.5" />
+      <rect x="50" y="54" width="38" height="9" rx="4.5" fill="#FF8AC2" stroke="#C2437F" strokeWidth="2.5" />
+      {/* splashes */}
+      <circle cx="20" cy="48" r="2.4" fill="#4CC9F0" />
+      <circle cx="76" cy="48" r="2.4" fill="#4CC9F0" />
+      <path d="M28,44 l1.2,2.6 2.6,1.2 -2.6,1.2 -1.2,2.6 -1.2,-2.6 -2.6,-1.2 2.6,-1.2 Z" fill="#4CC9F0" />
+      <path d="M68,44 l1.2,2.6 2.6,1.2 -2.6,1.2 -1.2,2.6 -1.2,-2.6 -2.6,-1.2 2.6,-1.2 Z" fill="#4CC9F0" />
+    </svg>
+  );
+}
+
+function RocketJetpack({ className }: { className?: string }) {
+  const rocket = (cx: number) => (
+    <g>
+      {/* body */}
+      <rect x={cx - 7} y={56} width={14} height={24} rx={7} fill="#E4EBF5" stroke="#4A5A70" strokeWidth="2.5" />
+      {/* nose */}
+      <path d={`M${cx - 7},60 L${cx},48 L${cx + 7},60 Z`} fill="#FF6B6B" stroke="#C0392B" strokeWidth="2.5" strokeLinejoin="round" />
+      {/* window */}
+      <circle cx={cx} cy={66} r={3} fill="#4CC9F0" stroke="#2A9FD8" strokeWidth="2" />
+      {/* flame */}
+      <path
+        d={`M${cx - 5},80 L${cx},92 L${cx + 5},80 Z`}
+        fill="#FFC93C"
+        stroke="#E8823C"
+        strokeWidth="2"
+        strokeLinejoin="round"
+        className="animate-kid-twinkle"
+      />
+    </g>
+  );
+  return (
+    <svg viewBox="0 0 96 96" className={className} role="img" aria-hidden="true" {...P}>
+      {rocket(22)}
+      {rocket(74)}
+      {/* harness straps */}
+      <path d="M30,58 C36,66 40,74 42,84" fill="none" stroke="#7A4E2D" strokeWidth="4" />
+      <path d="M66,58 C60,66 56,74 54,84" fill="none" stroke="#7A4E2D" strokeWidth="4" />
+    </svg>
+  );
+}
+
 const ART: Record<string, (props: { className?: string }) => React.JSX.Element> = {
   'explorer-hat': ExplorerHat,
   'sleepy-nightcap': SleepyNightcap,
@@ -506,6 +707,12 @@ const ART: Record<string, (props: { className?: string }) => React.JSX.Element> 
   'superhero-mask': SuperheroMask,
   'frog-backpack': FrogBackpack,
   'party-balloon': PartyBalloon,
+  'cowboy-hat': CowboyHat,
+  'knight-helmet': KnightHelmet,
+  'detective-cap': DetectiveCap,
+  'snorkel-mask': SnorkelMask,
+  'rain-boots': RainBoots,
+  'rocket-jetpack': RocketJetpack,
 };
 
 /** Render an outfit's SVG overlay. Same 96x96 viewBox as the avatars — stack absolutely on top. */

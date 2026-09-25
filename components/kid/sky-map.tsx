@@ -5,6 +5,23 @@ import { getCharacter } from '@/lib/kid/characters';
 import { CHATTER } from '@/lib/kid/char-chatter';
 import { AVATARS } from '@/components/avatars';
 import { playSfx, speakAs } from '@/lib/kid/audio';
+/** Small drifting cloud for map parallax depth (KidShell paints the far sky). */
+function MapCloud({ top, scale, duration, delay, opacity }: { top: string; scale: number; duration: number; delay: number; opacity: number }) {
+  return (
+    <div
+      className="pointer-events-none absolute animate-kid-drift"
+      style={{ top, animationDuration: `${duration}s`, animationDelay: `${delay}s`, opacity }}
+      aria-hidden="true"
+    >
+      <svg width={150 * scale} height={75 * scale} viewBox="0 0 180 90" fill="white">
+        <ellipse cx="60" cy="55" rx="42" ry="26" />
+        <ellipse cx="100" cy="42" rx="36" ry="30" />
+        <ellipse cx="132" cy="58" rx="30" ry="20" />
+      </svg>
+    </div>
+  );
+}
+
 /** Decorative motif drawn on each island. */
 function IslandMotif({ motif, color }: { motif: Island['motif']; color: string }) {
   const common = { stroke: color, strokeWidth: 3, fill: 'none', strokeLinecap: 'round' as const };
@@ -139,6 +156,14 @@ function IslandCard({
         <ellipse cx="60" cy="70" rx="52" ry="14" fill="#ffffff" opacity="0.25" />
         {/* motif */}
         <IslandMotif motif={island.motif} color={island.color} />
+        {/* waving flag — idle animation only */}
+        <g
+          className="animate-kid-wave"
+          style={{ transformBox: 'fill-box', transformOrigin: '0% 60%', animationDelay: `${index * 0.35}s` }}
+        >
+          <line x1="96" y1="72" x2="96" y2="34" stroke="#8B5E34" strokeWidth="3" strokeLinecap="round" />
+          <path d="M96 34 h22 l-7 7 7 7 h-22 z" fill={island.color} stroke="#ffffff" strokeWidth="1.5" />
+        </g>
       </svg>
       {/* host character peeking over the island */}
       <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/4 transition-transform duration-300 group-hover:-translate-y-1/3 group-hover:scale-110">
@@ -195,6 +220,9 @@ export default function SkyMap({
 }) {
   return (
     <div className="kid-sky-map relative flex w-full max-w-6xl flex-col items-center px-4">
+      {/* near-field drifting clouds for parallax depth */}
+      <MapCloud top="2%" scale={0.5} duration={74} delay={-18} opacity={0.75} />
+      <MapCloud top="12%" scale={0.38} duration={98} delay={-52} opacity={0.6} />
       <h1 className="animate-kid-rise text-center text-3xl font-black text-kid-ink-900 md:text-5xl">
         Where to, {nickname}?
       </h1>

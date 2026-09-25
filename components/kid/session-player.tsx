@@ -28,6 +28,12 @@ import CoinCove from './coin-cove';
 import MovieStudio from './movie-studio';
 import CharacterHomes from './character-homes';
 import ShowdownCard from './showdown-card';
+import FeelingsTheater from './feelings-theater';
+import ColorMixLab from './color-mix-lab';
+import RhymeTime from './rhyme-time';
+import PetPlayground from './pet-playground';
+import SplashIntro from './splash-intro';
+import StreakCalendar from './streak-calendar';
 import PhonicsFun from './phonics-fun';
 import Encyclopedia from './encyclopedia';
 import WelcomeQuest from './welcome-quest';
@@ -378,6 +384,10 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
   const [showMoney, setShowMoney] = useState(false);
   const [showMovies, setShowMovies] = useState(false);
   const [showHomes, setShowHomes] = useState(false);
+  const [showFeelings, setShowFeelings] = useState(false);
+  const [showColors, setShowColors] = useState(false);
+  const [showRhymes, setShowRhymes] = useState(false);
+  const [showPlayground, setShowPlayground] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
   const [showTrophies, setShowTrophies] = useState(false);
   const [talkWith, setTalkWith] = useState<string | null>(null);
@@ -627,6 +637,7 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
       points={points}
       onExit={phase === 'playing' || phase === 'map' || phase === 'trailIntro' ? onExit : undefined}
     >
+      <SplashIntro onDone={() => {}} />
       {loadingIsland && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-kid-sky-300/60 p-4 backdrop-blur-sm">
           <div className="w-full max-w-2xl rounded-kid-card bg-white/90 px-6 py-8 shadow-2xl">
@@ -1017,6 +1028,77 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
               <span className="text-xs font-bold opacity-90">visit friends</span>
             </button>
           </div>
+          <div className="mt-3 flex flex-wrap gap-2 md:gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowFeelings(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-mint-500 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <circle cx="24" cy="24" r="16" fill="#fff" opacity="0.95" />
+                <circle cx="18" cy="21" r="2.5" fill="#0D7C5F" />
+                <circle cx="30" cy="21" r="2.5" fill="#0D7C5F" />
+                <path d="M16 30q8 8 16 0" stroke="#0D7C5F" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+              </svg>
+              <span className="text-lg font-black">Feelings Theater</span>
+              <span className="text-xs font-bold opacity-90">name big feelings</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowColors(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-grape-400 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <circle cx="18" cy="20" r="9" fill="#EF4444" opacity="0.95" />
+                <circle cx="30" cy="20" r="9" fill="#3B82F6" opacity="0.95" />
+                <circle cx="24" cy="33" r="10" fill="#8B5CF6" opacity="0.95" />
+                <path d="M18 29q6 4 12 0" stroke="#fff" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+              </svg>
+              <span className="text-lg font-black">Color Mix Lab</span>
+              <span className="text-xs font-bold opacity-90">mix magic colors</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowRhymes(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-coral-400 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <rect x="8" y="12" width="32" height="10" rx="5" fill="#fff" opacity="0.95" />
+                <rect x="8" y="26" width="32" height="10" rx="5" fill="#fff" opacity="0.7" />
+                <text x="24" y="20.5" fontSize="9" fontWeight="900" fill="#C2410C" textAnchor="middle">cat</text>
+                <text x="24" y="34.5" fontSize="9" fontWeight="900" fill="#7C2D12" textAnchor="middle">hat</text>
+              </svg>
+              <span className="text-lg font-black">Rhyme Time</span>
+              <span className="text-xs font-bold opacity-90">words that chime</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('pop');
+                setShowPlayground(true);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-kid-card bg-kid-sun-500 px-4 py-4 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden>
+                <rect x="6" y="28" width="36" height="6" rx="3" fill="#fff" opacity="0.9" />
+                <circle cx="14" cy="20" r="8" fill="#fff" opacity="0.95" />
+                <path d="M10 20a4 4 0 008 0 4 4 0 00-8 0" fill="#B45309" />
+                <rect x="28" y="10" width="14" height="14" rx="4" fill="#fff" opacity="0.7" />
+                <circle cx="35" cy="17" r="4" fill="#B45309" opacity="0.8" />
+              </svg>
+              <span className="text-lg font-black">Pet Playground</span>
+              <span className="text-xs font-bold opacity-90">play with your pet</span>
+            </button>
+          </div>
           <UpNext
             childId={child.id}
             onPracticeIsland={(islandId) => {
@@ -1029,6 +1111,7 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
             <GoalMeter childId={child.id} />
             <DailyGift childId={child.id} nickname={child.nickname} />
             <ShowdownCard childId={child.id} />
+            <StreakCalendar childId={child.id} />
           </div>
           <SkyMap
             nickname={child.nickname}
@@ -1131,6 +1214,26 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
       {showHomes && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
           <CharacterHomes childId={child.id} nickname={child.nickname} onExit={() => setShowHomes(false)} />
+        </div>
+      )}
+      {showFeelings && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <FeelingsTheater childId={child.id} nickname={child.nickname} onExit={() => setShowFeelings(false)} />
+        </div>
+      )}
+      {showColors && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <ColorMixLab childId={child.id} nickname={child.nickname} onExit={() => setShowColors(false)} />
+        </div>
+      )}
+      {showRhymes && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <RhymeTime childId={child.id} nickname={child.nickname} onExit={() => setShowRhymes(false)} />
+        </div>
+      )}
+      {showPlayground && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-kid-sky-300 to-kid-sky-500">
+          <PetPlayground childId={child.id} onExit={() => setShowPlayground(false)} />
         </div>
       )}
       {showWelcome && (

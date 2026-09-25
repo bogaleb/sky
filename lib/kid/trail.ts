@@ -42,6 +42,12 @@ const SKILLS_BY_SUBJECT: Record<string, string[]> = {
   feelings: ['emotions', 'breathing', 'calm_down', 'attention'],
 };
 
+/**
+ * Canonical skill codes per subject, exported so parent tools (report
+ * cards, play cards) validate against the real curriculum bank.
+ */
+export const SKILL_CODES: Record<string, string[]> = SKILLS_BY_SUBJECT;
+
 /** One quest title per skill — the story the child steps into. */
 const QUEST_TITLES: Record<string, string> = {
   alphabet: 'The Scattered Star-Books',

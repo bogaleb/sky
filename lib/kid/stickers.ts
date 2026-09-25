@@ -79,6 +79,11 @@ export const STICKERS: Sticker[] = [
   { id: 'friendly-rival', name: 'Friendly Rival', description: 'Finished a sibling showdown!', characterId: 'curio', colors: ['#FF8C42', '#FF7BAC'] },
   { id: 'movie-maker', name: 'Movie Maker', description: 'Directed your first cartoon!', characterId: 'luna', colors: ['#9B7EDE', '#FF7BAC'] },
   { id: 'home-sweet-home', name: 'Home Sweet Home', description: 'Visited every character home!', characterId: 'curio', colors: ['#FF9A3D', '#7ED6A5'] },
+  // Wave 7 — SEL, color, rhyme, and pet playground
+  { id: 'feelings-friend', name: 'Feelings Friend', description: 'Named feelings in Feelings Theater!', characterId: 'tuno', colors: ['#7ED6A5', '#FFD93D'] },
+  { id: 'color-wizard', name: 'Color Wizard', description: 'Mixed magical colors!', characterId: 'bea', colors: ['#FF7BAC', '#9B7EDE'] },
+  { id: 'rhyme-star', name: 'Rhyme Star', description: 'Rhymed words with Luna!', characterId: 'luna', colors: ['#9B7EDE', '#FFD93D'] },
+  { id: 'playground-pro', name: 'Playground Pro', description: 'Played every pet playground game!', characterId: 'nova', colors: ['#FFB84D', '#7ED6A5'] },
 ];
 
 export function getSticker(id: string): Sticker | undefined {

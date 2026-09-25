@@ -13,6 +13,8 @@ import PinGate from './pin-gate';
 import WeeklyGoals from './weekly-goals';
 import Certificate from './certificate';
 import FamilyLeaderboard from './family-leaderboard';
+import ReportCard from './report-card';
+import PlayCards from './play-cards';
 import { getTrophies } from '@/app/actions/trophies';
 
 function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
@@ -220,6 +222,11 @@ function ChildReport({ child }: { child: ChildDashboard }) {
         </div>
       </div>
 
+      {/* Report card: 44-skill mastery grid */}
+      <div className="mt-6">
+        <ReportCard childId={child.id} nickname={child.nickname} />
+      </div>
+
       {/* Suggested focus */}
       {child.focusSkills.length > 0 && (
         <div className="mt-6 rounded-2xl border border-parent-sun-400/40 bg-white p-6 shadow-[0_4px_16px_rgba(18,60,96,0.06)]">
@@ -407,6 +414,11 @@ export default function Dashboard() {
           {/* Family leaderboard: sibling Star Sprint, all children */}
           <div className="mt-6">
             <FamilyLeaderboard />
+          </div>
+
+          {/* Screen-free play cards: real-world activities for the whole family */}
+          <div className="mt-6">
+            <PlayCards />
           </div>
         </>
       )}
