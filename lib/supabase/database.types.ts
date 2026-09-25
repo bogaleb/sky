@@ -257,6 +257,24 @@ export interface Database {
         Update: Partial<Database['public']['Tables']['skill_mastery']['Insert']>;
         Relationships: [];
       };
+      sticker_awards: {
+        Row: {
+          id: string;
+          child_id: string;
+          sticker_id: string;
+          awarded_at: string;
+          metadata: Json;
+        };
+        Insert: {
+          id?: string;
+          child_id: string;
+          sticker_id: string;
+          awarded_at?: string;
+          metadata?: Json;
+        };
+        Update: Partial<Database['public']['Tables']['sticker_awards']['Insert']>;
+        Relationships: [];
+      };
       learning_events: {
         Row: {
           id: string;

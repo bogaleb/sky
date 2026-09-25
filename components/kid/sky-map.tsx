@@ -99,18 +99,21 @@ function IslandMotif({ motif, color }: { motif: Island['motif']; color: string }
   }
 }
 
-/** A single floating island card. */
+/** A single floating island card, with a learning-progress bar. */
 function IslandCard({
   island,
   index,
   onSelect,
+  progress,
 }: {
   island: Island;
   index: number;
   onSelect: (island: Island) => void;
+  progress?: { mastered: number; total: number };
 }) {
   const host = getCharacter(island.hostCharacter);
   const HostAvatar = (AVATARS[island.hostCharacter] ?? AVATARS.curio).Component;
+  const pct = progress && progress.total > 0 ? Math.round((progress.mastered / progress.total) * 100) : 0;
   return (
     <button
       type="button"
@@ -120,7 +123,7 @@ function IslandCard({
       }}
       className="kid-island-card animate-kid-rise group relative w-full text-left"
       style={{ animationDelay: `${index * 0.07}s` }}
-      aria-label={`Visit ${island.islandName} for ${island.subjectName} with ${host.name}`}
+      aria-label={`Visit ${island.islandName} for ${island.subjectName} with ${host.name}${progress ? `, ${progress.mastered} of ${progress.total} skills growing` : ''}`}
     >
       <svg viewBox="0 0 120 110" className="w-full" role="img" aria-hidden="true">
         <defs>
@@ -147,6 +150,19 @@ function IslandCard({
         <p className="text-sm font-bold" style={{ color: island.color }}>
           {island.subjectName} · {host.name}
         </p>
+        {progress && progress.total > 0 && (
+          <div className="mx-auto mt-1.5 w-full max-w-[140px]" aria-hidden="true">
+            <div className="h-2.5 overflow-hidden rounded-full bg-white/60 shadow-inner">
+              <div
+                className="h-full rounded-full transition-all duration-700"
+                style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${island.color}, #FFD93C)` }}
+              />
+            </div>
+            <p className="mt-0.5 text-[11px] font-extrabold text-kid-ink-700">
+              {progress.mastered}/{progress.total} growing
+            </p>
+          </div>
+        )}
       </div>
     </button>
   );
@@ -161,10 +177,18 @@ export default function SkyMap({
   nickname,
   onSelectIsland,
   onSurprise,
+  onOpenStickers,
+  progress,
+  stickerCount,
+  stickerTotal,
 }: {
   nickname: string;
   onSelectIsland: (island: Island) => void;
   onSurprise: () => void;
+  onOpenStickers?: () => void;
+  progress?: Record<string, { mastered: number; total: number }>;
+  stickerCount?: number;
+  stickerTotal?: number;
 }) {
   return (
     <div className="kid-sky-map relative flex w-full max-w-6xl flex-col items-center px-4">
@@ -175,29 +199,54 @@ export default function SkyMap({
         Pick an island to visit — or let the sky surprise you!
       </p>
 
-      <button
-        type="button"
-        onClick={() => {
-          playSfx('fanfare');
-          speakAs('curio', "Ooh, a mystery adventure! Let's see where the wind takes us!");
-          onSurprise();
-        }}
-        className="animate-kid-rise group mt-5 flex items-center gap-3 rounded-full border-b-8 border-kid-sun-600 bg-kid-sun-400 px-10 py-4 text-2xl font-black text-kid-ink-900 shadow-[0_14px_30px_rgba(255,201,60,0.45)] transition-all hover:scale-105 active:scale-95"
-        style={{ animationDelay: '0.15s' }}
-      >
-        <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="transition-transform duration-500 group-hover:rotate-180">
-          <rect x="3" y="3" width="18" height="18" rx="5" />
-          <circle cx="8.5" cy="8.5" r="1.4" fill="currentColor" stroke="none" />
-          <circle cx="15.5" cy="15.5" r="1.4" fill="currentColor" stroke="none" />
-          <circle cx="15.5" cy="8.5" r="1.4" fill="currentColor" stroke="none" />
-          <circle cx="8.5" cy="15.5" r="1.4" fill="currentColor" stroke="none" />
-        </svg>
-        Surprise me!
-      </button>
+      <div className="animate-kid-rise mt-5 flex flex-wrap items-center justify-center gap-3" style={{ animationDelay: '0.15s' }}>
+        <button
+          type="button"
+          onClick={() => {
+            playSfx('fanfare');
+            speakAs('curio', "Ooh, a mystery adventure! Let's see where the wind takes us!");
+            onSurprise();
+          }}
+          className="group flex items-center gap-3 rounded-full border-b-8 border-kid-sun-600 bg-kid-sun-400 px-10 py-4 text-2xl font-black text-kid-ink-900 shadow-[0_14px_30px_rgba(255,201,60,0.45)] transition-all hover:scale-105 active:scale-95"
+        >
+          <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="transition-transform duration-500 group-hover:rotate-180">
+            <rect x="3" y="3" width="18" height="18" rx="5" />
+            <circle cx="8.5" cy="8.5" r="1.4" fill="currentColor" stroke="none" />
+            <circle cx="15.5" cy="15.5" r="1.4" fill="currentColor" stroke="none" />
+            <circle cx="15.5" cy="8.5" r="1.4" fill="currentColor" stroke="none" />
+            <circle cx="8.5" cy="15.5" r="1.4" fill="currentColor" stroke="none" />
+          </svg>
+          Surprise me!
+        </button>
+        {onOpenStickers && (
+          <button
+            type="button"
+            onClick={() => {
+              playSfx('pop');
+              onOpenStickers();
+            }}
+            className="flex items-center gap-2 rounded-full border-b-8 border-kid-grape-600 bg-kid-grape-400 px-8 py-4 text-xl font-black text-white shadow-[0_14px_30px_rgba(23,50,79,0.25)] transition-all hover:scale-105 active:scale-95"
+          >
+            <svg width="26" height="26" viewBox="0 0 64 64" aria-hidden="true">
+              <rect x="10" y="14" width="44" height="38" rx="6" fill="#fff" opacity="0.95" />
+              <rect x="16" y="8" width="32" height="10" rx="3" fill="#FFD93C" />
+              <circle cx="32" cy="34" r="9" fill="#FFD93C" />
+              <path d="M32 29l1.8 3.6 4 .6-2.9 2.8.7 4-3.6-1.9-3.6 1.9.7-4-2.9-2.8 4-.6z" fill="#fff" />
+            </svg>
+            My stickers{stickerCount !== undefined && stickerTotal !== undefined ? ` (${stickerCount}/${stickerTotal})` : ''}
+          </button>
+        )}
+      </div>
 
       <div className="mt-6 grid w-full grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-3">
         {ISLANDS.map((island, i) => (
-          <IslandCard key={island.subjectCode} island={island} index={i} onSelect={onSelectIsland} />
+          <IslandCard
+            key={island.subjectCode}
+            island={island}
+            index={i}
+            onSelect={onSelectIsland}
+            progress={progress?.[island.subjectCode]}
+          />
         ))}
       </div>
     </div>

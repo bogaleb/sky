@@ -1,14 +1,17 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { speakAs, startMusicBed, stopMusicBed, isMuted } from '@/lib/kid/audio';
 import { getCharacter } from '@/lib/kid/characters';
 import { AVATARS } from '@/components/avatars';
 
 /**
- * A cinematic video moment: the (silent) generated clip plays while we
- * layer a character voiceover, a soft music bed, and captions on top.
- * This is what makes every video feel alive with sound.
+ * A cinematic video moment: the (silent) generated clip plays full-bleed
+ * while we layer a character voiceover, a soft music bed, and captions
+ * on top. Captions and action buttons float OVER the video — never below it.
+ *
+ * Sound controls live only in the session header; VideoSpot itself has no
+ * sound icon. The voiceover auto-plays once the video starts.
  */
 export default function VideoSpot({
   src,
@@ -18,6 +21,8 @@ export default function VideoSpot({
   caption,
   poster,
   onDone,
+  overlay,
+  rounded = true,
 }: {
   src: string;
   label: string;
@@ -25,10 +30,14 @@ export default function VideoSpot({
   characterId: string;
   /** What the character says while the video plays. */
   voiceover: string;
-  /** On-screen caption text. */
+  /** On-screen caption text, overlaid on the video. */
   caption: string;
   poster?: string;
   onDone?: () => void;
+  /** Buttons/content rendered on top of the video (bottom overlay zone). */
+  overlay?: ReactNode;
+  /** Rounded card look (false for full-bleed cinematic). */
+  rounded?: boolean;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [started, setStarted] = useState(false);
@@ -58,8 +67,7 @@ export default function VideoSpot({
 
     video.addEventListener('play', begin);
     video.addEventListener('ended', finish);
-    // Autoplay muted-first is not needed; the parent screen appears
-    // after a tap, so we can play with sound right away.
+    // The parent screen appears after a tap, so we can play with sound.
     video.play().catch(() => {
       /* user will tap to play */
     });
@@ -76,29 +84,33 @@ export default function VideoSpot({
     // Graceful fallback: the character speaks their line over a pretty backdrop.
     const Avatar = (AVATARS[characterId] ?? AVATARS.curio).Component;
     return (
-      <div className="kid-video-spot kid-video-spot--fallback" role="img" aria-label={label}>
-        <div className="flex h-full w-full flex-col items-center justify-center gap-4 p-6">
+      <div
+        className={rounded ? 'kid-video-spot' : 'kid-video-spot kid-video-spot--bleed'}
+        role="img"
+        aria-label={label}
+      >
+        <div className="kid-video-spot__fallback">
           <button
             type="button"
             onClick={() => speakAs(characterId, voiceover)}
             className="animate-kid-bob rounded-full transition-transform hover:scale-105 active:scale-95"
             aria-label={`Hear ${character.name}`}
           >
-            <Avatar className="h-32 w-32 drop-shadow-[0_14px_24px_rgba(23,50,79,0.35)] md:h-40 md:w-40" />
+            <Avatar className="h-32 w-32 drop-shadow-[0_14px_24px_rgba(23,50,79,0.35)] md:h-44 md:w-44" />
           </button>
-          <p className="max-w-md text-center text-lg font-bold text-white drop-shadow-[0_2px_8px_rgba(23,50,79,0.5)]">
-            {caption}
-          </p>
-          <p className="text-sm font-extrabold uppercase tracking-widest text-white/80">
-            Tap {character.name} to hear
-          </p>
+          <p className="kid-video-spot__fallback-caption">{caption}</p>
+          {overlay && <div className="kid-video-spot__overlay">{overlay}</div>}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="kid-video-spot" role="img" aria-label={label}>
+    <div
+      className={rounded ? 'kid-video-spot' : 'kid-video-spot kid-video-spot--bleed'}
+      role="img"
+      aria-label={label}
+    >
       <video
         ref={videoRef}
         src={src}
@@ -108,26 +120,17 @@ export default function VideoSpot({
         onError={() => setFailed(true)}
         className="kid-video-spot__video"
       />
-      {/* Caption bar — every video is captioned. */}
+      {/* Cinematic gradient so captions stay readable over bright video. */}
+      <div className="kid-video-spot__shade" aria-hidden="true" />
+      {/* Caption floats on the video. */}
       <div className="kid-video-spot__caption" aria-hidden="true">
         <span className="kid-video-spot__caption-name" style={{ color: character.color }}>
           {character.name}
         </span>
         <span className="kid-video-spot__caption-text">{caption}</span>
       </div>
-      {/* Tap to replay the voiceover. */}
-      <button
-        type="button"
-        className="kid-video-spot__replay-voice"
-        onClick={() => speakAs(characterId, voiceover)}
-        aria-label={`Hear ${character.name} again`}
-      >
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <path d="M11 5 6 9H2v6h4l5 4V5z" />
-          <path d="M15.5 8.5a5 5 0 0 1 0 7" />
-          <path d="M18.5 5.5a9 9 0 0 1 0 13" />
-        </svg>
-      </button>
+      {/* Action buttons float on the video, above the caption. */}
+      {overlay && <div className="kid-video-spot__overlay">{overlay}</div>}
     </div>
   );
 }
