@@ -40,7 +40,10 @@ export async function updateSession(request: NextRequest) {
   }
 
   const pathname = request.nextUrl.pathname;
-  const isPublic = PUBLIC_PATHS.has(pathname);
+  // /dev/* is a local-only UI preview (sample data, no Supabase). It is never
+  // public in production builds, and the pages themselves 404 there too.
+  const isDevPreview = process.env.NODE_ENV !== 'production' && pathname.startsWith('/dev/');
+  const isPublic = PUBLIC_PATHS.has(pathname) || isDevPreview;
 
   if (!userId && !isPublic) {
     return NextResponse.redirect(new URL('/login', request.url));

@@ -6,25 +6,31 @@ import {
   ROUND_LEVELS,
   ROUNDS_PER_GAME,
   generateQuestion,
+  moneyLines,
   spokenCents,
   totalCents,
   type CoinId,
   type MoneyQuestion,
 } from '@/lib/kid/money';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
+import { ageProfile } from '@/lib/kid/age-profile';
+import type { AgeBand } from '@/lib/planner/types';
 import { useGameSession, GameWinScreen } from './game-shell';
+import { AnswerTray, ChoiceCard, choiceStateFor, GameFrame, GameIntro, useTeaching } from './game-frame';
 import KidShell from '@/components/kid/kid-shell';
 
 export interface CoinCoveProps {
   childId: string;
   nickname?: string;
+  ageBand?: AgeBand;
   onExit: () => void;
 }
 
 type Phase = 'intro' | 'play' | 'won';
 
 const HOST = 'milo';
-const CELEBRATE_MS = 1400;
+const CELEBRATE_MS = 2000;
+const HOW_TO = 'Milo found treasure! Tap each coin to count it, then tap how much money there is.';
 
 /** Original coin art per denomination. No emoji, ever. */
 function CoinArt({ coin, counted }: { coin: CoinId; counted: boolean }) {
@@ -95,12 +101,15 @@ function CoinArt({ coin, counted }: { coin: CoinId; counted: boolean }) {
   );
 }
 
-export default function CoinCove({ childId, nickname = 'friend', onExit }: CoinCoveProps) {
+export default function CoinCove({ childId, nickname = 'friend', ageBand, onExit }: CoinCoveProps) {
+  const profile = ageProfile(ageBand);
+  // Gradual release: younger children count with a running total shown and
+  // spoken (support); independent counters (7–8) keep the total in their head.
+  const scaffoldTotal = profile.band !== '7-8';
   const [phase, setPhase] = useState<Phase>('intro');
   const [roundIndex, setRoundIndex] = useState(0);
   const [question, setQuestion] = useState<MoneyQuestion | null>(null);
   const [counted, setCounted] = useState<boolean[]>([]);
-  const [picked, setPicked] = useState<number | null>(null);
   const [mistakes, setMistakes] = useState(0);
   const [starsEarned, setStarsEarned] = useState(0);
   const session = useGameSession({
@@ -111,8 +120,9 @@ export default function CoinCove({ childId, nickname = 'friend', onExit }: CoinC
     milestone: 'coin_cove_win',
     learning: { gameId: 'coin-cove', skill: 'money' },
   });
+  const { logSupport } = session;
+  const teaching = useTeaching({ profile, host: HOST, onSupport: logSupport });
   const starBalance = session.starBalance ?? 0;
-  const [shakeId, setShakeId] = useState<number | null>(null);
   const timers = useRef<number[]>([]);
 
   const later = useCallback((ms: number, fn: () => void) => {
@@ -134,24 +144,22 @@ export default function CoinCove({ childId, nickname = 'friend', onExit }: CoinC
   const startRound = useCallback(
     (index: number, seed: number) => {
       const q = generateQuestion(ROUND_LEVELS[index], seed);
+      teaching.next();
       setQuestion(q);
       setCounted(new Array(q.coins.length).fill(false));
-      setPicked(null);
       setRoundIndex(index);
-      speakAs(HOST, `Tap each coin to count it, ${nickname}! Then tell me how much money we have.`);
+      speakAs(HOST, 'Tap each coin to count it. Then tell me how much money we have.');
     },
-    [nickname]
+    [teaching]
   );
 
   const startGame = useCallback(() => {
-    const seed = Date.now();
     setMistakes(0);
     setStarsEarned(0);
     setPhase('play');
     playSfx('whoosh');
-    speakAs(HOST, `Welcome to Coin Cove, ${nickname}! Count the shiny coins with me!`);
-    later(1600, () => startRound(0, seed));
-  }, [later, startRound]);
+    startRound(0, Date.now());
+  }, [startRound]);
 
   const tapCoin = (index: number) => {
     if (!question || phase !== 'play' || counted[index]) return;
@@ -160,8 +168,12 @@ export default function CoinCove({ childId, nickname = 'friend', onExit }: CoinC
     setCounted(next);
     playSfx('click');
     const def = COIN_DEFS[question.coins[index]];
-    const soFar = totalCents(question.coins.filter((_, i) => next[i]));
-    speakAs(HOST, `${def.name}! ${spokenCents(def.value)}. We have ${spokenCents(soFar)} so far.`);
+    if (scaffoldTotal) {
+      const soFar = totalCents(question.coins.filter((_, i) => next[i]));
+      speakAs(HOST, `${def.name}! ${spokenCents(def.value)}. We have ${spokenCents(soFar)} so far.`);
+    } else {
+      speakAs(HOST, `${def.name}. ${spokenCents(def.value)}.`);
+    }
   };
 
   const allCounted = question !== null && counted.length > 0 && counted.every(Boolean);
@@ -174,15 +186,16 @@ export default function CoinCove({ childId, nickname = 'friend', onExit }: CoinC
     playSfx('fanfare');
     speakAs(HOST, `Treasure counted, ${nickname}! You counted ${ROUNDS_PER_GAME} piles of coins! You earned ${stars} stars!`);
     await session.complete({ stars, mistakes, extraMetadata: { rounds: ROUNDS_PER_GAME } });
-  }, [childId, nickname, mistakes, session]);
+  }, [nickname, mistakes, session]);
 
   const pickChoice = (choice: number) => {
-    if (!question || phase !== 'play' || picked !== null) return;
-    session.recordAnswer(choice === question.answer, { level: question.level + 1, itemKey: roundIndex });
-    if (choice === question.answer) {
-      setPicked(choice);
-      playSfx('fanfare');
-      speakAs(HOST, `Yes! ${spokenCents(choice)}! Great counting, ${nickname}!`);
+    if (!question || phase !== 'play' || teaching.state.mode === 'correct') return;
+    const correct = choice === question.answer;
+    // With the running total shown the child is counting WITH support, so it
+    // is weaker evidence: one level lower than an unsupported count.
+    session.recordAnswer(correct, { level: scaffoldTotal ? question.level : question.level + 1, itemKey: roundIndex });
+    teaching.judge(correct, String(choice), moneyLines(question), question.choices.length);
+    if (correct) {
       later(CELEBRATE_MS, () => {
         if (roundIndex + 1 < ROUNDS_PER_GAME) {
           startRound(roundIndex + 1, Date.now() + (roundIndex + 1) * 7919);
@@ -191,98 +204,19 @@ export default function CoinCove({ childId, nickname = 'friend', onExit }: CoinC
         }
       });
     } else {
-      playSfx('wrong');
       setMistakes((m) => m + 1);
-      setShakeId(choice);
-      speakAs(HOST, 'Not quite. Count the coins again — tap each one slowly.');
-      later(650, () => setShakeId((s) => (s === choice ? null : s)));
     }
   };
 
-  return (
-    <KidShell onExit={onExit} points={phase === 'won' ? starBalance : 0}>
-      {phase === 'intro' && (
-        <div className="flex w-full max-w-xl flex-col items-center px-4 text-center">
-          <h1 className="animate-kid-rise text-3xl font-black text-kid-ink-900 md:text-5xl">Coin Cove</h1>
-          <p className="animate-kid-rise mt-2 text-lg font-bold text-kid-ink-700 md:text-xl" style={{ animationDelay: '0.1s' }}>
-            Milo found a treasure chest! Tap each coin to count it, then say how much money we have.
-          </p>
-          <button
-            type="button"
-            onClick={startGame}
-            className="animate-kid-rise mt-6 min-h-[72px] rounded-full bg-kid-sun-400 px-10 py-4 text-2xl font-black text-kid-ink-900 shadow-xl transition-transform hover:scale-105 active:scale-95"
-            style={{ animationDelay: '0.2s' }}
-          >
-            Count the treasure
-          </button>
-        </div>
-      )}
+  if (phase === 'intro') {
+    return (
+      <GameIntro title="Coin Cove" say={HOW_TO} host={HOST} profile={profile} onStart={startGame} onExit={onExit} startLabel="Count the treasure" />
+    );
+  }
 
-      {phase === 'play' && question && (
-        <div className="flex w-full max-w-2xl flex-col items-center px-4">
-          <div className="flex w-full items-center justify-between gap-2">
-            <div className="rounded-full bg-white/85 px-4 py-2 shadow-lg backdrop-blur">
-              <span className="text-base font-black text-kid-ink-900 md:text-lg">Coin Cove</span>
-              <span className="ml-2 text-sm font-bold text-kid-ink-700">with Milo</span>
-            </div>
-            <div className="rounded-full bg-white/85 px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg backdrop-blur md:text-lg">
-              {roundIndex + 1} / {ROUNDS_PER_GAME}
-            </div>
-          </div>
-
-          <div className="mt-4 flex w-full flex-col items-center gap-3">
-            <p className="text-center text-2xl font-black text-kid-ink-900 md:text-3xl">
-              {allCounted ? 'How much money is it?' : 'Tap each coin to count it'}
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4" role="group" aria-label="Coins to count">
-              {question.coins.map((coin, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => tapCoin(i)}
-                  disabled={counted[i]}
-                  aria-label={counted[i] ? `${COIN_DEFS[coin].name} counted` : `Count the ${COIN_DEFS[coin].name}`}
-                  className="min-h-[72px] min-w-[72px] rounded-full p-1 transition-transform active:scale-90 disabled:cursor-default"
-                  style={{ transform: counted[i] ? 'scale(0.92)' : undefined }}
-                >
-                  <CoinArt coin={coin} counted={counted[i]} />
-                </button>
-              ))}
-            </div>
-            <div
-              className="rounded-full bg-white/85 px-6 py-2 text-xl font-black tabular-nums text-kid-ink-900 shadow-lg backdrop-blur md:text-2xl"
-              aria-live="polite"
-            >
-              Counted so far: {countedTotal}¢
-            </div>
-
-            {allCounted && (
-              <div className="mt-2 flex flex-col gap-3" role="group" aria-label="Total choices">
-                {question.choices.map((choice) => (
-                  <button
-                    key={choice}
-                    type="button"
-                    onClick={() => pickChoice(choice)}
-                    disabled={picked !== null}
-                    aria-label={`${choice} cents`}
-                    className={`min-h-[72px] min-w-[180px] rounded-kid-card border-4 px-8 py-3 text-3xl font-black tabular-nums shadow-xl transition-transform active:scale-95 ${
-                      picked === choice
-                        ? 'border-kid-sun-400 bg-kid-sun-200 text-kid-ink-900'
-                        : shakeId === choice
-                          ? 'animate-kid-shake border-kid-coral-500 bg-white text-kid-ink-900'
-                          : 'border-kid-sky-300 bg-white text-kid-ink-900 hover:scale-105'
-                    }`}
-                  >
-                    {choice}¢
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {phase === 'won' && (
+  if (phase === 'won') {
+    return (
+      <KidShell onExit={onExit} points={starBalance}>
         <GameWinScreen
           stars={starsEarned}
           nickname={nickname}
@@ -292,7 +226,70 @@ export default function CoinCove({ childId, nickname = 'friend', onExit }: CoinC
           onPlayAgain={startGame}
           onExit={onExit}
         />
-      )}
-    </KidShell>
+      </KidShell>
+    );
+  }
+
+  if (!question) return null;
+  const showTally = scaffoldTotal || teaching.state.mode === 'show';
+  return (
+    <GameFrame
+      title="Coin Cove"
+      host={HOST}
+      profile={profile}
+      onExit={onExit}
+      progress={{ current: roundIndex + 1, total: ROUNDS_PER_GAME }}
+      prompt={
+        allCounted
+          ? { text: 'How much money is it?', say: 'How much money is it? Tap the right amount.' }
+          : { text: 'Tap each coin to count it', say: 'Tap each coin to count it.' }
+      }
+      teaching={teaching.state}
+      tray={
+        allCounted ? (
+          <AnswerTray label="Total choices">
+            {question.choices.map((choice) => (
+              <ChoiceCard
+                key={choice}
+                say={spokenCents(choice)}
+                state={choiceStateFor(teaching.state, String(choice), String(question.answer))}
+                onPick={() => pickChoice(choice)}
+                minHeight={profile.minTarget}
+                host={HOST}
+              >
+                <span className="tabular-nums">{choice}¢</span>
+              </ChoiceCard>
+            ))}
+          </AnswerTray>
+        ) : undefined
+      }
+    >
+      <div className="flex flex-col items-center gap-4">
+        <div
+          className="flex flex-wrap items-center justify-center gap-3 rounded-kid-card bg-white/70 p-4 shadow-xl md:gap-4"
+          role="group"
+          aria-label="Coins to count"
+        >
+          {question.coins.map((coin, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => tapCoin(i)}
+              disabled={counted[i]}
+              aria-label={counted[i] ? `${COIN_DEFS[coin].name} counted` : `Count the ${COIN_DEFS[coin].name}`}
+              className="kid-press flex items-center justify-center rounded-full p-1 disabled:cursor-default"
+              style={{ minWidth: profile.minTarget, minHeight: profile.minTarget }}
+            >
+              <CoinArt coin={coin} counted={counted[i]} />
+            </button>
+          ))}
+        </div>
+        {showTally && (
+          <div className="rounded-full bg-white px-6 py-2 text-2xl font-black tabular-nums text-kid-ink-900 shadow-lg" aria-live="polite">
+            {teaching.state.mode === 'show' ? `Total: ${question.answer}¢` : `Counted so far: ${countedTotal}¢`}
+          </div>
+        )}
+      </div>
+    </GameFrame>
   );
 }

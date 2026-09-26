@@ -117,3 +117,29 @@ export function generateQuestion(level: TimeLevel, seed: number): TimeQuestion {
     spoken: spokenTime(hour, minute),
   };
 }
+
+/**
+ * Teaching lines for a clock: the hint points at the right hand to read, the
+ * worked example reads the clock out loud step by step (short hand first,
+ * then the long hand), ending on the answer the child then taps.
+ */
+export function timeLines(q: TimeQuestion): { hint: string; explain: string; praise: string } {
+  const hourWord = HOUR_WORDS[q.hour] ?? `${q.hour}`;
+  const nextHour = q.hour === 12 ? 1 : q.hour + 1;
+  const nextWord = HOUR_WORDS[nextHour] ?? `${nextHour}`;
+  const hint =
+    q.minute === 0
+      ? 'Look at the short hand first. The short hand tells the hour. Where is the long hand pointing?'
+      : 'Look at the long hand. Is it pointing to 12, 3, 6, or 9? Then find the short hand.';
+  let explain: string;
+  if (q.minute === 0) {
+    explain = `The short hand points to ${hourWord}. The long hand points straight up to 12. That means ${q.spoken}. That is ${q.answer}.`;
+  } else if (q.minute === 30) {
+    explain = `The long hand points down to 6. That means thirty, or half past. The short hand is just past ${hourWord}. So it is ${q.spoken}. That is ${q.answer}.`;
+  } else if (q.minute === 15) {
+    explain = `The long hand points to 3. That means fifteen, or quarter past. The short hand is just past ${hourWord}. So it is ${q.spoken}. That is ${q.answer}.`;
+  } else {
+    explain = `The long hand points to 9. That means forty five, or quarter to. The short hand is almost at ${nextWord}, so it is still ${hourWord}. It is ${q.spoken}. That is ${q.answer}.`;
+  }
+  return { hint, explain, praise: `Yes! It's ${q.spoken}!` };
+}

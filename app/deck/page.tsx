@@ -17,10 +17,17 @@ export default async function DeckPage() {
 
   const { data } = await supabase
     .from('children')
-    .select('id, nickname, avatar_id')
+    .select('id, nickname, avatar_id, age_band')
     .eq('id', active.childId)
     .single();
   if (!data) redirect('/profiles');
+  // A parent can set an age-band override (e.g. a 4-year-old reading early).
+  const { data: settings } = await supabase
+    .from('parent_settings')
+    .select('age_band_override')
+    .eq('child_id', data.id)
+    .maybeSingle();
+  const ageBand = settings?.age_band_override ?? data.age_band;
 
   let plan: ServerPlanItem[] = [];
   try {
@@ -32,7 +39,7 @@ export default async function DeckPage() {
 
   return (
     <DeckClient
-      child={{ id: data.id, nickname: data.nickname, avatarId: data.avatar_id }}
+      child={{ id: data.id, nickname: data.nickname, avatarId: data.avatar_id, ageBand }}
       initialSteps={plan.map(toPlannedStep)}
       sessionId={active.sessionId}
       onExit={endSessionAndSwitch}

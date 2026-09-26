@@ -1,12 +1,16 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { AttemptResult, PlannedStep, SessionChild } from '@/lib/kid/types';
 import { getSessionPlan, submitActivityAttempt, logLearningEvent } from '@/app/actions/learning';
 import { awardStickers, getChildStickers, awardStars, getStarBalance } from '@/app/actions/rewards';
 import { checkTrophies } from '@/app/actions/trophies';
 import type { Trophy } from '@/lib/kid/trophies';
-import { getIslandProgress } from '@/app/actions/progress';
+import { getHomeSnapshot, getIslandProgress } from '@/app/actions/progress';
+import { ageProfile } from '@/lib/kid/age-profile';
+import { buildGarden, type SkillMasterySnapshot } from '@/lib/kid/garden';
+import { buildToday, daySeed, type PathStop } from '@/lib/kid/today';
+import TodayHome from './today-home';
 import { getTrailState, getTrailPlan, completeTrailQuest, recordDailyActivity, bumpQuestProgress, type TrailState } from '@/app/actions/trail';
 import TrailBanner from './trail-banner';
 import QuestIntro from './quest-intro';
@@ -15,6 +19,7 @@ import SplashIntro from './splash-intro';
 import StreakCalendar from './streak-calendar';
 import {
   GAME_GROUPS,
+  GAME_REGISTRY,
   GameCard,
   GameOverlay,
   gamesForGroup,
@@ -62,7 +67,8 @@ export interface SessionPlayerProps {
   onReplay: () => void;
 }
 
-type Phase = 'intro' | 'map' | 'islandIntro' | 'trailIntro' | 'playing' | 'complete' | 'goodbye';
+// 'map' is the Today home; 'explore' is the full hub (islands, Sky Park, trail, gifts).
+type Phase = 'intro' | 'map' | 'explore' | 'islandIntro' | 'trailIntro' | 'playing' | 'complete' | 'goodbye';
 
 /** Welcome intro: Captain Curio's video fills the screen, UI floats on top. */
 function Intro({ child, onStart }: { child: SessionChild; onStart: () => void }) {
@@ -351,6 +357,37 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
   const [talkWith, setTalkWith] = useState<string | null>(null);
   const [openGame, setOpenGame] = useState<string | null>(null);
   const [parkTab, setParkTab] = useState<GameGroupId>('reading');
+  // Today home: age profile, mastery snapshot, and which path stops are done.
+  const profile = ageProfile(child.ageBand);
+  const [snapshot, setSnapshot] = useState<SkillMasterySnapshot[] | null>(null);
+  const doneKey = `sky-today-done-${child.id}-${daySeed(new Date())}`;
+  const [doneStops, setDoneStops] = useState<string[]>(() => {
+    try {
+      const raw = typeof window !== 'undefined' ? window.localStorage.getItem(doneKey) : null;
+      const parsed: unknown = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed.filter((k): k is string => typeof k === 'string') : [];
+    } catch {
+      return [];
+    }
+  });
+  const activeStop = useRef<string | null>(null);
+  const markStopDone = useCallback(
+    (key: string | null) => {
+      if (!key) return;
+      activeStop.current = null;
+      setDoneStops((prev) => {
+        if (prev.includes(key)) return prev;
+        const next = [...prev, key];
+        try {
+          window.localStorage.setItem(doneKey, JSON.stringify(next));
+        } catch {
+          /* per-device convenience only */
+        }
+        return next;
+      });
+    },
+    [doneKey]
+  );
   const resultsRef = useRef<AttemptResult[]>([]);
 
   // Browser back button closes an open game overlay instead of leaving the deck.
@@ -390,7 +427,7 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
 
   // Load island progress + sticker book + trail state whenever the map shows.
   useEffect(() => {
-    if (phase !== 'map') return;
+    if (phase !== 'map' && phase !== 'explore') return;
     void getIslandProgress(child.id)
       .then((list) => {
         const map: Record<string, { mastered: number; total: number }> = {};
@@ -411,6 +448,36 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
       /* corrupted placement data — skip the quest */
     }
   }, [phase, child.id]);
+
+  // Mastery snapshot for today's path and the garden (refreshed on every return home).
+  useEffect(() => {
+    if (phase !== 'map') return;
+    void getHomeSnapshot(child.id)
+      .then(setSnapshot)
+      .catch(() => setSnapshot((prev) => prev ?? []));
+  }, [phase, child.id]);
+
+  const todayPlan = useMemo(
+    () =>
+      snapshot === null
+        ? null
+        : buildToday({ profile, games: GAME_REGISTRY, skills: snapshot, now: new Date() }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- profile is derived from child.ageBand
+    [snapshot, child.ageBand]
+  );
+  const garden = useMemo(
+    () => (snapshot === null ? null : buildGarden(profile.gardenSubjects, snapshot)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- profile is derived from child.ageBand
+    [snapshot, child.ageBand]
+  );
+
+  // A game opened from today's path counts as done when the child comes back.
+  const prevOpenGame = useRef<string | null>(null);
+  useEffect(() => {
+    const was = prevOpenGame.current;
+    prevOpenGame.current = openGame;
+    if (was && !openGame && activeStop.current === `game-${was}`) markStopDone(activeStop.current);
+  }, [openGame, markStopDone]);
 
   const activeSteps = islandSteps ?? steps;
   const step = activeSteps[index];
@@ -448,6 +515,7 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
         playSfx('whoosh');
       } else {
         setPhase('complete');
+        if (activeStop.current === 'lesson') markStopDone('lesson');
         playSfx('fanfare');
         const earnedCount = resultsRef.current.filter((r) => r.correct).length;
         const totalPoints = resultsRef.current.reduce((s, r) => s + r.pointsEarned, 0);
@@ -531,7 +599,7 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
         }
       }
     },
-    [child.id, child.nickname, index, activeSteps.length, sessionId, step?.hostCharacter, questMode, trailStop]
+    [child.id, child.nickname, index, activeSteps.length, sessionId, step?.hostCharacter, questMode, trailStop, markStopDone]
   );
 
   const startIslandSession = useCallback(
@@ -610,6 +678,13 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
     }
   };
 
+  const startStop = (stop: PathStop) => {
+    activeStop.current = stop.key;
+    if (stop.kind === 'lesson') void startIslandSession(null);
+    else if (stop.kind === 'story') setPickingLibrary('story');
+    else if (stop.gameId) setOpenGame(stop.gameId);
+  };
+
   const backToMap = () => {
     setPhase('map');
     setIndex(0);
@@ -631,7 +706,7 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
       doneCount={stars}
       totalSteps={activeSteps.length}
       points={(walletBalance ?? 0) + points}
-      onExit={phase === 'playing' || phase === 'map' || phase === 'trailIntro' ? onExit : undefined}
+      onExit={phase === 'playing' || phase === 'map' || phase === 'explore' || phase === 'trailIntro' ? onExit : undefined}
       hideHud={openGame !== null}
       hudId="outer"
     >
@@ -647,8 +722,31 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
       <PhaseTransition transitionKey={phase} className="flex w-full flex-col items-center">
       {phase === 'intro' && <Intro child={child} onStart={() => setPhase('map')} />}
       {phase === 'map' && (
+        <TodayHome
+          nickname={child.nickname}
+          profile={profile}
+          plan={todayPlan}
+          garden={garden}
+          done={doneStops}
+          onStartStop={startStop}
+          onOpenGame={(id) => setOpenGame(id)}
+          onExplore={() => setPhase('explore')}
+        />
+      )}
+      {phase === 'explore' && (
         <>
           <div className="relative z-10 flex w-full flex-col items-center gap-5">
+          <button
+            type="button"
+            onClick={() => {
+              playSfx('whoosh');
+              setPhase('map');
+            }}
+            className="kid-press self-start rounded-full border-b-4 border-kid-ink-700 bg-white px-6 py-3 text-lg font-black text-kid-ink-900 shadow-lg"
+            aria-label="Back to today"
+          >
+            ← Today
+          </button>
           <SeasonalDecor />
           <OfflineBanner />
           <TrailBanner trail={trailState} onStartQuest={() => void startTrailQuest()} starting={startingQuest} />
@@ -765,9 +863,13 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
       {activeStory && (
         <Storybook
           story={activeStory}
-          onDone={() => setActiveStory(null)}
+          onDone={() => {
+            setActiveStory(null);
+            if (activeStop.current === 'story') markStopDone('story');
+          }}
           onFinish={() => {
             setActiveStory(null);
+            if (activeStop.current === 'story') markStopDone('story');
             // Finishing a story earns the Bookworm sticker + feeds the Bookworm daily quest!
             // After 6pm local time it also earns the Night Owl bedtime-story sticker.
             void bumpQuestProgress(child.id, 'story_read', 1).catch(() => {});

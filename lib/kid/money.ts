@@ -103,3 +103,22 @@ export function generateQuestion(level: MoneyLevel, seed: number): MoneyQuestion
   const choices = [answer, ...distractors(answer, rng)].sort(() => rng() - 0.5);
   return { level, coins, choices, answer };
 }
+
+/**
+ * Teaching lines for a coin pile. The strategy taught is "start with the
+ * biggest coin, then count on": the worked example skip-counts the pile in
+ * that order, saying each running total, and ends on the answer.
+ */
+export function moneyLines(q: MoneyQuestion): { hint: string; explain: string; praise: string } {
+  const values = q.coins.map((c) => COIN_DEFS[c].value).sort((a, b) => b - a);
+  const running: number[] = [];
+  values.reduce((sum, v) => {
+    running.push(sum + v);
+    return sum + v;
+  }, 0);
+  return {
+    hint: 'Start with the biggest coin. Say its value, then count on with the next coin.',
+    explain: `Let's count together, biggest coin first: ${running.join(', ')}. That is ${spokenCents(q.answer)}.`,
+    praise: `Yes! ${spokenCents(q.answer)}!`,
+  };
+}

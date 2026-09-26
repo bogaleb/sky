@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useRef, type ReactNode } from 'react';
 import type { SessionChild } from '@/lib/kid/types';
+import type { AgeBand } from '@/lib/planner/types';
 import { playSfx } from '@/lib/kid/audio';
 import { GAME_ART } from './game-art';
 
@@ -93,68 +94,73 @@ export interface GameEntry {
   hidden?: boolean;
 }
 
-const byId = (childId: string, nickname: string, onExit: () => void) => ({ childId, nickname, onExit });
+const byId = (childId: string, nickname: string, onExit: () => void, ageBand?: AgeBand) => ({
+  childId,
+  nickname,
+  onExit,
+  ageBand,
+});
 
 export const GAME_REGISTRY: GameEntry[] = [
   {
     id: 'words', title: 'Word Builder', sub: 'spell magic words', color: 'sky', group: 'reading', art: 'Words',
-    render: (c, n, x) => <WordBuilder {...byId(c.id, n, x)} />,
+    render: (c, n, x) => <WordBuilder {...byId(c.id, n, x, c.ageBand)} />,
   },
   {
     id: 'writing', title: 'Letter Lab', sub: 'trace your ABCs', color: 'mint', group: 'reading', art: 'Writing',
-    render: (c, n, x) => <LetterLab {...byId(c.id, n, x)} />,
+    render: (c, n, x) => <LetterLab {...byId(c.id, n, x, c.ageBand)} />,
   },
   {
     id: 'phonics', title: 'Phonics Fun', sub: 'blend the sounds', color: 'coral', group: 'reading', art: 'Phonics',
-    render: (c, n, x) => <PhonicsFun {...byId(c.id, n, x)} />,
+    render: (c, n, x) => <PhonicsFun {...byId(c.id, n, x, c.ageBand)} />,
   },
   {
     id: 'sentences', title: 'Sentence Studio', sub: 'build super sentences', color: 'sky', group: 'reading', art: 'Sentences',
-    render: (c, n, x) => <SentenceStudio {...byId(c.id, n, x)} />,
+    render: (c, n, x) => <SentenceStudio {...byId(c.id, n, x, c.ageBand)} />,
   },
   {
     id: 'opposites', title: 'Opposites Attic', sub: 'words that are opposites', color: 'grape', group: 'reading', art: 'Opposites',
-    render: (c, n, x) => <OppositesAttic {...byId(c.id, n, x)} />,
+    render: (c, n, x) => <OppositesAttic {...byId(c.id, n, x, c.ageBand)} />,
   },
   {
     id: 'rhymes', title: 'Rhyme Time', sub: 'words that chime', color: 'coral', group: 'reading', art: 'Rhymes',
-    render: (c, n, x) => <RhymeTime {...byId(c.id, n, x)} />,
+    render: (c, n, x) => <RhymeTime {...byId(c.id, n, x, c.ageBand)} />,
   },
   {
     id: 'numbers', title: 'Number Run', sub: 'race with math', color: 'mint', group: 'numbers', art: 'Numbers',
-    render: (c, n, x) => <NumberRun {...byId(c.id, n, x)} />,
+    render: (c, n, x) => <NumberRun {...byId(c.id, n, x, c.ageBand)} />,
   },
   {
     id: 'pattern', title: 'Pattern Parade', sub: 'finish the pattern', color: 'mint', group: 'numbers', art: 'Pattern',
-    render: (c, n, x) => <PatternParade {...byId(c.id, n, x)} />,
+    render: (c, n, x) => <PatternParade {...byId(c.id, n, x, c.ageBand)} />,
   },
   {
     id: 'time', title: 'Clock Tower', sub: 'tell the time', color: 'grape', group: 'numbers', art: 'Time',
-    render: (c, n, x) => <ClockTower {...byId(c.id, n, x)} />,
+    render: (c, n, x) => <ClockTower {...byId(c.id, n, x, c.ageBand)} />,
   },
   {
     id: 'money', title: 'Coin Cove', sub: 'count coins', color: 'mint', group: 'numbers', art: 'Money',
-    render: (c, n, x) => <CoinCove {...byId(c.id, n, x)} />,
+    render: (c, n, x) => <CoinCove {...byId(c.id, n, x, c.ageBand)} />,
   },
   {
     id: 'fractions', title: 'Fraction Fair', sub: 'halves, thirds, quarters', color: 'coral', group: 'numbers', art: 'Fractions',
-    render: (c, n, x) => <FractionFair {...byId(c.id, n, x)} />,
+    render: (c, n, x) => <FractionFair {...byId(c.id, n, x, c.ageBand)} />,
   },
   {
     id: 'measure', title: 'Measure Meadow', sub: 'longer, taller, heavier', color: 'mint', group: 'numbers', art: 'Measure',
-    render: (c, n, x) => <MeasureMeadow {...byId(c.id, n, x)} />,
+    render: (c, n, x) => <MeasureMeadow {...byId(c.id, n, x, c.ageBand)} />,
   },
   {
     id: 'coding', title: 'Coding Cove', sub: 'guide Milo home', color: 'mint', group: 'numbers', art: 'Coding',
-    render: (c, n, x) => <CodingCove {...byId(c.id, n, x)} />,
+    render: (c, n, x) => <CodingCove {...byId(c.id, n, x, c.ageBand)} />,
   },
   {
     id: 'geography', title: 'World Tour', sub: 'explore with Atlas', color: 'coral', group: 'world', art: 'Geography',
-    render: (c, n, x) => <WorldTour {...byId(c.id, n, x)} />,
+    render: (c, n, x) => <WorldTour {...byId(c.id, n, x, c.ageBand)} />,
   },
   {
     id: 'science', title: 'Science Lab', sub: 'try experiments', color: 'sky', group: 'world', art: 'Science',
-    render: (c, n, x) => <ScienceLab {...byId(c.id, n, x)} />,
+    render: (c, n, x) => <ScienceLab {...byId(c.id, n, x, c.ageBand)} />,
   },
   {
     id: 'encyclopedia', title: 'Animal Book', sub: 'collect critters', color: 'sky', group: 'world', art: 'Encyclopedia',
@@ -162,19 +168,19 @@ export const GAME_REGISTRY: GameEntry[] = [
   },
   {
     id: 'colors', title: 'Color Mix Lab', sub: 'mix magic colors', color: 'grape', group: 'world', art: 'Colors',
-    render: (c, n, x) => <ColorMixLab {...byId(c.id, n, x)} />,
+    render: (c, n, x) => <ColorMixLab {...byId(c.id, n, x, c.ageBand)} />,
   },
   {
     id: 'rhythm', title: 'Rhythm Studio', sub: 'tap the beat', color: 'grape', group: 'create', art: 'Rhythm',
-    render: (c, n, x) => <RhythmStudio {...byId(c.id, n, x)} />,
+    render: (c, n, x) => <RhythmStudio {...byId(c.id, n, x, c.ageBand)} />,
   },
   {
     id: 'studio', title: 'Creative Studio', sub: 'draw and color', color: 'grape', group: 'create', art: 'Studio',
-    render: (c, n, x) => <CreativeStudio {...byId(c.id, n, x)} />,
+    render: (c, n, x) => <CreativeStudio {...byId(c.id, n, x, c.ageBand)} />,
   },
   {
     id: 'movies', title: 'Movie Studio', sub: 'direct cartoons', color: 'coral', group: 'create', art: 'Movies',
-    render: (c, n, x) => <MovieStudio {...byId(c.id, n, x)} />,
+    render: (c, n, x) => <MovieStudio {...byId(c.id, n, x, c.ageBand)} />,
   },
   {
     id: 'cinema', title: 'Story Cinema', sub: 'watch cartoons', color: 'coral', group: 'create', art: 'Cinema',
@@ -182,11 +188,11 @@ export const GAME_REGISTRY: GameEntry[] = [
   },
   {
     id: 'bedtime', title: 'Bedtime', sub: 'wind down', color: 'sky', group: 'calm', art: 'Bedtime',
-    render: (c, n, x) => <Bedtime {...byId(c.id, n, x)} />,
+    render: (c, n, x) => <Bedtime {...byId(c.id, n, x, c.ageBand)} />,
   },
   {
     id: 'feelings', title: 'Feelings Theater', sub: 'name big feelings', color: 'mint', group: 'calm', art: 'Feelings',
-    render: (c, n, x) => <FeelingsTheater {...byId(c.id, n, x)} />,
+    render: (c, n, x) => <FeelingsTheater {...byId(c.id, n, x, c.ageBand)} />,
   },
   {
     id: 'memory', title: 'Memory Cove', sub: 'a matching game', color: 'grape', group: 'play', art: 'Memory',
@@ -194,11 +200,11 @@ export const GAME_REGISTRY: GameEntry[] = [
   },
   {
     id: 'puzzle', title: 'Puzzle Reef', sub: 'build the picture', color: 'sky', group: 'play', art: 'Puzzle',
-    render: (c, n, x) => <PuzzleReef {...byId(c.id, n, x)} />,
+    render: (c, n, x) => <PuzzleReef {...byId(c.id, n, x, c.ageBand)} />,
   },
   {
     id: 'homes', title: 'Character Homes', sub: 'visit friends', color: 'sky', group: 'play', art: 'Homes',
-    render: (c, n, x) => <CharacterHomes {...byId(c.id, n, x)} />,
+    render: (c, n, x) => <CharacterHomes {...byId(c.id, n, x, c.ageBand)} />,
   },
   {
     id: 'playground', title: 'Pet Playground', sub: 'play with your pet', color: 'sky', group: 'play', art: 'Playground',

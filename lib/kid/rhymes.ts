@@ -21,7 +21,7 @@ export const RHYME_SETS: RhymeSet[] = [
   { family: '-ed', prompt: 'bed', rhymes: ['red', 'fed', 'sled', 'bread'], nonRhymes: ['sun', 'map', 'kite', 'drum'] },
   { family: '-ake', prompt: 'cake', rhymes: ['bake', 'lake', 'rake', 'snake'], nonRhymes: ['pig', 'top', 'van', 'box'] },
   { family: '-ight', prompt: 'light', rhymes: ['night', 'right', 'kite', 'bright'], nonRhymes: ['ball', 'nest', 'drum', 'fox'] },
-  { family: '-un', prompt: 'sun', rhymes: ['run', 'fun', 'bun', 'drum'], nonRhymes: ['cat', 'pig', 'leaf', 'rock'] },
+  { family: '-un', prompt: 'sun', rhymes: ['run', 'fun', 'bun', 'spun'], nonRhymes: ['cat', 'pig', 'leaf', 'rock'] },
   { family: '-ell', prompt: 'bell', rhymes: ['well', 'shell', 'yell', 'tell'], nonRhymes: ['dog', 'fish', 'cup', 'cake'] },
   { family: '-op', prompt: 'top', rhymes: ['hop', 'pop', 'mop', 'stop'], nonRhymes: ['pen', 'bug', 'nest', 'van'] },
   { family: '-an', prompt: 'pan', rhymes: ['can', 'fan', 'man', 'van'], nonRhymes: ['dog', 'cup', 'leaf', 'box'] },
@@ -61,6 +61,8 @@ export interface RhymeRound {
   choices: string[];
   /** The one rhyming word. */
   answer: string;
+  /** Word family, e.g. '-at'. */
+  family: string;
 }
 
 function shuffled<T>(items: T[], rng: () => number): T[] {
@@ -78,7 +80,7 @@ export function roundFromSet(set: RhymeSet, seed: number): RhymeRound {
   const answer = set.rhymes[Math.floor(rng() * set.rhymes.length)];
   const distractPool = shuffled(set.nonRhymes, rng).slice(0, 2);
   const choices = shuffled([answer, ...distractPool], rng);
-  return { prompt: set.prompt, choices, answer };
+  return { prompt: set.prompt, choices, answer, family: set.family };
 }
 
 /** 8 rounds from 8 different rhyme sets, deterministic for a seed. */
@@ -86,4 +88,20 @@ export function pickSession(seed: number): RhymeRound[] {
   const rng = mulberry32(seed);
   const order = shuffled(RHYME_SETS.map((_, i) => i), rng).slice(0, ROUNDS_PER_GAME);
   return order.map((setIndex, i) => roundFromSet(RHYME_SETS[setIndex], seed + i * 7919));
+}
+
+/**
+ * Teaching lines for a rhyme round: a hint that points at the ending sound
+ * (never the answer), and a worked example that models the comparison.
+ */
+export function rhymeLines(round: RhymeRound): { hint: string; explain: string; praise: string } {
+  const ending = round.family.replace(/^-/, '');
+  const spelledSame = round.answer.endsWith(ending) && round.prompt.endsWith(ending);
+  return {
+    hint: `Say ${round.prompt} slowly. Listen to the end of the word. Which word ends with that sound too?`,
+    explain: spelledSame
+      ? `Listen: ${round.prompt}, ${round.answer}. They both end with ${ending}. So ${round.answer} rhymes with ${round.prompt}. Now you tap ${round.answer}!`
+      : `Listen: ${round.prompt}, ${round.answer}. They end with the same sound. So ${round.answer} rhymes with ${round.prompt}. Now you tap ${round.answer}!`,
+    praise: `Yes! ${round.prompt} and ${round.answer} rhyme!`,
+  };
 }
