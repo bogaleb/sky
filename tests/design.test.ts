@@ -121,16 +121,19 @@ describe('SkyBackdrop', () => {
 });
 
 describe('KidShell upgrade', () => {
-  it('keeps the exact props API and renders the glass HUD', () => {
+  it('keeps the exact props API and renders the compact HUD', () => {
     const src = readFileSync(shellPath, 'utf8');
     expect(src).toContain('doneCount');
     expect(src).toContain('totalSteps');
     expect(src).toContain('points');
     expect(src).toContain('onExit');
+    expect(src).toContain('hideHud');
+    expect(src).toContain('hudId');
     expect(src).toContain('SkyBackdrop');
-    expect(src).toContain('glass-kid');
     expect(src).toContain('btn-kid-coral');
     expect(src).toContain('font-display');
+    // Compact HUD: single-row, sky-tinted, non-covering (redesigned per user feedback).
+    expect(src).toContain('data-kid-hud');
     // Mute behavior preserved.
     expect(src).toContain('toggleMute');
     expect(src).toContain("aria-label={muted ? 'Turn sound on' : 'Turn sound off'}");

@@ -581,3 +581,9 @@ body {
     animation: none;
   }
 }
+
+/* Double-HUD fix: when a game overlay is open, hide the outer KidShell header.
+   The game's own KidShell header (inside the fixed overlay) remains visible. */
+body[data-sky-game-open] [data-kid-hud="outer"] {
+  display: none !important;
+}

@@ -37,7 +37,8 @@ export interface CharacterHome {
 
 /** Clips that actually shipped in public/videos/. */
 const AVAILABLE_CLIPS = new Set([
-  'curio-home',
+  // 'curio-home' disabled: video file contains a monkey, not Curio the Fox.
+  // Falls back to the correct SVG fox avatar until the video is regenerated.
   'nova-home',
   'luna-home',
   'milo-home',

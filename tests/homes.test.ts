@@ -32,12 +32,16 @@ describe('character homes', () => {
     expect(ids).toEqual([...CHARACTER_IDS].sort());
   });
 
-  it('every home has a name, tagline, greeting and clip', () => {
+  it('every home has a name, tagline, greeting and clip (curio clip disabled: wrong video content)', () => {
     for (const h of HOMES) {
       expect(h.homeName.trim().length).toBeGreaterThan(0);
       expect(h.tagline.trim().length).toBeGreaterThan(0);
       expect(h.greeting.trim().length).toBeGreaterThan(0);
-      expect(h.clipSrc).toBe(`/videos/${h.characterId}-home.mp4`);
+      if (h.characterId === 'curio') {
+        expect(h.clipSrc).toBeNull();
+      } else {
+        expect(h.clipSrc).toBe(`/videos/${h.characterId}-home.mp4`);
+      }
     }
   });
 

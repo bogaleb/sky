@@ -327,6 +327,7 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
   const [index, setIndex] = useState(0);
   const [points, setPoints] = useState(0);
   const [stars, setStars] = useState(0);
+  const [walletBalance, setWalletBalance] = useState<number | null>(null);
   const [mood, setMood] = useState<CharacterMood>('idle');
   const [island, setIsland] = useState<Island | null>(null);
   const [islandSteps, setIslandSteps] = useState<PlannedStep[] | null>(null);
@@ -351,6 +352,41 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
   const [openGame, setOpenGame] = useState<string | null>(null);
   const [parkTab, setParkTab] = useState<GameGroupId>('reading');
   const resultsRef = useRef<AttemptResult[]>([]);
+
+  // Browser back button closes an open game overlay instead of leaving the deck.
+  // When a game opens we push a history entry; popstate closes the overlay.
+  // A ref tracks whether the close came from the back button (popstate) vs.
+  // the in-app UI (Escape/button), so we only undo the push in the latter case.
+  // Also sets a body attribute so CSS can hide the outer HUD (double-HUD fix).
+  const gameCloseFromPop = useRef(false);
+  useEffect(() => {
+    if (openGame === null) {
+      document.body.removeAttribute('data-sky-game-open');
+      return;
+    }
+    document.body.setAttribute('data-sky-game-open', 'true');
+    gameCloseFromPop.current = false;
+    window.history.pushState({ skyGame: openGame }, '', `${window.location.pathname}#game-${openGame}`);
+    const onPop = () => {
+      gameCloseFromPop.current = true;
+      setOpenGame(null);
+    };
+    window.addEventListener('popstate', onPop);
+    return () => {
+      window.removeEventListener('popstate', onPop);
+      // In-app close (not the back button): undo our push so back skips the game.
+      if (!gameCloseFromPop.current && window.location.hash.startsWith('#game-')) {
+        window.history.back();
+      }
+    };
+  }, [openGame]);
+
+  // Load the real star wallet balance on mount so the HUD shows the child's actual stars.
+  useEffect(() => {
+    void getStarBalance(child.id)
+      .then(({ balance }) => setWalletBalance(balance))
+      .catch(() => {});
+  }, [child.id]);
 
   // Load island progress + sticker book + trail state whenever the map shows.
   useEffect(() => {
@@ -590,11 +626,14 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
   };
 
   return (
+    <>
     <KidShell
       doneCount={stars}
       totalSteps={activeSteps.length}
-      points={points}
+      points={(walletBalance ?? 0) + points}
       onExit={phase === 'playing' || phase === 'map' || phase === 'trailIntro' ? onExit : undefined}
+      hideHud={openGame !== null}
+      hudId="outer"
     >
       <SplashIntro onDone={() => {}} />
       {loadingIsland && (
@@ -693,12 +732,6 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
           </div>
         </>
       )}
-      {(() => {
-        const entry = getGame(openGame);
-        return entry ? (
-          <GameOverlay entry={entry} child={child} nickname={child.nickname} onClose={() => setOpenGame(null)} />
-        ) : null;
-      })()}
       {showWelcome && (
         <WelcomeQuest childId={child.id} nickname={child.nickname} onDone={() => setShowWelcome(false)} />
       )}
@@ -855,5 +888,14 @@ export default function SessionPlayer({ child, steps, sessionId, onExit, onRepla
       {phase === 'goodbye' && <Goodbye child={child} onDone={onExit} />}
       </PhaseTransition>
     </KidShell>
+    {/* Game overlay rendered outside KidShell (and PhaseTransition) so position:fixed
+        is viewport-relative, not broken by ancestor transforms. */}
+    {(() => {
+      const entry = getGame(openGame);
+      return entry ? (
+        <GameOverlay entry={entry} child={child} nickname={child.nickname} onClose={() => setOpenGame(null)} />
+      ) : null;
+    })()}
+    </>
   );
 }

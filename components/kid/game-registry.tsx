@@ -384,7 +384,7 @@ export function GameOverlay({
       aria-modal="true"
       aria-label={entry.title}
       tabIndex={-1}
-      className="fixed inset-0 z-50 overflow-y-auto outline-none"
+      className="fixed inset-0 z-50 overflow-y-auto bg-kid-sky-200 outline-none"
     >
       {entry.render(child, nickname, onClose)}
     </div>
