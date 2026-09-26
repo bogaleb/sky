@@ -13,6 +13,7 @@ import type {
   SessionPlan,
   SkillInfo,
 } from '@/lib/planner/types';
+import { GAME_ATTEMPT_BATCH, isGameSkillCode, type GameAttempt } from '@/lib/kid/game-skills';
 
 // ---------------------------------------------------------------------------
 // Authorization helper: the child must belong to the signed-in parent.
@@ -221,6 +222,41 @@ export async function submitActivityAttempt(
     currentLevel: r.current_level,
     leveledUp: r.leveled_up,
   };
+}
+
+// ---------------------------------------------------------------------------
+// recordGameAttempts: per-answer evidence from Sky Park games. Feeds the same
+// skill_mastery rules as submit_attempt (see record_game_attempts in
+// 20260926000100_game_learning.sql). Items are validated here and again in
+// the database.
+// ---------------------------------------------------------------------------
+
+export async function recordGameAttempts(
+  childId: string,
+  gameId: string,
+  attempts: GameAttempt[],
+  sessionId?: string
+): Promise<number> {
+  if (!/^[a-z0-9_-]{1,40}$/.test(gameId)) throw new Error('Invalid game.');
+  const clean = attempts
+    .filter((a) => a && typeof a.correct === 'boolean' && isGameSkillCode(String(a.skill)))
+    .slice(0, GAME_ATTEMPT_BATCH)
+    .map((a) => ({
+      skill: a.skill,
+      correct: a.correct,
+      ...(Number.isFinite(a.level) ? { level: Math.min(5, Math.max(1, Math.round(a.level!))) } : {}),
+      ...(Number.isFinite(a.latency_ms) ? { latency_ms: Math.max(0, Math.round(a.latency_ms!)) } : {}),
+    }));
+  if (clean.length === 0) return 0;
+  const { supabase, child } = await requireChild(childId);
+  const { data, error } = await supabase.rpc('record_game_attempts', {
+    p_child_id: child.id,
+    p_game_id: gameId,
+    p_attempts: clean as never,
+    p_session_id: sessionId ?? null,
+  });
+  if (error || !data) throw new Error('Could not record game practice.');
+  return (data as { recorded?: number }).recorded ?? clean.length;
 }
 
 // ---------------------------------------------------------------------------

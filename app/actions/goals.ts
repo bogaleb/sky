@@ -1,5 +1,6 @@
 'use server';
 
+import { requireParentZone } from '@/lib/parent-zone';
 import { createClient } from '@/lib/supabase/server';
 import { weekStartMonday, clampTarget, goalReached, type GoalProgress } from '@/lib/kid/goals';
 import { awardStickers } from './rewards';
@@ -54,6 +55,7 @@ async function goalProgressInternal(supabase: Db, childId: string): Promise<Goal
 /** Set (or replace) this week's activity target for a child. */
 export async function setWeeklyGoal(childId: string, target: number): Promise<GoalProgress> {
   const supabase = await requireChild(childId);
+  await requireParentZone(supabase);
   const safeTarget = clampTarget(target);
   const weekStart = weekStartMonday();
   const { error } = await supabase.from('parent_goals').upsert(

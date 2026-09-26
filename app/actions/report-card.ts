@@ -1,5 +1,6 @@
 'use server';
 
+import { requireParentZone } from '@/lib/parent-zone';
 import { createClient } from '@/lib/supabase/server';
 import { starsFromMastery } from '@/lib/kid/mastery';
 
@@ -60,6 +61,7 @@ async function requireChild(childId: string) {
  */
 export async function getSkillMastery(childId: string): Promise<SkillMasteryRow[]> {
   const supabase = await requireChild(childId);
+  await requireParentZone(supabase);
 
   const [{ data: skills }, { data: subjectRows }, { data: masteryRows }] = await Promise.all([
     supabase.from('skills').select('id, subject_code, code, name, sort_order').order('sort_order'),

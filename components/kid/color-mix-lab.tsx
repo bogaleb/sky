@@ -97,6 +97,7 @@ export default function ColorMixLab({ childId, nickname = 'friend', onExit }: Co
     stickerId: 'color-wizard',
     trophyEvent: 'color_done',
     milestone: 'color_lab_win',
+    learning: { gameId: 'color-mix-lab', skill: 'experiments' },
   });
   const starBalance = session.starBalance ?? 0;
   const timers = useRef<number[]>([]);
@@ -199,6 +200,7 @@ export default function ColorMixLab({ childId, nickname = 'friend', onExit }: Co
   const pickChoice = (choice: ColorId) => {
     if (!question || celebrating) return;
     speakAs(HOST, choice);
+    session.recordAnswer(choice === question.answer, { itemKey: `${roundIndex}-${question.a}-${question.b}` });
     if (choice === question.answer) {
       setCelebrating(true);
       playSfx('correct');

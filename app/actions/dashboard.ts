@@ -1,5 +1,6 @@
 'use server';
 
+import { isParentZoneUnlocked, lockParentZone, requireParentZone, unlockParentZone } from '@/lib/parent-zone';
 import { createClient } from '@/lib/supabase/server';
 import { buildWeeklyDigest } from '@/lib/parent/digest';
 import type {
@@ -36,6 +37,7 @@ async function requireParent() {
 
 export async function getDashboardData(): Promise<ChildDashboard[]> {
   const { supabase, userId } = await requireParent();
+  await requireParentZone(supabase);
 
   const { data: children, error: childError } = await supabase
     .from('children')
@@ -333,13 +335,26 @@ export async function getDashboardData(): Promise<ChildDashboard[]> {
 // Parent-zone PIN gate: verify the PIN server-side (hash never leaves the DB).
 // ---------------------------------------------------------------------------
 
-/** Returns true when the PIN matches. Rate-limited by pin_attempts in the DB. */
+/**
+ * Returns true when the PIN matches, and binds a 20-minute parent-zone grant
+ * to this device (httpOnly cookie). Rate-limited by pin_attempts in the DB.
+ */
 export async function verifyParentZonePin(pin: string): Promise<boolean> {
   if (!/^\d{4,6}$/.test(pin)) return false;
   const { supabase } = await requireParent();
-  const { data, error } = await supabase.rpc('verify_parent_pin', { pin });
-  if (error) return false;
-  return data === true;
+  return unlockParentZone(supabase, pin);
+}
+
+/** Whether this device still holds a live parent-zone grant. */
+export async function parentZoneUnlocked(): Promise<boolean> {
+  const { supabase } = await requireParent();
+  return isParentZoneUnlocked(supabase);
+}
+
+/** Lock the parent zone on this device (revokes the server-side grant). */
+export async function lockParentZoneAction(): Promise<void> {
+  const { supabase } = await requireParent();
+  await lockParentZone(supabase);
 }
 
 // ---------------------------------------------------------------------------
@@ -356,6 +371,7 @@ function weekStartDate(): string {
 
 export async function getWeeklyDigest(childId: string): Promise<WeeklyDigest> {
   const { supabase, userId } = await requireParent();
+  await requireParentZone(supabase);
 
   // Child must belong to this parent.
   const { data: child } = await supabase

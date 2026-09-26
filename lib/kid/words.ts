@@ -146,3 +146,12 @@ export function pictogramFor(word: string): Pictogram {
 export function hasPictogram(word: string): boolean {
   return pictogramKey(word) !== undefined;
 }
+
+/**
+ * The build_words level a spelling item is evidence for: CVC words are level
+ * 2 ("three-letter words from letter tiles"); blends, digraphs and sight
+ * words are level 3.
+ */
+export function buildWordsLevel(entry: WordEntry): number {
+  return entry.level === 1 ? 2 : 3;
+}

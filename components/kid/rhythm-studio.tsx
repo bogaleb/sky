@@ -414,7 +414,7 @@ export default function RhythmStudio({ childId, nickname, onExit }: RhythmStudio
             Rhythm Studio
           </h1>
           <p className="animate-kid-rise mt-2 text-center text-lg font-bold text-kid-ink-700 md:text-xl" style={{ animationDelay: '0.1s' }}>
-            Riff's band is warming up! Pick a tune and tap along with the beat.
+            Riff&apos;s band is warming up! Pick a tune and tap along with the beat.
           </p>
           <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 md:gap-4">
             {TUNES.map((t, i) => {

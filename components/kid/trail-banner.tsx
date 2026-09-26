@@ -88,7 +88,7 @@ export default function TrailBanner({
         {/* Daily quests */}
         {trail.quests.length > 0 && (
           <div className="border-t-2 border-dashed border-kid-sky-100 px-5 py-3">
-            <p className="mb-2 text-xs font-black uppercase tracking-widest text-kid-ink-500">Today's quests</p>
+            <p className="mb-2 text-xs font-black uppercase tracking-widest text-kid-ink-500">Today&apos;s quests</p>
             <div className="flex flex-col gap-1.5">
               {trail.quests.map((q) => (
                 <div key={q.id} className="flex items-center gap-2 text-sm">

@@ -264,6 +264,7 @@ export default function MeasureMeadow({ childId, nickname = 'friend', onExit }: 
     stickerId: 'measure-master',
     trophyEvent: 'measure_done',
     milestone: 'measure_meadow_win',
+    learning: { gameId: 'measure-meadow', skill: 'measurement' },
   });
   const starBalance = session.starBalance ?? 0;
   const [shakeId, setShakeId] = useState<number | null>(null);
@@ -325,6 +326,11 @@ export default function MeasureMeadow({ childId, nickname = 'friend', onExit }: 
   const pickOption = (id: number) => {
     if (!question || phase !== 'play' || picked !== null) return;
     const option = question.options[id];
+    // Two options is "compares two things" (level 1); three or more is ordering (level 2).
+    session.recordAnswer(id === question.answer, {
+      level: question.options.length <= 2 ? 1 : 2,
+      itemKey: roundIndex,
+    });
     if (id === question.answer) {
       setPicked(id);
       playSfx('correct');

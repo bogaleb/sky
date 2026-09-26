@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   generateRound,
   levelForRound,
+  skillForRound,
   ROUNDS_PER_GAME,
   DOT_POSITIONS,
   type NumberRound,
@@ -11,7 +12,6 @@ import {
 } from '@/lib/kid/numbers';
 import {
   levelFor,
-  recordResult,
   adaptiveRamp,
   placementSeedLevel,
   type DifficultyLevel,
@@ -224,11 +224,12 @@ export default function NumberRun({ childId, nickname = 'friend', onExit }: Numb
     stickerId: 'number-ninja',
     trophyEvent: 'number_done',
     milestone: 'number_run_win',
+    learning: { gameId: 'number-run', skill: 'count' },
   });
   const starBalance = session.starBalance ?? 0;
   // Adaptive difficulty (ZPD): round difficulty follows the child's level.
   const [adaptLevel, setAdaptLevel] = useState<DifficultyLevel>(() =>
-    levelFor('number-run', placementSeedLevel(childId))
+    levelFor(childId, 'number-run', placementSeedLevel(childId))
   );
   const timers = useRef<number[]>([]);
 
@@ -264,7 +265,7 @@ export default function NumberRun({ childId, nickname = 'friend', onExit }: Numb
     timers.current.forEach((t) => window.clearTimeout(t));
     timers.current = [];
     // Re-read the adaptive level each game so recent results reshape content.
-    const level = levelFor('number-run', placementSeedLevel(childId));
+    const level = levelFor(childId, 'number-run', placementSeedLevel(childId));
     setAdaptLevel(level);
     const levels = adaptiveRamp(baseRamp, level);
     setRoundIndex(0);
@@ -301,8 +302,8 @@ export default function NumberRun({ childId, nickname = 'friend', onExit }: Numb
   const choose = useCallback(
     (value: number) => {
       if (picked || phase !== 'play') return;
-      // Feed the adaptive engine: every answer is a signal.
-      recordResult('number-run', value === round.answer);
+      // Every answer is evidence: feeds skill mastery and adaptive difficulty.
+      session.recordAnswer(value === round.answer, { ...skillForRound(round), itemKey: `${gameSeed}-${roundIndex}` });
       const nextAttempts = attempts + 1;
       setAttempts(nextAttempts);
       if (value === round.answer) {
@@ -331,7 +332,7 @@ export default function NumberRun({ childId, nickname = 'friend', onExit }: Numb
         later(750, () => setPicked(null));
       }
     },
-    [picked, phase, attempts, round, roundIndex, roundLevels, correctCount, gameSeed, later, handleWin]
+    [picked, phase, attempts, round, roundIndex, roundLevels, correctCount, gameSeed, later, handleWin, session]
   );
 
   const speakQuestion = useCallback(() => {

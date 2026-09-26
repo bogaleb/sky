@@ -49,6 +49,7 @@ export default function SentenceStudio({ childId, nickname = 'friend', onExit }:
     stickerId: 'sentence-scribe',
     trophyEvent: 'sentence_done',
     milestone: 'sentence_studio_win',
+    learning: { gameId: 'sentence-studio', skill: 'write_sentences' },
   });
   const starBalance = session.starBalance ?? 0;
   const timers = useRef<number[]>([]);
@@ -133,6 +134,8 @@ export default function SentenceStudio({ childId, nickname = 'friend', onExit }:
     if (celebrating || phase !== 'play' || !round) return;
     if (placed.length !== round.words.length) return;
     const correct = placed.every((t, i) => t.id === round.answer[i]);
+    // Building a sentence from a word bank: write_sentences level 2–3.
+    session.recordAnswer(correct, { level: round.level === 1 ? 2 : 3, itemKey: `${roundIndex}-${round.sentence}` });
     if (correct) {
       setCelebrating(true);
       playSfx('fanfare');

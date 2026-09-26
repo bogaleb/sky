@@ -7,11 +7,11 @@ import {
   phonicsForLevel,
   PHONICS_RAMP,
   PHONICS_PER_GAME,
+  skillForPhonics,
   type PhonicsEntry,
 } from '@/lib/kid/phonics';
 import {
   levelFor,
-  recordResult,
   adaptiveRamp,
   pickAdaptiveItems,
   placementSeedLevel,
@@ -83,11 +83,12 @@ export default function PhonicsFun({ childId, nickname = 'friend', onExit }: Pho
     stickerId: 'sound-sleuth',
     trophyEvent: 'phonics_done',
     milestone: 'phonics_fun_win',
+    learning: { gameId: 'phonics-fun', skill: 'blending' },
   });
   const starBalance = session.starBalance ?? 0;
   // Adaptive difficulty (ZPD): content difficulty follows the child's level.
   const [adaptLevel, setAdaptLevel] = useState<DifficultyLevel>(() =>
-    levelFor('phonics-fun', placementSeedLevel(childId))
+    levelFor(childId, 'phonics-fun', placementSeedLevel(childId))
   );
   const timers = useRef<number[]>([]);
 
@@ -135,7 +136,7 @@ export default function PhonicsFun({ childId, nickname = 'friend', onExit }: Pho
   const startGame = useCallback(() => {
     const seed = Date.now();
     // Re-read the adaptive level each game so recent results reshape content.
-    const level = levelFor('phonics-fun', placementSeedLevel(childId));
+    const level = levelFor(childId, 'phonics-fun', placementSeedLevel(childId));
     setAdaptLevel(level);
     const picked = pickAdaptiveItems(
       [phonicsForLevel(1), phonicsForLevel(2), phonicsForLevel(3)],
@@ -210,8 +211,8 @@ export default function PhonicsFun({ childId, nickname = 'friend', onExit }: Pho
 
   const pickChoice = (choice: PhonicsEntry) => {
     if (!item || celebrating || roundPhase !== 'match') return;
-    // Feed the adaptive engine: every word choice is a signal.
-    recordResult('phonics-fun', choice.word === item.word);
+    // Every word choice is evidence: feeds skill mastery and adaptive difficulty.
+    session.recordAnswer(choice.word === item.word, { ...skillForPhonics(item), itemKey: `${itemIndex}-${item.word}` });
     // Every tap previews the word aloud so non-readers can play.
     speakAs(HOST, choice.word);
     if (choice.word === item.word) {

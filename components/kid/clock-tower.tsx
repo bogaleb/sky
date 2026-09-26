@@ -102,6 +102,7 @@ export default function ClockTower({ childId, nickname = 'friend', onExit }: Clo
     stickerId: 'time-keeper',
     trophyEvent: 'time_done',
     milestone: 'clock_tower_win',
+    learning: { gameId: 'clock-tower', skill: 'telling_time' },
   });
   const starBalance = session.starBalance ?? 0;
   const [picked, setPicked] = useState<string | null>(null);
@@ -162,6 +163,8 @@ export default function ClockTower({ childId, nickname = 'friend', onExit }: Clo
   const pickChoice = (choice: string) => {
     if (!question || phase !== 'play') return;
     setAttempts((a) => a + 1);
+    // Hour / half past / quarter clocks are telling_time levels 2 / 3 / 4.
+    session.recordAnswer(choice === question.answer, { level: question.level + 1, itemKey: roundIndex });
     if (choice === question.answer) {
       setPicked(choice);
       playSfx('fanfare');

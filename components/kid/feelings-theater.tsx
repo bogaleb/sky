@@ -175,6 +175,7 @@ export default function FeelingsTheater({ childId, nickname = 'friend', onExit }
     stickerId: 'feelings-friend',
     trophyEvent: 'feelings_done',
     milestone: 'feelings_theater_win',
+    learning: { gameId: 'feelings-theater', skill: 'emotions' },
   });
   const starBalance = session.starBalance ?? 0;
   const [didBreathe, setDidBreathe] = useState(false);
@@ -228,6 +229,12 @@ export default function FeelingsTheater({ childId, nickname = 'friend', onExit }
   const choose = useCallback(
     (index: number) => {
       if (picked !== null || !round) return;
+      // Naming a face is emotions level 2; picking a calm-down idea is calm_down level 2.
+      session.recordAnswer(index === round.answerIndex, {
+        skill: round.kind === 'name' ? 'emotions' : 'calm_down',
+        level: 2,
+        itemKey: roundIndex,
+      });
       if (index === round.answerIndex) {
         setPicked(index);
         playSfx('correct');
@@ -244,7 +251,7 @@ export default function FeelingsTheater({ childId, nickname = 'friend', onExit }
         window.setTimeout(() => setWrongPick(null), 1200);
       }
     },
-    [picked, round, nickname, advance]
+    [picked, round, nickname, advance, roundIndex, session]
   );
 
   const resumeAfterBreathe = useCallback(() => {

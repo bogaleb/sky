@@ -125,7 +125,7 @@ function countRound(rng: Rng): NumberRound {
 }
 
 function compareRound(rng: Rng): NumberRound {
-  let a = int(rng, 2, 6);
+  const a = int(rng, 2, 6);
   let b = int(rng, 2, 6);
   while (b === a) b = int(rng, 2, 6);
   const big = Math.max(a, b);
@@ -223,5 +223,28 @@ export function generateRound(level: number, seed: number): NumberRound {
       return subtractRound(rng);
     default:
       return missingRound(rng);
+  }
+}
+
+/**
+ * The skill (and its 1–5 level) a round is evidence for, per the math
+ * taxonomy descriptors: e.g. "Adds within 5 using objects" is add level 2,
+ * "Adds within 10" is add level 3.
+ */
+export function skillForRound(round: NumberRound): { skill: 'count' | 'compare_order' | 'add' | 'subtract'; level: number } {
+  switch (round.kind) {
+    case 'count':
+      return { skill: 'count', level: round.answer <= 5 ? 1 : round.answer <= 10 ? 2 : 3 };
+    case 'compare':
+      return { skill: 'compare_order', level: round.answer <= 5 ? 2 : 3 };
+    case 'add':
+      return { skill: 'add', level: round.answer <= 5 ? 2 : round.answer <= 10 ? 3 : 4 };
+    case 'subtract': {
+      const start = round.dots[0]?.count ?? round.answer;
+      return { skill: 'subtract', level: start <= 5 ? 2 : start <= 10 ? 3 : 4 };
+    }
+    case 'missing':
+      // Filling a gap in a number line is ordering numbers (level 3: "Puts numbers 1 to 10 in order").
+      return { skill: 'compare_order', level: 3 };
   }
 }

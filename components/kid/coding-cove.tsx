@@ -194,7 +194,11 @@ export default function CodingCove({ childId, nickname, onExit }: CodingCoveProp
   const [levelDone, setLevelDone] = useState(false);
   // Per-level wins log 'coding_cove_level' with no quest/sticker/trophy;
   // the full-cove completion logs 'coding_cove_win' with the rewards.
-  const levelSession = useGameSession({ childId, milestone: 'coding_cove_level' });
+  const levelSession = useGameSession({
+    childId,
+    milestone: 'coding_cove_level',
+    learning: { gameId: 'coding-cove', skill: 'sequencing' },
+  });
   const session = useGameSession({
     childId,
     gameKey: 'coding_game',
@@ -317,6 +321,8 @@ export default function CodingCove({ childId, nickname, onExit }: CodingCoveProp
 
     later(result.path.length * STEP_MS + 200, () => {
       setRunning(false);
+      // The first run of each maze is the evidence: did the plan work?
+      levelSession.recordAnswer(result.outcome === 'goal', { itemKey: `level-${level}` });
       if (result.outcome === 'goal') {
         void handleLevelWin(level, queue.length);
       } else if (result.outcome === 'crash') {
@@ -339,7 +345,7 @@ export default function CodingCove({ childId, nickname, onExit }: CodingCoveProp
         });
       }
     });
-  }, [running, levelDone, queue, level, later, handleLevelWin]);
+  }, [running, levelDone, queue, level, later, handleLevelWin, levelSession]);
 
   const milo: RunStep =
     runPath.length > 0 ? runPath[Math.min(animIdx, runPath.length - 1)] : { ...level.start };

@@ -69,11 +69,12 @@ describe('parent glow-up design contract', () => {
 });
 
 describe('parent flows unchanged (visual pass only)', () => {
-  it('keeps the PIN gate logic byte-identical', () => {
+  it('keeps the PIN gate flow, now enforced server-side (Wave 11)', () => {
     expect(pinGate).toContain('verifyParentZonePin');
-    expect(pinGate).toContain("sessionStorage.setItem('sky_parent_zone', 'unlocked')");
     expect(pinGate).toContain('/^\\d{4,6}$/');
     expect(pinGate).toContain('onUnlocked()');
+    // No client-side unlock flag: a sessionStorage value is not a gate.
+    expect(pinGate).not.toContain('sessionStorage');
   });
 
   it('keeps auth form behavior and server actions', () => {

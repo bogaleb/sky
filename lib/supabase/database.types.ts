@@ -560,6 +560,27 @@ export interface Database {
         };
         Returns: string;
       };
+      record_game_attempts: {
+        Args: {
+          p_child_id: string;
+          p_game_id: string;
+          p_attempts: Json;
+          p_session_id?: string | null;
+        };
+        Returns: Json;
+      };
+      unlock_parent_zone: {
+        Args: { pin: string; p_token_hash: string };
+        Returns: boolean;
+      };
+      parent_zone_is_unlocked: {
+        Args: { p_token_hash: string };
+        Returns: boolean;
+      };
+      lock_parent_zone: {
+        Args: { p_token_hash: string };
+        Returns: undefined;
+      };
     };
     Enums: {
       [_ in never]: never;

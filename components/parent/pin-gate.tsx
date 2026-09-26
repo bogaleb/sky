@@ -6,8 +6,9 @@ import SkyBackdrop from '@/components/kid/sky-backdrop';
 
 /**
  * Parent-zone PIN gate. The parent enters their 4-6 digit PIN to unlock
- * the dashboard on this device. Verified server-side via verify_parent_pin —
- * the hash never leaves the database. Unlock lasts for this tab session.
+ * the dashboard on this device. Verified server-side via unlock_parent_zone —
+ * the hash never leaves the database — which binds a 20-minute grant to this
+ * device's httpOnly cookie. Parent-only server actions require that grant.
  */
 export default function PinGate({ onUnlocked }: { onUnlocked: () => void }) {
   const [pin, setPin] = useState('');
@@ -28,7 +29,6 @@ export default function PinGate({ onUnlocked }: { onUnlocked: () => void }) {
         setPin('');
         return;
       }
-      sessionStorage.setItem('sky_parent_zone', 'unlocked');
       onUnlocked();
     } catch {
       setError('Something went wrong. Try again.');

@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { pickSession, ROUNDS_PER_GAME, type OppositeRound } from '@/lib/kid/opposites';
+import { oppositeSkillLevel, pickSession, ROUNDS_PER_GAME, type OppositeRound } from '@/lib/kid/opposites';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
 import { useGameSession, GameWinScreen } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
@@ -103,6 +103,7 @@ export default function OppositesAttic({ childId, nickname = 'friend', onExit }:
     stickerId: 'opposites-ace',
     trophyEvent: 'opposites_done',
     milestone: 'opposites_attic_win',
+    learning: { gameId: 'opposites-attic', skill: 'vocabulary' },
   });
   const starBalance = session.starBalance ?? 0;
   // Match-round state: tapped cards and found pairs.
@@ -178,6 +179,10 @@ export default function OppositesAttic({ childId, nickname = 'friend', onExit }:
     if (!round || round.kind !== 'ask' || celebrating) return;
     // Every tap previews the word aloud so non-readers can play.
     speakAs(HOST, choice);
+    session.recordAnswer(choice === round.answer, {
+      level: oppositeSkillLevel(round.word),
+      itemKey: `${roundIndex}-${round.word}`,
+    });
     if (choice === round.answer) {
       setCelebrating(true);
       playSfx('correct');
@@ -217,12 +222,15 @@ export default function OppositesAttic({ childId, nickname = 'friend', onExit }:
       playSfx('correct');
       if (newlyFound.length >= round.cards.length) {
         setCelebrating(true);
+        session.recordAnswer(true, { level: oppositeSkillLevel(first), itemKey: `${roundIndex}-match` });
         speakAs(HOST, `Amazing! You matched every opposite pair!`);
         later(CELEBRATE_MS, advance);
       } else {
         speakAs(HOST, `Yes! ${first} and ${word} are opposites! Find the next pair!`);
       }
     } else {
+      // A match round counts as one answer: correct only with no wrong pairing.
+      session.recordAnswer(false, { level: oppositeSkillLevel(first), itemKey: `${roundIndex}-match` });
       playSfx('wrong');
       setAttempts((a) => a + 1);
       setShakeKey(`${first}|${word}`);

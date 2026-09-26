@@ -149,6 +149,7 @@ export default function LetterLab({ childId, nickname = 'friend', onExit }: Lett
     stickerId: 'pen-pal',
     trophyEvent: 'writing_done',
     milestone: 'letter_lab_win',
+    learning: { gameId: 'letter-lab', skill: 'trace_letters' },
   });
   const starBalance = session.starBalance ?? 0;
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -334,7 +335,10 @@ export default function LetterLab({ childId, nickname = 'friend', onExit }: Lett
       speakAs(HOST, 'Trace the letter with your finger first!');
       return;
     }
-    if (letterPassed(letter, allPoints)) {
+    const passed = letterPassed(letter, allPoints);
+    // First trace per letter is the evidence (uppercase is level 2, lowercase 3).
+    session.recordAnswer(passed, { level: letter === letter.toUpperCase() ? 2 : 3, itemKey: `${index}-${letter}` });
+    if (passed) {
       playSfx('correct');
       setLetterPhase('celebrate');
       speakAs(HOST, `${ph.name}! ${ph.sound}, like ${ph.word}! Wonderful writing!`);
@@ -346,7 +350,7 @@ export default function LetterLab({ childId, nickname = 'friend', onExit }: Lett
       tryAgainRef.current++;
       speakAs(HOST, line);
     }
-  }, [letterPhase, kidStrokes, letter, ph, letters, index, later, advance]);
+  }, [letterPhase, kidStrokes, letter, ph, letters, index, later, advance, session]);
 
   const watchDone = useCallback(() => {
     setLetterPhase('trace');

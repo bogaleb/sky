@@ -204,6 +204,7 @@ export default function FractionFair({ childId, nickname = 'friend', onExit }: F
     stickerId: 'fraction-fan',
     trophyEvent: 'fraction_done',
     milestone: 'fraction_fair_win',
+    learning: { gameId: 'fraction-fair', skill: 'fractions' },
   });
   const starBalance = session.starBalance ?? 0;
   const [firstTryCorrect, setFirstTryCorrect] = useState(0);
@@ -286,13 +287,15 @@ export default function FractionFair({ childId, nickname = 'friend', onExit }: F
 
   const handleCorrect = useCallback(
     (firstTry: boolean) => {
+      // Halves are fractions level 2; thirds and fourths level 3.
+      session.recordAnswer(firstTry, { level: question.parts === 2 ? 2 : 3, itemKey: roundIndex });
       setFeedback('correct');
       if (firstTry) setFirstTryCorrect((c) => c + 1);
       playSfx('correct');
       speakAs('bea', `${PRAISE[Math.floor(Math.random() * PRAISE.length)]} That's ${fractionName(question.shaded, question.parts)}!`);
       later(1600, () => nextRound(firstTry));
     },
-    [later, nextRound, question],
+    [later, nextRound, question, roundIndex, session],
   );
 
   const handleWrong = useCallback(() => {

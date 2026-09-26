@@ -147,3 +147,13 @@ export function pickChoices(entry: PhonicsEntry, seed: number): PhonicsEntry[] {
   const all = [entry, ...distractors];
   return all.sort(() => rand() - 0.5);
 }
+
+/**
+ * The skill a phonics item is evidence for. CVC blends are blending level 3
+ * ("c-a-t = cat"), digraph blends are level 4 ("ship"); sight words are read
+ * whole, so they count toward sight_words (level 2: early common words).
+ */
+export function skillForPhonics(entry: PhonicsEntry): { skill: 'blending' | 'sight_words'; level: number } {
+  if (entry.level === 3) return { skill: 'sight_words', level: 2 };
+  return { skill: 'blending', level: entry.level === 2 ? 4 : 3 };
+}

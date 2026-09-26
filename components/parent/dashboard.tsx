@@ -5,6 +5,8 @@ import Link from 'next/link';
 import {
   getDashboardData,
   getWeeklyDigest,
+  lockParentZoneAction,
+  parentZoneUnlocked,
   type ChildDashboard,
   type WeeklyDigest,
 } from '@/app/actions/dashboard';
@@ -309,17 +311,11 @@ function ChildReport({ child }: { child: ChildDashboard }) {
 }
 
 /** The parent dashboard: PIN-gated learning reports, one tab per child. */
-export default function Dashboard() {
-  const [unlocked, setUnlocked] = useState(false);
+export default function Dashboard({ initiallyUnlocked = false }: { initiallyUnlocked?: boolean }) {
+  const [unlocked, setUnlocked] = useState(initiallyUnlocked);
   const [children, setChildren] = useState<ChildDashboard[] | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [error, setError] = useState('');
-
-  useEffect(() => {
-    if (sessionStorage.getItem('sky_parent_zone') === 'unlocked') {
-      setUnlocked(true);
-    }
-  }, []);
 
   useEffect(() => {
     if (!unlocked) return;
@@ -328,7 +324,16 @@ export default function Dashboard() {
         setChildren(data);
         if (data.length > 0) setActiveId(data[0].id);
       })
-      .catch(() => setError('Could not load reports. Check your connection and try again.'));
+      .catch(async () => {
+        // The server-side grant may have expired (20 min): ask for the PIN again.
+        // (Server action error messages are redacted in production, so ask.)
+        const stillUnlocked = await parentZoneUnlocked().catch(() => true);
+        if (!stillUnlocked) {
+          setUnlocked(false);
+          return;
+        }
+        setError('Could not load reports. Check your connection and try again.');
+      });
   }, [unlocked]);
 
   if (!unlocked) return <PinGate onUnlocked={() => setUnlocked(true)} />;
@@ -354,8 +359,9 @@ export default function Dashboard() {
           <button
             type="button"
             onClick={() => {
-              sessionStorage.removeItem('sky_parent_zone');
               setUnlocked(false);
+              setChildren(null);
+              void lockParentZoneAction();
             }}
             className="rounded-xl border border-parent-sky-200 bg-white px-5 py-2.5 font-bold text-parent-ink-600 transition-all hover:bg-parent-sky-50"
           >

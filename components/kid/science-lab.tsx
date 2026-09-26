@@ -606,6 +606,7 @@ export default function ScienceLab({ childId, nickname, onExit }: ScienceLabProp
     stickerId: 'jr-scientist',
     trophyEvent: 'science_done',
     milestone: 'science_lab_win',
+    learning: { gameId: 'science-lab', skill: 'experiments' },
   });
   const starBalance = session.starBalance ?? 0;
   const timers = useRef<number[]>([]);
@@ -676,9 +677,10 @@ export default function ScienceLab({ childId, nickname, onExit }: ScienceLabProp
   const handlePredict = useCallback(
     (option: ScienceOption) => {
       if (!trial || phase !== 'predict') return;
+      session.recordAnswer(option.id === trial.correctId, { itemKey: `${exp?.id}-${trial.id}` });
       goReveal(option.id === trial.correctId);
     },
-    [trial, phase, goReveal]
+    [trial, phase, goReveal, exp, session]
   );
 
   const handleOrderTap = useCallback(
@@ -690,16 +692,18 @@ export default function ScienceLab({ childId, nickname, onExit }: ScienceLabProp
         const next = [...order, stageId];
         setOrder(next);
         if (next.length === exp.stages.length) {
+          session.recordAnswer(true, { itemKey: `${exp.id}-stages` });
           later(500, () => goReveal(true));
         }
       } else {
+        session.recordAnswer(false, { itemKey: `${exp.id}-stages` });
         playSfx('wrong');
         setShakeKey(stageId);
         later(600, () => setShakeKey(null));
         speakAs(HOST, 'Hmm, not quite that one. Which step comes next?');
       }
     },
-    [exp, order, phase, later, goReveal]
+    [exp, order, phase, later, goReveal, session]
   );
 
   const nextStep = useCallback(() => {

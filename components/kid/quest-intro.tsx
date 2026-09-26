@@ -54,7 +54,7 @@ export default function QuestIntro({
           }}
           className="rounded-full bg-kid-coral-500 px-12 py-4 text-2xl font-black text-white shadow-xl transition-transform hover:scale-105 active:scale-95"
         >
-          Let's go!
+          Let&apos;s go!
         </button>
         <p className="mt-4 text-sm font-bold text-kid-ink-400">{charLine(island.hostCharacter, 'encouragement')}</p>
       </div>

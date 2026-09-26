@@ -17,6 +17,7 @@ export type DifficultyLevel = 1 | 2 | 3;
 export interface StorageLike {
   getItem(key: string): string | null;
   setItem(key: string, value: string): void;
+  removeItem?(key: string): void;
 }
 
 /** Games with adaptive difficulty wired in. */
@@ -33,7 +34,17 @@ interface AdaptRecord {
   results: boolean[];
 }
 
-export function adaptKey(gameId: string): string {
+/**
+ * Storage key for one child's adaptive record in one game. Scoped by child:
+ * siblings share an iPad, and a shared key made one child's results change
+ * the other's difficulty.
+ */
+export function adaptKey(childId: string, gameId: string): string {
+  return `sky-adapt-${childId}-${gameId}`;
+}
+
+/** Pre-Wave-11 key shared by every child on the device; removed on sight. */
+function legacyAdaptKey(gameId: string): string {
   return `sky-adapt-${gameId}`;
 }
 
@@ -43,11 +54,11 @@ function resolveStorage(storage?: StorageLike | null): StorageLike | null {
   return null;
 }
 
-function readRecord(gameId: string, storage?: StorageLike | null): AdaptRecord | null {
+function readRecord(childId: string, gameId: string, storage?: StorageLike | null): AdaptRecord | null {
   const store = resolveStorage(storage);
   if (!store) return null;
   try {
-    const raw = store.getItem(adaptKey(gameId));
+    const raw = store.getItem(adaptKey(childId, gameId));
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<AdaptRecord>;
     if (parsed.level !== 1 && parsed.level !== 2 && parsed.level !== 3) return null;
@@ -61,11 +72,12 @@ function readRecord(gameId: string, storage?: StorageLike | null): AdaptRecord |
   }
 }
 
-function writeRecord(gameId: string, record: AdaptRecord, storage?: StorageLike | null): void {
+function writeRecord(childId: string, gameId: string, record: AdaptRecord, storage?: StorageLike | null): void {
   const store = resolveStorage(storage);
   if (!store) return;
   try {
-    store.setItem(adaptKey(gameId), JSON.stringify(record));
+    store.setItem(adaptKey(childId, gameId), JSON.stringify(record));
+    store.removeItem?.(legacyAdaptKey(gameId));
   } catch {
     /* storage full or unavailable — adaptation simply stays put */
   }
@@ -76,13 +88,14 @@ function writeRecord(gameId: string, record: AdaptRecord, storage?: StorageLike 
  * Fire-and-forget; safe to call from event handlers.
  */
 export function recordResult(
+  childId: string,
   gameId: string,
   correct: boolean,
   storage?: StorageLike | null
 ): void {
-  const record = readRecord(gameId, storage) ?? { level: 1 as DifficultyLevel, results: [] };
+  const record = readRecord(childId, gameId, storage) ?? { level: 1 as DifficultyLevel, results: [] };
   record.results = [...record.results, correct].slice(-MAX_HISTORY);
-  writeRecord(gameId, record, storage);
+  writeRecord(childId, gameId, record, storage);
 }
 
 /**
@@ -97,13 +110,14 @@ export function recordResult(
  * from scratch.
  */
 export function levelFor(
+  childId: string,
   gameId: string,
   seedLevel: DifficultyLevel = 1,
   storage?: StorageLike | null
 ): DifficultyLevel {
-  const record = readRecord(gameId, storage);
+  const record = readRecord(childId, gameId, storage);
   if (!record || record.results.length === 0) {
-    writeRecord(gameId, { level: seedLevel, results: [] }, storage);
+    writeRecord(childId, gameId, { level: seedLevel, results: [] }, storage);
     return seedLevel;
   }
   const recent = record.results.slice(-WINDOW);
@@ -116,7 +130,7 @@ export function levelFor(
     next = (next - 1) as DifficultyLevel;
   }
   if (next !== record.level) {
-    writeRecord(gameId, { level: next, results: record.results }, storage);
+    writeRecord(childId, gameId, { level: next, results: record.results }, storage);
   }
   return next;
 }

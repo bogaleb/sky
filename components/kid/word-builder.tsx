@@ -7,11 +7,11 @@ import {
   wordsForLevel,
   LEVEL_RAMP,
   WORDS_PER_GAME,
+  buildWordsLevel,
   type WordEntry,
 } from '@/lib/kid/words';
 import {
   levelFor,
-  recordResult,
   adaptiveRamp,
   pickAdaptiveItems,
   placementSeedLevel,
@@ -63,13 +63,16 @@ export default function WordBuilder({ childId, nickname = 'friend', onExit }: Wo
     stickerId: 'word-wizard',
     trophyEvent: 'word_done',
     milestone: 'word_builder_win',
+    learning: { gameId: 'word-builder', skill: 'build_words' },
   });
   const starBalance = session.starBalance ?? 0;
   // Adaptive difficulty (ZPD): word difficulty follows the child's level.
   const [adaptLevel, setAdaptLevel] = useState<DifficultyLevel>(() =>
-    levelFor('word-builder', placementSeedLevel(childId))
+    levelFor(childId, 'word-builder', placementSeedLevel(childId))
   );
   const timers = useRef<number[]>([]);
+  /** Wrong tiles on the current word (one mastery answer per word). */
+  const wordMistakes = useRef(0);
 
   const later = useCallback((ms: number, fn: () => void) => {
     const id = window.setTimeout(() => {
@@ -99,6 +102,7 @@ export default function WordBuilder({ childId, nickname = 'friend', onExit }: Wo
       const tileList = entry.word.split('').map((letter, i) => ({ id: i, letter }));
       setTiles(seededShuffle(tileList, seed));
       setBuilt([]);
+      wordMistakes.current = 0;
       setCelebrating(false);
       setShakeId(null);
       speakWord(entry);
@@ -109,7 +113,7 @@ export default function WordBuilder({ childId, nickname = 'friend', onExit }: Wo
   const startGame = useCallback(() => {
     const seed = Date.now();
     // Re-read the adaptive level each game so recent results reshape content.
-    const level = levelFor('word-builder', placementSeedLevel(childId));
+    const level = levelFor(childId, 'word-builder', placementSeedLevel(childId));
     setAdaptLevel(level);
     const picked = pickAdaptiveItems(
       [wordsForLevel(1), wordsForLevel(2), wordsForLevel(3), wordsForLevel(4)],
@@ -142,14 +146,14 @@ export default function WordBuilder({ childId, nickname = 'friend', onExit }: Wo
   const tapTile = (tile: Tile) => {
     if (celebrating || phase !== 'play' || !word) return;
     const expected = word.word[built.length];
-    // Feed the adaptive engine: every tile tap is a signal.
-    recordResult('word-builder', tile.letter === expected);
     if (tile.letter === expected) {
       playSfx('click');
       const nextBuilt = [...built, tile];
       setBuilt(nextBuilt);
       setTiles((t) => t.filter((x) => x.id !== tile.id));
       if (nextBuilt.length === word.word.length) {
+        // One answer per word (not per tile): correct only if spelled cleanly.
+        session.recordAnswer(wordMistakes.current === 0, { level: buildWordsLevel(word) });
         setCelebrating(true);
         playSfx('fanfare');
         const spelledOut = `${word.word.split('').join('. ')}. ${word.word}!`;
@@ -166,6 +170,7 @@ export default function WordBuilder({ childId, nickname = 'friend', onExit }: Wo
       }
     } else {
       playSfx('wrong');
+      wordMistakes.current += 1;
       setMistakes((m) => m + 1);
       setShakeId(tile.id);
       speakAs(HOST, 'Try again! Find the next letter.');

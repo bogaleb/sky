@@ -1,5 +1,6 @@
 'use server';
 
+import { requireParentZone } from '@/lib/parent-zone';
 import { createClient } from '@/lib/supabase/server';
 import { tallyWeeklyEvents, weekKey, type WeeklyEventLike } from '@/lib/kid/showdown';
 
@@ -104,5 +105,6 @@ export async function getFamilyWeeklyStars(childId: string): Promise<FamilyWeekl
 /** Weekly totals for every child of the signed-in parent. */
 export async function getFamilyLeaderboard(): Promise<FamilyWeeklyRow[]> {
   const { supabase, userId } = await requireParent();
+  await requireParentZone(supabase);
   return familyWeeklyRows(supabase, userId);
 }

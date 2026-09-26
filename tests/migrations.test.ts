@@ -67,6 +67,7 @@ describe('migration files', () => {
       '20260925001000_collections.sql',
       '20260925001100_cleanup_dead_schema.sql',
       '20260925001200_fix_ensure_parent_profile.sql',
+      '20260926000100_game_learning.sql',
     ]);
   });
 });
@@ -132,7 +133,13 @@ describe('security definer RPCs', () => {
     (c) => c.match(/create or replace function public\.(\w+)\(/)?.[1] ?? '?'
   );
   // set_updated_at is a plain trigger helper, not a client-callable RPC.
-  const rpcChunks = fnChunks.filter((c) => !c.includes('function public.set_updated_at('));
+  // Internal SECURITY DEFINER helpers: called only from other RPCs, never by clients.
+  const INTERNAL_HELPERS = ['apply_skill_attempt'];
+  const rpcChunks = fnChunks.filter(
+    (c) =>
+      !c.includes('function public.set_updated_at(') &&
+      !INTERNAL_HELPERS.some((h) => c.includes(`function public.${h}(`))
+  );
   const rpcNames = rpcChunks.map(
     (c) => c.match(/create or replace function public\.(\w+)\(/)?.[1] ?? '?'
   );
@@ -154,6 +161,10 @@ describe('security definer RPCs', () => {
         'award_stars',
         'spend_stars',
         'bump_quest_progress',
+        'record_game_attempts',
+        'unlock_parent_zone',
+        'parent_zone_is_unlocked',
+        'lock_parent_zone',
       ].sort()
     );
   });
@@ -181,6 +192,14 @@ describe('security definer RPCs', () => {
         allSql.includes(`grant execute on function public.${name}(`),
         `${name} must be granted to authenticated`
       ).toBe(true);
+    }
+  });
+
+  it('internal helpers are revoked from clients and never granted', () => {
+    for (const h of INTERNAL_HELPERS) {
+      expect(allSql).toContain(`revoke all on function public.${h}(`);
+      expect(allSql).toMatch(new RegExp(`revoke all on function public\\.${h}\\([^)]*\\) from anon, authenticated, public`));
+      expect(allSql).not.toContain(`grant execute on function public.${h}(`);
     }
   });
 

@@ -24,6 +24,9 @@ function fakeStorage(): StorageLike & { data: Record<string, string> } {
     setItem: (k: string, v: string) => {
       data[k] = v;
     },
+    removeItem: (k: string) => {
+      delete data[k];
+    },
   };
 }
 
@@ -32,74 +35,90 @@ describe('adaptive difficulty engine', () => {
     expect([...ADAPTED_GAMES]).toEqual(['phonics-fun', 'word-builder', 'number-run']);
   });
 
-  it('namespaces storage keys per game', () => {
-    expect(adaptKey('phonics-fun')).toBe('sky-adapt-phonics-fun');
+  it('namespaces storage keys per child and game', () => {
+    expect(adaptKey('c1', 'phonics-fun')).toBe('sky-adapt-c1-phonics-fun');
+  });
+
+  it('keeps siblings on one device independent', () => {
+    const s = fakeStorage();
+    levelFor('big-sister', 'g', 1, s);
+    for (let i = 0; i < 5; i += 1) recordResult('big-sister', 'g', true, s);
+    expect(levelFor('big-sister', 'g', 1, s)).toBe(2);
+    // Her little brother's difficulty is untouched by her streak.
+    expect(levelFor('little-brother', 'g', 1, s)).toBe(1);
+  });
+
+  it('removes the old device-wide key when a child plays', () => {
+    const s = fakeStorage();
+    s.setItem('sky-adapt-g', JSON.stringify({ level: 3, results: [true] }));
+    expect(levelFor('kid', 'g', 1, s)).toBe(1);
+    expect(s.getItem('sky-adapt-g')).toBeNull();
   });
 
   it('new players start at the seed level', () => {
-    expect(levelFor('fresh-game', 1, fakeStorage())).toBe(1);
-    expect(levelFor('fresh-game', 2, fakeStorage())).toBe(2);
-    expect(levelFor('fresh-game', 3, fakeStorage())).toBe(3);
+    expect(levelFor('kid', 'fresh-game', 1, fakeStorage())).toBe(1);
+    expect(levelFor('kid', 'fresh-game', 2, fakeStorage())).toBe(2);
+    expect(levelFor('kid', 'fresh-game', 3, fakeStorage())).toBe(3);
   });
 
   it('levels up after 3 correct in the last 5', () => {
     const s = fakeStorage();
-    recordResult('g', true, s);
-    recordResult('g', true, s);
-    recordResult('g', true, s);
-    expect(levelFor('g', 1, s)).toBe(2);
+    recordResult('kid', 'g', true, s);
+    recordResult('kid', 'g', true, s);
+    recordResult('kid', 'g', true, s);
+    expect(levelFor('kid', 'g', 1, s)).toBe(2);
   });
 
   it('levels down after 3 wrong in the last 5', () => {
     const s = fakeStorage();
-    expect(levelFor('g', 2, s)).toBe(2); // seeds the record at level 2
-    recordResult('g', false, s);
-    recordResult('g', false, s);
-    recordResult('g', false, s);
-    expect(levelFor('g', 2, s)).toBe(1);
+    expect(levelFor('kid', 'g', 2, s)).toBe(2); // seeds the record at level 2
+    recordResult('kid', 'g', false, s);
+    recordResult('kid', 'g', false, s);
+    recordResult('kid', 'g', false, s);
+    expect(levelFor('kid', 'g', 2, s)).toBe(1);
   });
 
   it('stays put on mixed results', () => {
     const s = fakeStorage();
-    expect(levelFor('g', 2, s)).toBe(2);
-    recordResult('g', true, s);
-    recordResult('g', true, s);
-    recordResult('g', false, s);
-    recordResult('g', false, s);
-    expect(levelFor('g', 2, s)).toBe(2);
+    expect(levelFor('kid', 'g', 2, s)).toBe(2);
+    recordResult('kid', 'g', true, s);
+    recordResult('kid', 'g', true, s);
+    recordResult('kid', 'g', false, s);
+    recordResult('kid', 'g', false, s);
+    expect(levelFor('kid', 'g', 2, s)).toBe(2);
   });
 
   it('never exceeds level 3 or drops below level 1', () => {
     const up = fakeStorage();
-    expect(levelFor('u', 3, up)).toBe(3);
-    for (let i = 0; i < 8; i += 1) recordResult('u', true, up);
-    expect(levelFor('u', 3, up)).toBe(3);
+    expect(levelFor('kid', 'u', 3, up)).toBe(3);
+    for (let i = 0; i < 8; i += 1) recordResult('kid', 'u', true, up);
+    expect(levelFor('kid', 'u', 3, up)).toBe(3);
 
     const down = fakeStorage();
-    for (let i = 0; i < 8; i += 1) recordResult('d', false, down);
-    expect(levelFor('d', 1, down)).toBe(1);
+    for (let i = 0; i < 8; i += 1) recordResult('kid', 'd', false, down);
+    expect(levelFor('kid', 'd', 1, down)).toBe(1);
   });
 
   it('ratchets up across sessions and persists the level', () => {
     const s = fakeStorage();
-    for (let i = 0; i < 5; i += 1) recordResult('g', true, s);
-    expect(levelFor('g', 1, s)).toBe(2);
+    for (let i = 0; i < 5; i += 1) recordResult('kid', 'g', true, s);
+    expect(levelFor('kid', 'g', 1, s)).toBe(2);
     // The adjusted level is persisted — a fresh read sees it.
-    const stored = JSON.parse(s.data['sky-adapt-g']) as { level: number; results: boolean[] };
+    const stored = JSON.parse(s.data['sky-adapt-kid-g']) as { level: number; results: boolean[] };
     expect(stored.level).toBe(2);
     expect(stored.results).toEqual([true, true, true, true, true]);
     // Another strong session keeps challenging.
-    for (let i = 0; i < 5; i += 1) recordResult('g', true, s);
-    expect(levelFor('g', 1, s)).toBe(3);
+    for (let i = 0; i < 5; i += 1) recordResult('kid', 'g', true, s);
+    expect(levelFor('kid', 'g', 1, s)).toBe(3);
     // And it caps at 3.
-    for (let i = 0; i < 5; i += 1) recordResult('g', true, s);
-    expect(levelFor('g', 1, s)).toBe(3);
+    for (let i = 0; i < 5; i += 1) recordResult('kid', 'g', true, s);
+    expect(levelFor('kid', 'g', 1, s)).toBe(3);
   });
 
   it('keeps only the last 10 results', () => {
     const s = fakeStorage();
-    for (let i = 0; i < 12; i += 1) recordResult('g', i % 2 === 0, s);
-    const stored = JSON.parse(s.data['sky-adapt-g']) as { results: boolean[] };
+    for (let i = 0; i < 12; i += 1) recordResult('kid', 'g', i % 2 === 0, s);
+    const stored = JSON.parse(s.data['sky-adapt-kid-g']) as { results: boolean[] };
     expect(stored.results).toHaveLength(10);
     expect(stored.results).toEqual(
       Array.from({ length: 10 }, (_, i) => (i + 2) % 2 === 0)
@@ -108,8 +127,8 @@ describe('adaptive difficulty engine', () => {
 
   it('treats corrupt storage as a new player', () => {
     const s = fakeStorage();
-    s.data['sky-adapt-g'] = 'not-json{{{';
-    expect(levelFor('g', 2, s)).toBe(2);
+    s.data['sky-adapt-kid-g'] = 'not-json{{{';
+    expect(levelFor('kid', 'g', 2, s)).toBe(2);
   });
 
   it('placementSeedLevel starts quest graduates at 2', () => {

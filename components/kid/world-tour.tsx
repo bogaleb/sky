@@ -585,6 +585,7 @@ export default function WorldTour({ childId, nickname = 'friend', onExit }: Worl
     stickerId: 'globe-trotter',
     trophyEvent: 'geography_done',
     milestone: 'world_tour_win',
+    learning: { gameId: 'world-tour', skill: 'continents_oceans' },
   });
   const starBalance = session.starBalance ?? 0;
   const timers = useRef<number[]>([]);
@@ -657,6 +658,10 @@ export default function WorldTour({ childId, nickname = 'friend', onExit }: Worl
       if (picked || phase !== 'play') return;
       const nextAttempts = attempts + 1;
       setAttempts(nextAttempts);
+      session.recordAnswer(continentId === round.answer, {
+        skill: round.mode === 'animal' ? 'world_animals' : round.mode === 'landmark' ? 'landmarks' : 'continents_oceans',
+        itemKey: `${gameSeed}-${roundIndex}`,
+      });
       if (continentId === round.answer) {
         playSfx('correct');
         setPicked({ id: continentId, correct: true });
@@ -682,7 +687,7 @@ export default function WorldTour({ childId, nickname = 'friend', onExit }: Worl
         later(900, () => setPicked(null));
       }
     },
-    [picked, phase, attempts, round, roundIndex, correctCount, gameSeed, later, handleWin]
+    [picked, phase, attempts, round, roundIndex, correctCount, gameSeed, later, handleWin, session]
   );
 
   const speakQuestion = useCallback(() => {

@@ -189,6 +189,7 @@ export function PatternParade({ childId, nickname, onExit }: PatternParadeProps)
     gameKey: 'pattern_game',
     stickerId: 'pattern-pro',
     milestone: 'pattern_parade_win',
+    learning: { gameId: 'pattern-parade', skill: 'shapes_patterns' },
   });
   const starBalance = session.starBalance ?? 0;
   const timers = useRef<number[]>([]);
@@ -256,6 +257,11 @@ export function PatternParade({ childId, nickname, onExit }: PatternParadeProps)
       if (lock || justCorrect || phase !== 'play') return;
       const attempts = totalAttempts + 1;
       setTotalAttempts(attempts);
+      // Finishing repeating patterns is shapes_patterns level 3; growing patterns level 4.
+      session.recordAnswer(choiceIndex === round.answerIndex, {
+        level: round.level <= 2 ? 3 : 4,
+        itemKey: `${gameSeed}-${roundIndex}`,
+      });
       if (choiceIndex === round.answerIndex) {
         setJustCorrect(true);
         setLock(true);
@@ -291,7 +297,7 @@ export function PatternParade({ childId, nickname, onExit }: PatternParadeProps)
         );
       }
     },
-    [lock, justCorrect, phase, round, roundIndex, totalAttempts, later, handleWin],
+    [lock, justCorrect, phase, round, roundIndex, totalAttempts, later, handleWin, gameSeed, session],
   );
 
   const speakSequence = useCallback(() => {

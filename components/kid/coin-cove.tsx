@@ -109,6 +109,7 @@ export default function CoinCove({ childId, nickname = 'friend', onExit }: CoinC
     stickerId: 'money-master',
     trophyEvent: 'money_done',
     milestone: 'coin_cove_win',
+    learning: { gameId: 'coin-cove', skill: 'money' },
   });
   const starBalance = session.starBalance ?? 0;
   const [shakeId, setShakeId] = useState<number | null>(null);
@@ -177,6 +178,7 @@ export default function CoinCove({ childId, nickname = 'friend', onExit }: CoinC
 
   const pickChoice = (choice: number) => {
     if (!question || phase !== 'play' || picked !== null) return;
+    session.recordAnswer(choice === question.answer, { level: question.level + 1, itemKey: roundIndex });
     if (choice === question.answer) {
       setPicked(choice);
       playSfx('fanfare');

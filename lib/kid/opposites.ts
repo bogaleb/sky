@@ -201,3 +201,12 @@ export function pickSession(seed: number): OppositeRound[] {
       : generateMatchRound(seed + i * 104729)
   );
 }
+
+/**
+ * The vocabulary level (1–5) an opposite word is evidence for: common pairs
+ * like big/little are level 2 ("Matches simple opposites"), the rest level 3.
+ */
+export function oppositeSkillLevel(word: string): number {
+  const pair = OPPOSITE_PAIRS.find((p) => p.word === word || p.opposite === word);
+  return pair && pair.level === 1 ? 2 : 3;
+}

@@ -1,10 +1,13 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { awardStars, awardStickers } from '@/app/actions/rewards';
 import { bumpQuestProgress } from '@/app/actions/trail';
 import { checkTrophies } from '@/app/actions/trophies';
-import { logLearningEvent } from '@/app/actions/learning';
+import { logLearningEvent, recordGameAttempts } from '@/app/actions/learning';
+import { recordResult } from '@/lib/kid/adapt';
+import { createAttemptBuffer, type AttemptBuffer } from '@/lib/kid/attempt-buffer';
+import type { GameSkillCode } from '@/lib/kid/game-skills';
 import type { TrophyEvent } from '@/lib/kid/trophies';
 import { getSticker } from '@/lib/kid/stickers';
 import { reportRewardError } from '@/lib/kid/reward-errors';
@@ -44,6 +47,30 @@ export interface GameSessionConfig {
   trophyEvent?: TrophyEvent;
   /** learning_events metadata kind, e.g. 'word_builder_win'. Optional — omit for flows with no milestone. */
   milestone?: string;
+  /**
+   * Per-answer learning evidence. Set for every game that asks the child
+   * questions with right/wrong answers, then call session.recordAnswer() at
+   * each judgment. Omit for open-ended play (dress-up, studio, bedtime).
+   */
+  learning?: {
+    /** Stable id for learning_events.metadata.game_id and the adaptive engine. */
+    gameId: string;
+    /** Default skill for this game's answers; recordAnswer can override per item. */
+    skill: GameSkillCode;
+  };
+}
+
+export interface RecordAnswerOptions {
+  /** Overrides the configured skill (games that mix skills, e.g. count vs add). */
+  skill?: GameSkillCode;
+  /** Item difficulty on the skill's 1–5 scale. Omit when unknown. */
+  level?: number;
+  /**
+   * Identifies the question being answered (e.g. the round index). Only the
+   * FIRST judgment per item is recorded, so retries after a wrong tap do not
+   * count as extra correct answers. Omit when every call is a new item.
+   */
+  itemKey?: string | number;
 }
 
 export interface CompleteArgs {
@@ -57,6 +84,11 @@ export interface CompleteArgs {
 
 export interface GameSession {
   complete: (args: CompleteArgs) => Promise<CompleteResult>;
+  /**
+   * Record one judged answer: feeds skill mastery (batched to the server) and
+   * this child's adaptive difficulty. No-op when `learning` is not configured.
+   */
+  recordAnswer: (correct: boolean, opts?: RecordAnswerOptions) => void;
   reset: () => void;
   loading: boolean;
   completed: boolean;
@@ -83,13 +115,71 @@ export function useGameSession(config: GameSessionConfig): GameSession {
   const [starBalance, setStarBalance] = useState<number | null>(null);
   const inFlight = useRef(false);
   const cfgRef = useRef(config);
-  cfgRef.current = config;
+  // Keep the latest config for the stable callbacks below (read only in
+  // event handlers, after commit — never during render).
+  useEffect(() => {
+    cfgRef.current = config;
+  });
+
+  // One buffer per mounted game. Created lazily so games without `learning`
+  // never allocate one; flushed on completion, when the page is hidden, and
+  // on unmount (the child tapping back to the map mid-round).
+  const bufferRef = useRef<AttemptBuffer | null>(null);
+  const lastItemKey = useRef<string | number | null>(null);
+  const getBuffer = useCallback((): AttemptBuffer | null => {
+    const cfg = cfgRef.current;
+    if (!cfg.learning) return null;
+    if (!bufferRef.current) {
+      const { childId } = cfg;
+      const { gameId } = cfg.learning;
+      bufferRef.current = createAttemptBuffer({
+        send: (attempts) => recordGameAttempts(childId, gameId, attempts),
+        onError: (err) => reportRewardError(childId, 'recordGameAttempts', err),
+      });
+    }
+    return bufferRef.current;
+  }, []);
+
+  useEffect(() => {
+    const flush = () => void bufferRef.current?.flush();
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden') flush();
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('pagehide', flush);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('pagehide', flush);
+      flush();
+    };
+  }, []);
+
+  const recordAnswer = useCallback(
+    (correct: boolean, opts: RecordAnswerOptions = {}) => {
+      const cfg = cfgRef.current;
+      const buffer = getBuffer();
+      if (!cfg.learning || !buffer) return;
+      if (opts.itemKey !== undefined) {
+        if (opts.itemKey === lastItemKey.current) return;
+        lastItemKey.current = opts.itemKey;
+      }
+      recordResult(cfg.childId, cfg.learning.gameId, correct);
+      buffer.add({
+        skill: opts.skill ?? cfg.learning.skill,
+        correct,
+        ...(opts.level !== undefined ? { level: opts.level } : {}),
+      });
+    },
+    [getBuffer]
+  );
 
   const complete = useCallback(async ({ stars, mistakes = 0, extraMetadata, stickerIds: stickerIdsOverride }: CompleteArgs): Promise<CompleteResult> => {
     if (inFlight.current) return { starBalance: null, errors: [] };
     inFlight.current = true;
     setLoading(true);
     const cfg = cfgRef.current;
+    void bufferRef.current?.flush();
+    lastItemKey.current = null;
     let balance: number | null = null;
     const runErrors: RewardStepError[] = [];
     const failed = (step: RewardStepError['step'], err: unknown) => {
@@ -146,6 +236,7 @@ export function useGameSession(config: GameSessionConfig): GameSession {
   }, []);
 
   const reset = useCallback(() => {
+    lastItemKey.current = null;
     setCompleted(false);
     setLoading(false);
   }, []);
@@ -153,8 +244,8 @@ export function useGameSession(config: GameSessionConfig): GameSession {
   // Stable identity across renders so callers can safely list `session` in
   // effect/callback dependency arrays.
   return useMemo(
-    () => ({ complete, reset, loading, completed, starBalance }),
-    [complete, reset, loading, completed, starBalance]
+    () => ({ complete, recordAnswer, reset, loading, completed, starBalance }),
+    [complete, recordAnswer, reset, loading, completed, starBalance]
   );
 }
 

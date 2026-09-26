@@ -124,7 +124,7 @@ export default function UpNext({ childId, onPracticeIsland, onStartTrail }: UpNe
           <div className="animate-kid-bounce-soft">
             <StarIcon className="h-16 w-16" />
           </div>
-          <h2 className="mt-2 text-2xl font-black text-kid-ink-900">You're a superstar!</h2>
+          <h2 className="mt-2 text-2xl font-black text-kid-ink-900">You&apos;re a superstar!</h2>
           <p className="mt-1 text-base font-bold text-kid-ink-700">
             You practiced everything. Amazing work!
           </p>

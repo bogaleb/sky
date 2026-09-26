@@ -58,6 +58,7 @@ export default function RhymeTime({ childId, nickname = 'friend', onExit }: Rhym
     stickerId: 'rhyme-star',
     trophyEvent: 'rhyme_done',
     milestone: 'rhyme_time_win',
+    learning: { gameId: 'rhyme-time', skill: 'rhyming' },
   });
   const starBalance = session.starBalance ?? 0;
   const timers = useRef<number[]>([]);
@@ -121,6 +122,8 @@ export default function RhymeTime({ childId, nickname = 'friend', onExit }: Rhym
     if (!round || celebrating) return;
     // Every tap previews the word aloud so non-readers can play.
     speakAs(HOST, choice);
+    // Three spoken choices: rhyming level 3. First pick per round counts.
+    session.recordAnswer(choice === round.answer, { level: 3, itemKey: `${roundIndex}-${round.prompt}` });
     if (choice === round.answer) {
       setCelebrating(true);
       playSfx('correct');
