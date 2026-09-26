@@ -381,15 +381,6 @@ body {
   transform: scale(0.93);
 }
 
-/* Kid controls that support press-and-hold (hear what it is): no iPad
-   callout, no text selection, no double-tap zoom delay. */
-.kid-no-callout {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
-  touch-action: manipulation;
-}
-
 /* ---- Kid loading skeletons ----
    Shimmer placeholders sized to the content they replace, so swapping in
    real content never shifts layout. */

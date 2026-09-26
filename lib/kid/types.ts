@@ -1,5 +1,3 @@
-import type { AgeBand } from '@/lib/planner/types';
-
 /**
  * Kid-facing types for the session player. Everything here is client-safe:
  * answer keys never leave the server (see fetch_activity_card).
@@ -85,8 +83,6 @@ export interface SessionChild {
   id: string;
   nickname: string;
   avatarId: string;
-  /** Effective age band (parent override wins). Drives the age profile. */
-  ageBand?: AgeBand;
 }
 
 /** Shape of SessionPlanResult['plan'] items from the server action. */

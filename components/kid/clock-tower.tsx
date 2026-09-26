@@ -6,40 +6,25 @@ import {
   handAngles,
   ROUND_LEVELS,
   ROUNDS_PER_GAME,
-  timeLines,
   type TimeQuestion,
 } from '@/lib/kid/time';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { ageProfile } from '@/lib/kid/age-profile';
-import type { AgeBand } from '@/lib/planner/types';
 import { useGameSession, GameWinScreen } from './game-shell';
-import { AnswerTray, ChoiceCard, choiceStateFor, GameFrame, GameIntro, useTeaching } from './game-frame';
 import KidShell from '@/components/kid/kid-shell';
 
 export interface ClockTowerProps {
   childId: string;
   nickname?: string;
-  ageBand?: AgeBand;
   onExit: () => void;
 }
 
 type Phase = 'intro' | 'play' | 'won';
 
 const HOST = 'tuno';
-const CELEBRATE_MS = 2000;
-const HOW_TO = 'Tuno shows you a big clock. Read the short hand for the hour and the long hand for the minutes, then tap the right time.';
+const CELEBRATE_MS = 1400;
 
 /** Big analog clock showing the question time. Original SVG art, no emoji. */
-function AnalogClock({
-  question,
-  emphasis = 'none',
-}: {
-  question: TimeQuestion;
-  /** Highlight the hand(s) the hint or worked example talks about. */
-  emphasis?: 'none' | 'hour' | 'minute' | 'both';
-}) {
-  const hourHot = emphasis === 'hour' || emphasis === 'both';
-  const minuteHot = emphasis === 'minute' || emphasis === 'both';
+function AnalogClock({ question }: { question: TimeQuestion }) {
   const { hourAngle, minuteAngle } = handAngles(question.hour, question.minute);
   const cx = 120;
   const cy = 120;
@@ -79,8 +64,8 @@ function AnalogClock({
         y1={cy}
         x2={cx}
         y2={cy - 58}
-        stroke={hourHot ? '#FF6B6B' : '#17324F'}
-        strokeWidth={hourHot ? 14 : 11}
+        stroke="#17324F"
+        strokeWidth="11"
         strokeLinecap="round"
         transform={`rotate(${hourAngle} ${cx} ${cy})`}
       />
@@ -90,8 +75,8 @@ function AnalogClock({
         y1={cy}
         x2={cx}
         y2={cy - 88}
-        stroke={minuteHot ? '#9B5DE5' : '#2E9BC6'}
-        strokeWidth={minuteHot ? 10 : 7}
+        stroke="#2E9BC6"
+        strokeWidth="7"
         strokeLinecap="round"
         transform={`rotate(${minuteAngle} ${cx} ${cy})`}
       />
@@ -104,8 +89,7 @@ function AnalogClock({
   );
 }
 
-export default function ClockTower({ childId, nickname = 'friend', ageBand, onExit }: ClockTowerProps) {
-  const profile = ageProfile(ageBand);
+export default function ClockTower({ childId, nickname = 'friend', onExit }: ClockTowerProps) {
   const [phase, setPhase] = useState<Phase>('intro');
   const [roundIndex, setRoundIndex] = useState(0);
   const [question, setQuestion] = useState<TimeQuestion | null>(null);
@@ -120,9 +104,9 @@ export default function ClockTower({ childId, nickname = 'friend', ageBand, onEx
     milestone: 'clock_tower_win',
     learning: { gameId: 'clock-tower', skill: 'telling_time' },
   });
-  const { logSupport } = session;
-  const teaching = useTeaching({ profile, host: HOST, onSupport: logSupport });
   const starBalance = session.starBalance ?? 0;
+  const [picked, setPicked] = useState<string | null>(null);
+  const [shakeId, setShakeId] = useState<string | null>(null);
   const timers = useRef<number[]>([]);
 
   const later = useCallback((ms: number, fn: () => void) => {
@@ -144,22 +128,28 @@ export default function ClockTower({ childId, nickname = 'friend', ageBand, onEx
   const startRound = useCallback(
     (index: number, seed: number) => {
       const q = generateQuestion(ROUND_LEVELS[index], seed);
-      teaching.next();
       setQuestion(q);
+      setPicked(null);
       setRoundIndex(index);
-      speakAs(HOST, 'What time is it? Look at the clock.');
+      speakAs(HOST, `What time is it, ${nickname}? Look at the big clock and tap the right time.`);
     },
-    [teaching]
+    [nickname]
   );
 
   const startGame = useCallback(() => {
+    const seed = Date.now();
     setMistakes(0);
     setAttempts(0);
     setStarsEarned(0);
     setPhase('play');
     playSfx('whoosh');
-    startRound(0, Date.now());
-  }, [startRound]);
+    speakAs(HOST, `Welcome to the Clock Tower, ${nickname}! Take your time and read the clock slowly.`);
+    later(1600, () => startRound(0, seed));
+  }, [later, startRound]);
+
+  const hearIt = useCallback(() => {
+    if (question) speakAs(HOST, `The clock says ${question.spoken}.`);
+  }, [question]);
 
   const handleWin = useCallback(async () => {
     const stars = mistakes === 0 ? 3 : mistakes <= 4 ? 2 : 1;
@@ -168,16 +158,17 @@ export default function ClockTower({ childId, nickname = 'friend', ageBand, onEx
     playSfx('fanfare');
     speakAs(HOST, `Wonderful, ${nickname}! You read ${ROUNDS_PER_GAME} clocks! You earned ${stars} stars!`);
     await session.complete({ stars, mistakes, extraMetadata: { attempts } });
-  }, [nickname, mistakes, attempts, session]);
+  }, [childId, nickname, mistakes, attempts, session]);
 
   const pickChoice = (choice: string) => {
-    if (!question || phase !== 'play' || teaching.state.mode === 'correct') return;
-    const correct = choice === question.answer;
+    if (!question || phase !== 'play') return;
     setAttempts((a) => a + 1);
     // Hour / half past / quarter clocks are telling_time levels 2 / 3 / 4.
-    session.recordAnswer(correct, { level: question.level + 1, itemKey: roundIndex });
-    teaching.judge(correct, choice, timeLines(question), question.choices.length);
-    if (correct) {
+    session.recordAnswer(choice === question.answer, { level: question.level + 1, itemKey: roundIndex });
+    if (choice === question.answer) {
+      setPicked(choice);
+      playSfx('fanfare');
+      speakAs(HOST, `Yes! ${question.spoken}! Great reading, ${nickname}!`);
       later(CELEBRATE_MS, () => {
         if (roundIndex + 1 < ROUNDS_PER_GAME) {
           startRound(roundIndex + 1, Date.now() + (roundIndex + 1) * 7919);
@@ -186,17 +177,83 @@ export default function ClockTower({ childId, nickname = 'friend', ageBand, onEx
         }
       });
     } else {
+      playSfx('wrong');
       setMistakes((m) => m + 1);
+      setShakeId(choice);
+      speakAs(HOST, 'Not quite. Look at the clock again — take your time.');
+      later(650, () => setShakeId((s) => (s === choice ? null : s)));
     }
   };
 
-  if (phase === 'intro') {
-    return <GameIntro title="Clock Tower" say={HOW_TO} host={HOST} profile={profile} onStart={startGame} onExit={onExit} startLabel="Climb the tower" />;
-  }
+  return (
+    <KidShell onExit={onExit} points={phase === 'won' ? starBalance : 0}>
+      {phase === 'intro' && (
+        <div className="flex w-full max-w-xl flex-col items-center px-4 text-center">
+          <h1 className="animate-kid-rise text-3xl font-black text-kid-ink-900 md:text-5xl">Clock Tower</h1>
+          <p className="animate-kid-rise mt-2 text-lg font-bold text-kid-ink-700 md:text-xl" style={{ animationDelay: '0.1s' }}>
+            Tuno will show you big clocks. Read each one and tap the right time.
+          </p>
+          <button
+            type="button"
+            onClick={startGame}
+            className="animate-kid-rise mt-6 min-h-[72px] rounded-full bg-kid-sky-400 px-10 py-4 text-2xl font-black text-white shadow-xl transition-transform hover:scale-105 active:scale-95"
+            style={{ animationDelay: '0.2s' }}
+          >
+            Climb the tower
+          </button>
+        </div>
+      )}
 
-  if (phase === 'won') {
-    return (
-      <KidShell onExit={onExit} points={starBalance}>
+      {phase === 'play' && question && (
+        <div className="flex w-full max-w-2xl flex-col items-center px-4">
+          <div className="flex w-full items-center justify-between gap-2">
+            <div className="rounded-full bg-white/85 px-4 py-2 shadow-lg backdrop-blur">
+              <span className="text-base font-black text-kid-ink-900 md:text-lg">Clock Tower</span>
+              <span className="ml-2 text-sm font-bold text-kid-ink-700">with Tuno</span>
+            </div>
+            <div className="rounded-full bg-white/85 px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg backdrop-blur md:text-lg">
+              {roundIndex + 1} / {ROUNDS_PER_GAME}
+            </div>
+          </div>
+
+          <div className="mt-4 flex w-full flex-col items-center gap-4 md:flex-row md:justify-center md:gap-8">
+            <AnalogClock question={question} />
+            <div className="flex flex-col items-center gap-3">
+              <p className="text-center text-2xl font-black text-kid-ink-900 md:text-3xl">What time is it?</p>
+              <button
+                type="button"
+                onClick={hearIt}
+                className="min-h-[72px] rounded-full bg-white/85 px-6 py-3 text-lg font-extrabold text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
+                aria-label="Hear the time spoken"
+              >
+                Hear it
+              </button>
+              <div className="flex flex-col gap-3" role="group" aria-label="Time choices">
+                {question.choices.map((choice) => (
+                  <button
+                    key={choice}
+                    type="button"
+                    onClick={() => pickChoice(choice)}
+                    disabled={picked !== null}
+                    aria-label={`Time ${choice}`}
+                    className={`min-h-[72px] min-w-[180px] rounded-kid-card border-4 px-8 py-3 text-3xl font-black tabular-nums shadow-xl transition-transform active:scale-95 ${
+                      picked === choice
+                        ? 'border-kid-sun-400 bg-kid-sun-200 text-kid-ink-900'
+                        : shakeId === choice
+                          ? 'animate-kid-shake border-kid-coral-500 bg-white text-kid-ink-900'
+                          : 'border-kid-sky-300 bg-white text-kid-ink-900 hover:scale-105'
+                    }`}
+                  >
+                    {choice}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {phase === 'won' && (
         <GameWinScreen
           stars={starsEarned}
           nickname={nickname}
@@ -206,41 +263,7 @@ export default function ClockTower({ childId, nickname = 'friend', ageBand, onEx
           onPlayAgain={startGame}
           onExit={onExit}
         />
-      </KidShell>
-    );
-  }
-
-  if (!question) return null;
-  const mode = teaching.state.mode;
-  return (
-    <GameFrame
-      title="Clock Tower"
-      host={HOST}
-      profile={profile}
-      onExit={onExit}
-      progress={{ current: roundIndex + 1, total: ROUNDS_PER_GAME }}
-      prompt={{ text: 'What time is it?', say: 'What time is it? Look at the short hand, then the long hand.' }}
-      teaching={teaching.state}
-      tray={
-        <AnswerTray label="Time choices">
-          {question.choices.map((choice) => (
-            <ChoiceCard
-              key={choice}
-              say={choice}
-              state={choiceStateFor(teaching.state, choice, question.answer)}
-              onPick={() => pickChoice(choice)}
-              minHeight={profile.minTarget}
-              host={HOST}
-            >
-              <span className="tabular-nums">{choice}</span>
-            </ChoiceCard>
-          ))}
-        </AnswerTray>
-      }
-    >
-      <div className="rounded-full bg-white/70 p-3 shadow-xl">
-        <AnalogClock question={question} emphasis={mode === 'show' ? 'both' : mode === 'hint' ? (question.minute === 0 ? 'hour' : 'minute') : 'none'} />
-      </div>
-    </GameFrame>
+      )}
+    </KidShell>
   );
 }

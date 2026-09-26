@@ -4,7 +4,6 @@ import { createClient } from '@/lib/supabase/server';
 import { questDateKey } from '@/lib/kid/quests';
 import { TRAIL_LENGTH, getTrailStop } from '@/lib/kid/trail';
 import type { MasterySignal, TrailSignal } from '@/lib/kid/recommend';
-import type { MasteryStatus, SkillMasterySnapshot } from '@/lib/kid/garden';
 
 /** Per-subject progress for the sky map: mastered skills / total skills. */
 export interface IslandProgress {
@@ -148,40 +147,4 @@ export async function getPracticeSignals(childId: string): Promise<PracticeSigna
       ...(stopIslandId ? { stopIslandId } : {}),
     },
   };
-}
-
-/**
- * Everything the Today home needs: one row per skill (practiced or not) with
- * the child's mastery state. Drives today's path (spaced review) and the
- * growth garden. Read-only; the child must belong to the signed-in parent.
- */
-export async function getHomeSnapshot(childId: string): Promise<SkillMasterySnapshot[]> {
-  const supabase = await requireChild(childId);
-  const [{ data: skills }, { data: masteryRows }] = await Promise.all([
-    supabase.from('skills').select('id, code, subject_code'),
-    supabase
-      .from('skill_mastery')
-      .select('skill_id, status, current_level, next_review_at, last_practiced_at')
-      .eq('child_id', childId),
-  ]);
-  const bySkill = new Map(
-    ((masteryRows ?? []) as Array<{
-      skill_id: string;
-      status: MasteryStatus;
-      current_level: number;
-      next_review_at: string | null;
-      last_practiced_at: string | null;
-    }>).map((m) => [m.skill_id, m])
-  );
-  return ((skills ?? []) as Array<{ id: string; code: string; subject_code: string }>).map((s) => {
-    const m = bySkill.get(s.id);
-    return {
-      code: s.code,
-      subject: s.subject_code,
-      status: m?.status ?? null,
-      currentLevel: m?.current_level ?? 1,
-      nextReviewAt: m?.next_review_at ?? null,
-      lastPracticedAt: m?.last_practiced_at ?? null,
-    };
-  });
 }

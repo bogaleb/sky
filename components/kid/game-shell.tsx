@@ -89,11 +89,6 @@ export interface GameSession {
    * this child's adaptive difficulty. No-op when `learning` is not configured.
    */
   recordAnswer: (correct: boolean, opts?: RecordAnswerOptions) => void;
-  /**
-   * Log that the child needed support on an item (a hint, or a worked
-   * "show me" example). Parents see how much scaffolding a skill needed.
-   */
-  logSupport: (kind: 'hint_used' | 'show_me', opts?: { skill?: GameSkillCode }) => void;
   reset: () => void;
   loading: boolean;
   completed: boolean;
@@ -240,16 +235,6 @@ export function useGameSession(config: GameSessionConfig): GameSession {
     return { starBalance: balance, errors: runErrors };
   }, []);
 
-  const logSupport = useCallback((kind: 'hint_used' | 'show_me', opts: { skill?: GameSkillCode } = {}) => {
-    const cfg = cfgRef.current;
-    if (!cfg.learning) return;
-    void logLearningEvent(cfg.childId, kind, {
-      metadata: { source: 'game', game_id: cfg.learning.gameId, skill: opts.skill ?? cfg.learning.skill },
-    }).catch(() => {
-      /* support logging is best-effort */
-    });
-  }, []);
-
   const reset = useCallback(() => {
     lastItemKey.current = null;
     setCompleted(false);
@@ -259,8 +244,8 @@ export function useGameSession(config: GameSessionConfig): GameSession {
   // Stable identity across renders so callers can safely list `session` in
   // effect/callback dependency arrays.
   return useMemo(
-    () => ({ complete, recordAnswer, logSupport, reset, loading, completed, starBalance }),
-    [complete, recordAnswer, logSupport, reset, loading, completed, starBalance]
+    () => ({ complete, recordAnswer, reset, loading, completed, starBalance }),
+    [complete, recordAnswer, reset, loading, completed, starBalance]
   );
 }
 
