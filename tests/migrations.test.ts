@@ -66,6 +66,7 @@ describe('migration files', () => {
       '20260925000900_parent_goals.sql',
       '20260925001000_collections.sql',
       '20260925001100_cleanup_dead_schema.sql',
+      '20260925001200_fix_ensure_parent_profile.sql',
     ]);
   });
 });

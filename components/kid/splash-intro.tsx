@@ -65,6 +65,7 @@ export default function SplashIntro({ onDone }: { onDone: () => void }) {
   const begin = () => {
     playSfx('fanfare');
     markSplashSeen(typeof sessionStorage === 'undefined' ? null : sessionStorage);
+    setVisible(false);
     onDone();
   };
 
