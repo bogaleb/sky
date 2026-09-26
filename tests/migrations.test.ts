@@ -71,7 +71,7 @@ describe('migration files', () => {
 });
 
 describe('row level security', () => {
-  const tables = [...allSql.matchAll(/create table public\.(\w+)/g)].map(
+  const tables = [...allSql.matchAll(/create table (?:if not exists )?public\.(\w+)/g)].map(
     (m) => m[1]
   );
 
@@ -193,7 +193,7 @@ describe('trophy awards', () => {
   const trophies = migrations.get('20260925000800_trophies.sql') ?? '';
 
   it('mirrors the sticker_awards table convention', () => {
-    expect(trophies).toMatch(/create table public\.trophy_awards/);
+    expect(trophies).toMatch(/create table (if not exists )?public\.trophy_awards/);
     expect(trophies).toMatch(/unique\s*\(\s*child_id\s*,\s*trophy_id\s*\)/);
     expect(trophies).toMatch(
       /alter table public\.trophy_awards enable row level security/

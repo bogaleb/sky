@@ -147,7 +147,7 @@ describe('collections migration SQL', () => {
   );
 
   it('creates collection_items with the right shape', () => {
-    expect(sql).toContain('create table public.collection_items');
+    expect(sql).toMatch(/create table (if not exists )?public\.collection_items/);
     expect(sql).toContain('collection_id text not null');
     expect(sql).toContain('item_id text not null');
     expect(sql).toContain('primary key (child_id, collection_id, item_id)');

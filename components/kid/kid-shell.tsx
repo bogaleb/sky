@@ -36,8 +36,10 @@ export default function KidShell({ children, doneCount = 0, totalSteps = 0, poin
       <SkyBackdrop />
 
       {/* HUD — floating glass bar. Sticky so the exit/mute controls stay
-          reachable even when game content overflows and the overlay scrolls. */}
-      <header className="sticky top-0 z-20 px-3 pt-3 md:px-8 md:pt-4">
+          reachable even when game content overflows and the overlay scrolls.
+          The sky-tinted scrim fades scrolled content out underneath instead of
+          letting it show through the glass garbled. */}
+      <header className="sticky top-0 z-20 bg-gradient-to-b from-kid-sky-200 via-kid-sky-200/75 to-transparent px-3 pb-6 pt-3 md:px-8 md:pt-4">
         <div className="glass-kid mx-auto flex w-full max-w-4xl flex-wrap items-center justify-between gap-x-3 gap-y-2 rounded-full px-3 py-2 md:px-5 md:py-2.5">
           {/* Progress dots */}
           <div className="flex items-center gap-1" role="img" aria-label={`${doneCount} of ${totalSteps} activities done`}>

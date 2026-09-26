@@ -23,15 +23,21 @@ const registrySrc = readFileSync(join(kidDir, 'game-registry.tsx'), 'utf8');
 
 const COLORS = ['coral', 'sky', 'mint', 'grape'] as const;
 
+// Pinned pre-refactor reference: the Wave 10 hub restructure (505ce89) moved
+// the game buttons from session-player.tsx into game-registry.tsx, so HEAD's
+// copy no longer carries the 30 inline labels. This commit is the last one
+// with every game button inline in session-player.tsx.
+const PRE_REFACTOR_REF = '1cac2b3';
+
 function headLabels(): string[] {
-  const atHead = execSync('git show HEAD:components/kid/session-player.tsx', {
+  const atRef = execSync(`git show ${PRE_REFACTOR_REF}:components/kid/session-player.tsx`, {
     cwd: process.cwd(),
     maxBuffer: 8 * 1024 * 1024,
   }).toString('utf8');
   const labels = new Set<string>();
   const re = /<span className="font-display text-lg[^"]*">([^<]+)<\/span>/g;
   let m: RegExpExecArray | null;
-  while ((m = re.exec(atHead)) !== null) labels.add(m[1].trim());
+  while ((m = re.exec(atRef)) !== null) labels.add(m[1].trim());
   return [...labels];
 }
 
@@ -79,8 +85,8 @@ describe('registry integrity', () => {
   });
 });
 
-describe('HEAD cross-check: no game lost in the refactor', () => {
-  it('keeps every game that was reachable at HEAD', () => {
+describe('pre-refactor cross-check: no game lost in the hub restructure', () => {
+  it('keeps every game that was reachable before the refactor', () => {
     const labels = headLabels();
     expect(labels.length).toBe(30);
     const titles = new Set(GAME_REGISTRY.map((g) => g.title));

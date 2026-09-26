@@ -167,10 +167,21 @@ export default function DressUp({ child, onExit }: { child: SessionChild; onExit
 
           {/* outfit grid */}
           <div className="grid grid-cols-2 content-start gap-3 sm:grid-cols-3">
-            {!shop && (
+            {!shop && !error && (
               <p className="col-span-full py-10 text-center text-lg font-black text-white">
                 Loading the studio…
               </p>
+            )}
+            {!shop && error && (
+              <div className="col-span-full flex flex-col items-center gap-3 py-10">
+                <button
+                  type="button"
+                  onClick={() => { setError(null); void load(); }}
+                  className="rounded-full bg-white/90 px-8 py-3 text-lg font-black text-kid-ink-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
+                >
+                  Try again
+                </button>
+              </div>
             )}
             {shop?.outfits.map((outfit) => {
               const affordable = (shop.balance ?? 0) >= outfit.cost;

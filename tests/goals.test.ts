@@ -76,7 +76,7 @@ describe('parent_goals migration', () => {
   );
 
   it('creates the parent_goals table with the required columns', () => {
-    expect(sql).toContain('create table public.parent_goals');
+    expect(sql).toMatch(/create table (if not exists )?public\.parent_goals/);
     expect(sql).toContain('child_id uuid primary key');
     expect(sql).toContain('references public.children (id) on delete cascade');
     expect(sql).toContain('week_start date not null');
