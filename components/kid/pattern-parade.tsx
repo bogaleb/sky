@@ -13,7 +13,7 @@ import {
   type PatternRound,
 } from '@/lib/kid/patterns';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { useGameSession, GameWinScreen } from './game-shell';
+import { useGameSession, GameWinScreen, AnswerFeedbackPanel } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
 import HostCharacter from '@/components/kid/host-character';
 
@@ -343,7 +343,7 @@ export function PatternParade({ childId, nickname, onExit }: PatternParadeProps)
       {phase === 'play' && (
         <div className="flex w-full max-w-4xl flex-col items-center px-2">
           <div className="flex w-full flex-wrap items-center justify-between gap-2">
-            <div className="rounded-full bg-white/85 px-4 py-2 shadow-lg backdrop-blur">
+            <div className="rounded-full bg-white px-4 py-2 shadow-lg">
               <span className="text-base font-black text-kid-ink-900 md:text-lg">
                 Round {roundIndex + 1} of {ROUNDS_PER_GAME}
               </span>
@@ -355,7 +355,7 @@ export function PatternParade({ childId, nickname, onExit }: PatternParadeProps)
               type="button"
               onClick={speakSequence}
               aria-label="Hear the pattern read aloud"
-              className="flex min-h-[56px] items-center gap-2 rounded-full bg-white/85 px-5 py-2 text-base font-black text-kid-ink-900 shadow-lg backdrop-blur transition-transform active:scale-95"
+              className="flex min-h-[56px] items-center gap-2 rounded-full bg-white px-5 py-2 text-base font-black text-kid-ink-900 shadow-lg transition-transform active:scale-95"
             >
               <SpeakerIcon className="h-8 w-8" />
               Hear it
@@ -432,6 +432,8 @@ export function PatternParade({ childId, nickname, onExit }: PatternParadeProps)
           </p>
         </div>
       )}
+
+      <AnswerFeedbackPanel feedback={session.feedback} />
 
       {phase === 'won' && (
         <GameWinScreen

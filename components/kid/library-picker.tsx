@@ -26,7 +26,7 @@ export default function LibraryPicker({
   const prompt = isStory ? 'Which story shall we read?' : 'Which song shall we sing?';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-kid-ink-900/70 p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-kid-ink-900/75 p-4">
       <div className="animate-kid-pop-in w-full max-w-2xl rounded-kid-card border-4 border-white/70 bg-gradient-to-b from-kid-sky-100 to-kid-sky-200 p-6 shadow-2xl md:p-8">
         <div className="mb-2 flex items-center justify-between">
           <h2 className="text-2xl font-black text-kid-ink-900 md:text-3xl">{heading}</h2>

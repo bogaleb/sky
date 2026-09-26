@@ -1,6 +1,7 @@
-import { describe, expect, it } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+// @vitest-environment jsdom
+import { describe, expect, it, vi } from 'vitest';
+import { render } from '@testing-library/react';
+import { createElement } from 'react';
 import {
   ADAPTED_GAMES,
   adaptKey,
@@ -12,6 +13,34 @@ import {
   type DifficultyLevel,
   type StorageLike,
 } from '../lib/kid/adapt';
+import { isGameSkillCode } from '../lib/kid/game-skills';
+
+vi.mock('server-only', () => ({}));
+vi.mock('@/app/actions/rewards', () => ({
+  awardStars: vi.fn(async () => 0),
+  awardStickers: vi.fn(async () => {}),
+}));
+vi.mock('@/app/actions/trail', () => ({ bumpQuestProgress: vi.fn(async () => {}) }));
+vi.mock('@/app/actions/trophies', () => ({ checkTrophies: vi.fn(async () => {}) }));
+vi.mock('@/app/actions/learning', () => ({
+  logLearningEvent: vi.fn(async () => {}),
+  recordGameAttempts: vi.fn(async () => ({ recorded: 0, leveledSkills: [] })),
+}));
+vi.mock('@/lib/kid/reward-errors', () => ({ reportRewardError: vi.fn() }));
+
+// Captures the real configs each game hands to useGameSession — the seam
+// where adapt ids meet the components the engine tunes.
+const captured = vi.hoisted(() => ({ configs: [] as Array<{ learning?: { gameId?: string; skill?: string } }> }));
+vi.mock('@/components/kid/game-shell', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/components/kid/game-shell')>();
+  return {
+    ...actual,
+    useGameSession: (cfg: never) => {
+      captured.configs.push(cfg);
+      return actual.useGameSession(cfg);
+    },
+  };
+});
 
 const EMOJI_RE = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}]/u;
 
@@ -138,9 +167,23 @@ describe('adaptive difficulty engine', () => {
     expect([1, 2]).toContain(level);
   });
 
-  it('adapt.ts source is emoji-free', () => {
-    const src = readFileSync(join(process.cwd(), 'lib', 'kid', 'adapt.ts'), 'utf8');
-    expect(EMOJI_RE.test(src)).toBe(false);
+  it('every adapted game id is the learning.gameId its component reports', async () => {
+    // The adaptive engine tunes games by these ids; the proof they are real
+    // is that the matching game component hands the same gameId to
+    // useGameSession (which is what recordGameAttempts receives), paired
+    // with a skill code the server taxonomy accepts.
+    const ids = [...ADAPTED_GAMES];
+    for (const id of ids) {
+      const mod = await import(`@/components/kid/${id}`);
+      captured.configs.length = 0;
+      render(createElement(mod.default, { childId: 'c1', nickname: 'Ada', onExit: () => {} }));
+      const cfgs = captured.configs.filter((c) => c.learning?.gameId);
+      expect(cfgs.length).toBeGreaterThan(0);
+      for (const c of cfgs) {
+        expect(c.learning!.gameId).toBe(id);
+        expect(isGameSkillCode(c.learning!.skill ?? '')).toBe(true);
+      }
+    }
   });
 });
 

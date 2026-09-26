@@ -13,7 +13,7 @@ import {
   type GeoRound,
 } from '@/lib/kid/geography';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { useGameSession, GameWinScreen } from './game-shell';
+import { useGameSession, GameWinScreen, AnswerFeedbackPanel } from './game-shell';
 import { unlockItem } from '@/app/actions/collections';
 import KidShell from '@/components/kid/kid-shell';
 import HostCharacter from '@/components/kid/host-character';
@@ -726,24 +726,24 @@ export default function WorldTour({ childId, nickname = 'friend', onExit }: Worl
       {phase === 'play' && (
         <div className="flex w-full max-w-4xl flex-col items-center px-4">
           <div className="flex w-full flex-wrap items-center justify-between gap-2">
-            <div className="rounded-full bg-white/85 px-4 py-2 shadow-lg backdrop-blur">
+            <div className="rounded-full bg-white px-4 py-2 shadow-lg">
               <span className="text-base font-black text-kid-ink-900 md:text-lg">World Tour</span>
               <span className="ml-2 text-sm font-bold text-kid-ink-700">with Atlas</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="rounded-full bg-white/85 px-4 py-2 text-base font-black text-kid-ink-900 shadow-lg backdrop-blur md:text-lg">
+              <div className="rounded-full bg-white px-4 py-2 text-base font-black text-kid-ink-900 shadow-lg md:text-lg">
                 {MODE_LABEL[mode]}
               </div>
               <button
                 type="button"
                 onClick={speakQuestion}
                 aria-label="Hear the question read aloud"
-                className="flex min-h-[56px] items-center gap-2 rounded-full bg-white/85 px-5 py-2 text-base font-black text-kid-ink-900 shadow-lg backdrop-blur transition-transform active:scale-95"
+                className="flex min-h-[56px] items-center gap-2 rounded-full bg-white px-5 py-2 text-base font-black text-kid-ink-900 shadow-lg transition-transform active:scale-95"
               >
                 <SpeakerIcon className="h-8 w-8" />
                 Hear it
               </button>
-              <div className="rounded-full bg-white/85 px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg backdrop-blur md:text-lg">
+              <div className="rounded-full bg-white px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg md:text-lg">
                 {correctCount} / {ROUNDS_PER_GAME}
               </div>
             </div>
@@ -767,6 +767,8 @@ export default function WorldTour({ childId, nickname = 'friend', onExit }: Worl
           </div>
         </div>
       )}
+
+      <AnswerFeedbackPanel feedback={session.feedback} />
 
       {phase === 'won' && (
         <GameWinScreen

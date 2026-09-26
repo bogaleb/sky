@@ -20,6 +20,8 @@ import {
 } from '@/lib/kid/bedtime';
 import type { Story } from '@/lib/kid/stories';
 import type { Song } from '@/lib/kid/songs';
+import { TIME_LIMIT_WINDDOWN_COPY } from '@/lib/kid/time-limits';
+import { logLearningEvent } from '@/app/actions/learning';
 
 /** Bedtime trophy event fires best-effort; the def lands in Wave 3 integration. */
 const BEDTIME_TROPHY_EVENT: TrophyEvent = 'bedtime_done';
@@ -576,6 +578,93 @@ function BackToDoors({ onBack }: { onBack: () => void }) {
       >
         ← Back
       </button>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* TimeLimitWindDown — the daily time limit was reached.                */
+/*                                                                     */
+/* Warm, encouraging wind-down (no emoji, text-xl and up). Shown by the */
+/* session player when the server-side limit check reports the day's    */
+/* learning time is used up. "Wind down with Luna" opens the full      */
+/* bedtime routine; "Done for now" exits the session.                  */
+/* ------------------------------------------------------------------ */
+
+export function TimeLimitWindDown({
+  childId,
+  nickname = 'friend',
+  onDone,
+}: {
+  childId: string;
+  nickname?: string;
+  onDone: () => void;
+}) {
+  const [cozy, setCozy] = useState(false);
+  const loggedRef = useRef(false);
+
+  // Luna greets the child, and the wind-down is logged once (best-effort)
+  // so parents can see it in the dashboard's recent activity.
+  useEffect(() => {
+    unlockAudio();
+    const t = window.setTimeout(() => {
+      speakAs('luna', TIME_LIMIT_WINDDOWN_COPY.spoken(nickname));
+    }, 600);
+    if (!loggedRef.current) {
+      loggedRef.current = true;
+      void logLearningEvent(childId, 'milestone', {
+        metadata: { kind: 'time_limit_reached' },
+      }).catch(() => {});
+    }
+    return () => {
+      window.clearTimeout(t);
+      stopSpeaking();
+    };
+  }, [childId, nickname]);
+
+  if (cozy) {
+    return <Bedtime childId={childId} nickname={nickname} onExit={onDone} />;
+  }
+
+  return (
+    <div className="relative flex min-h-[70dvh] w-full flex-col overflow-hidden rounded-kid-card">
+      <NightSky />
+      <div className="relative flex flex-1 flex-col items-center justify-center px-4 pb-10">
+        <div className="animate-kid-pop-in flex max-w-xl flex-col items-center rounded-kid-card border-2 border-white/25 bg-white/10 px-8 py-10 text-center shadow-2xl backdrop-blur">
+          <MoonIcon className="h-24 w-24 md:h-28 md:w-28" />
+          <h2 className="mt-4 text-3xl font-black text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] md:text-4xl">
+            {TIME_LIMIT_WINDDOWN_COPY.heading(nickname)}
+          </h2>
+          <p className="mt-4 text-xl font-bold leading-relaxed text-white">
+            {TIME_LIMIT_WINDDOWN_COPY.body1}
+          </p>
+          <p className="mt-3 text-xl font-bold leading-relaxed text-white/85">
+            {TIME_LIMIT_WINDDOWN_COPY.body2}
+          </p>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+            <button
+              type="button"
+              onClick={() => {
+                playSfx('star');
+                setCozy(true);
+              }}
+              className="rounded-kid-pill border-b-4 border-kid-sun-600 bg-kid-sun-400 px-8 py-4 text-xl font-black text-kid-ink-900 shadow-xl transition-all hover:scale-105 active:scale-95"
+            >
+              {TIME_LIMIT_WINDDOWN_COPY.cozyButton}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                stopSpeaking();
+                onDone();
+              }}
+              className="rounded-kid-pill border-b-4 border-white/30 bg-white/15 px-8 py-4 text-xl font-black text-white backdrop-blur transition-all hover:scale-105 hover:bg-white/25 active:scale-95"
+            >
+              {TIME_LIMIT_WINDDOWN_COPY.doneButton}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

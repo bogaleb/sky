@@ -31,6 +31,8 @@ export interface CharacterHome {
   tagline: string;
   /** Public clip path, or null when the clip is unavailable (fallback scene). */
   clipSrc: string | null;
+  /** Poster frame for the clip (shown before the video loads), or null. */
+  posterSrc: string | null;
   /** Spoken line when the child visits. */
   greeting: string;
 }
@@ -53,12 +55,18 @@ function clipFor(characterId: string): string | null {
   return AVAILABLE_CLIPS.has(stem) ? `/videos/${stem}.mp4` : null;
 }
 
+function posterFor(characterId: string): string | null {
+  const stem = `${characterId}-home`;
+  return AVAILABLE_CLIPS.has(stem) ? `/videos/posters/${stem}.jpg` : null;
+}
+
 export const HOMES: CharacterHome[] = [
   {
     characterId: 'curio',
     homeName: "Curio's Treehouse Lookout",
     tagline: 'The coziest lookout in the whole sky',
     clipSrc: clipFor('curio'),
+    posterSrc: posterFor('curio'),
     greeting: "Welcome to my treehouse lookout! This is where I watch over the whole sky. Come look with me!",
   },
   {
@@ -66,6 +74,7 @@ export const HOMES: CharacterHome[] = [
     homeName: "Nova's Meadow Den",
     tagline: 'Sunshine, giggles, and soft grass',
     clipSrc: clipFor('nova'),
+    posterSrc: posterFor('nova'),
     greeting: 'Hi hi! This is my meadow den! I play here every single day. Come play with me!',
   },
   {
@@ -73,6 +82,7 @@ export const HOMES: CharacterHome[] = [
     homeName: "Luna's Moonlit Library",
     tagline: 'Every book is a dream waiting to open',
     clipSrc: clipFor('luna'),
+    posterSrc: posterFor('luna'),
     greeting: 'Shhh... welcome to my moonlit library. Pick a book, little reader, and we will dream together.',
   },
   {
@@ -80,6 +90,7 @@ export const HOMES: CharacterHome[] = [
     homeName: "Milo's Gadget Workshop",
     tagline: 'Beep boop! Building brilliant things',
     clipSrc: clipFor('milo'),
+    posterSrc: posterFor('milo'),
     greeting: 'Beep boop! Welcome to my gadget workshop! I build and fix things here. Want to see my tools?',
   },
   {
@@ -87,6 +98,7 @@ export const HOMES: CharacterHome[] = [
     homeName: "Bea's Honeycomb Garden",
     tagline: 'Buzzing with flowers and sweet honey',
     clipSrc: clipFor('bea'),
+    posterSrc: posterFor('bea'),
     greeting: 'Buzz buzz! Welcome to my honeycomb garden! Smell the flowers. I grew them all myself!',
   },
   {
@@ -94,6 +106,7 @@ export const HOMES: CharacterHome[] = [
     homeName: "Tuno's Lily-Pad Pond",
     tagline: 'Slow, calm, and wonderfully cozy',
     clipSrc: clipFor('tuno'),
+    posterSrc: posterFor('tuno'),
     greeting: 'Mmm... welcome to my lily-pad pond. Sit with me a while. There is no hurry here.',
   },
   {
@@ -101,6 +114,7 @@ export const HOMES: CharacterHome[] = [
     homeName: "Riff's Burrow Studio",
     tagline: 'Every wall hums a happy tune',
     clipSrc: clipFor('riff'),
+    posterSrc: posterFor('riff'),
     greeting: 'Hey hey! Welcome to my burrow studio! This is where the music lives. Let us make some noise!',
   },
   {
@@ -108,6 +122,7 @@ export const HOMES: CharacterHome[] = [
     homeName: "Atlas's Baobab House",
     tagline: 'Maps, stories, and faraway places',
     clipSrc: clipFor('atlas'),
+    posterSrc: posterFor('atlas'),
     greeting: 'Hello, explorer! Welcome to my baobab house! My maps hold every corner of the world. Come see!',
   },
 ];

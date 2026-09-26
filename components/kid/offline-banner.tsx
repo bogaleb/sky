@@ -74,7 +74,7 @@ export default function OfflineBanner() {
     return (
       <div
         role="alert"
-        className="fixed inset-x-0 top-0 z-[70] flex items-center justify-center gap-2 bg-kid-ink-900/90 px-4 py-2.5 text-center shadow-lg backdrop-blur"
+        className="fixed inset-x-0 top-0 z-[70] flex items-center justify-center gap-2 bg-kid-ink-900/90 px-4 py-2.5 text-center shadow-lg"
       >
         <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0" aria-hidden>
           <path d="M2 8.5A15 15 0 0 1 12 5c3.9 0 7.4 1.5 10 3.9" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" />

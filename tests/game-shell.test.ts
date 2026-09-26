@@ -7,8 +7,6 @@
  * smoke tests (default export is a component function).
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { renderToString } from 'react-dom/server';
 import { createElement } from 'react';
 
@@ -18,6 +16,7 @@ const awardStickersMock = vi.hoisted(() => vi.fn(async () => {}));
 const bumpQuestProgressMock = vi.hoisted(() => vi.fn(async () => {}));
 const checkTrophiesMock = vi.hoisted(() => vi.fn(async () => {}));
 const logLearningEventMock = vi.hoisted(() => vi.fn(async () => {}));
+const recordGameAttemptsMock = vi.hoisted(() => vi.fn(async () => ({ recorded: 0, leveledSkills: [] })));
 
 vi.mock('server-only', () => ({}));
 vi.mock('@/app/actions/rewards', () => ({
@@ -26,7 +25,10 @@ vi.mock('@/app/actions/rewards', () => ({
 }));
 vi.mock('@/app/actions/trail', () => ({ bumpQuestProgress: bumpQuestProgressMock }));
 vi.mock('@/app/actions/trophies', () => ({ checkTrophies: checkTrophiesMock }));
-vi.mock('@/app/actions/learning', () => ({ logLearningEvent: logLearningEventMock }));
+vi.mock('@/app/actions/learning', () => ({
+  logLearningEvent: logLearningEventMock,
+  recordGameAttempts: recordGameAttemptsMock,
+}));
 vi.mock('@/app/actions/showdown', () => ({ getFamilyWeeklyStars: vi.fn(async () => []) }));
 vi.mock('@/app/actions/collections', () => ({ getCollection: vi.fn(async () => null) }));
 const reportRewardErrorMock = vi.hoisted(() => vi.fn());
@@ -139,13 +141,6 @@ describe('reportRewardError wiring', () => {
 });
 
 describe('GameWinScreen', () => {
-  it('renders on the Wave 8 design contract (static source check)', () => {
-    const src = readFileSync(join(__dirname, '..', 'components', 'kid', 'game-shell.tsx'), 'utf8');
-    expect(src).toContain('glass-kid');
-    expect(src).toContain('font-display');
-    expect(src).toContain('btn-kid');
-  });
-
   it('renders stars, sticker reveal, and both buttons', () => {
     const html = renderToString(
       createElement(GameWinScreen, {

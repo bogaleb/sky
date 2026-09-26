@@ -89,6 +89,8 @@ describe('learning-event outbox', () => {
   });
 });
 
+// The manifest and service worker are static deployable artifacts in public/,
+// not TypeScript application source — reading them validates what ships.
 describe('web app manifest', () => {
   it('is valid JSON with the required PWA fields', () => {
     const raw = readFileSync(join(repoRoot, 'public', 'manifest.webmanifest'), 'utf8');

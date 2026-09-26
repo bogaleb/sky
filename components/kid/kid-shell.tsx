@@ -47,7 +47,7 @@ export default function KidShell({ children, doneCount = 0, totalSteps = 0, poin
           overlay. Sticky keeps exit/mute reachable while scrolling.
           Hidden when a game overlay (with its own HUD) is open. */}
       {!hideHud && (
-      <header data-kid-hud={hudId} className="sticky top-0 z-20 bg-kid-sky-200/95 px-2 pb-2 pt-2 shadow-[0_2px_12px_rgba(23,50,79,0.08)] backdrop-blur-md md:px-6">
+      <header data-kid-hud={hudId} className="sticky top-0 z-20 bg-kid-sky-200 px-2 pb-2 pt-2 shadow-[0_2px_12px_rgba(23,50,79,0.08)] md:px-6">
         <div className="mx-auto flex w-full max-w-4xl items-center justify-between gap-2 rounded-full border border-white/60 bg-white/70 py-1 pl-3 pr-1.5 shadow-md md:pl-4">
           {/* Progress stars — small and compact */}
           <div className="flex min-w-0 flex-1 items-center gap-0.5" role="img" aria-label={`${doneCount} of ${totalSteps} activities done`}>
@@ -87,7 +87,7 @@ export default function KidShell({ children, doneCount = 0, totalSteps = 0, poin
               type="button"
               onClick={toggleMute}
               aria-label={muted ? 'Turn sound on' : 'Turn sound off'}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/70 bg-white/70 shadow-sm backdrop-blur transition-transform hover:scale-105 active:scale-90"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/70 bg-white shadow-sm transition-transform hover:scale-105 active:scale-90"
             >
               {muted ? (
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#17324F" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">

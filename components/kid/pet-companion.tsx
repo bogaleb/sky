@@ -40,7 +40,7 @@ function Shell({ children, onExit }: { children: ReactNode; onExit: () => void }
   return (
     <div className="flex min-h-dvh items-center justify-center p-3 md:p-8">
       <div className="animate-kid-pop-in flex max-h-[92dvh] w-full max-w-3xl flex-col overflow-hidden rounded-kid-card border-4 border-white/70 bg-gradient-to-b from-kid-sky-200 to-kid-sky-300 shadow-2xl">
-        <div className="flex items-center justify-between bg-white/70 px-6 py-4 backdrop-blur">
+        <div className="flex items-center justify-between bg-white px-6 py-4">
           <h2 className="text-2xl font-black text-kid-ink-900 md:text-3xl">Pet Companion</h2>
           <button
             type="button"

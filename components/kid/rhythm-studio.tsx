@@ -25,7 +25,7 @@ import {
   type DrumSound,
 } from '@/lib/kid/rhythm';
 import { speakAs, playSfx, stopSpeaking, unlockAudio } from '@/lib/kid/audio';
-import { useGameSession, GameWinScreen } from './game-shell';
+import { useGameSession, GameWinScreen, AnswerFeedbackPanel } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
 
 export interface RhythmStudioProps {
@@ -128,6 +128,7 @@ export default function RhythmStudio({ childId, nickname, onExit }: RhythmStudio
     stickerId: 'beat-master',
     trophyEvent: 'rhythm_done',
     milestone: 'rhythm_studio_win',
+    learning: { gameId: 'rhythm-studio', skill: 'rhythm' },
   });
   const starBalance = session.starBalance ?? 0;
   const [finalAccuracy, setFinalAccuracy] = useState(0);
@@ -142,6 +143,10 @@ export default function RhythmStudio({ childId, nickname, onExit }: RhythmStudio
   const liveRef = useRef({ perfect: 0, good: 0, miss: 0, combo: 0, maxCombo: 0 });
   const echoPtrRef = useRef(0);
   const popupKey = useRef(0);
+  // Tune identity + level for recordAnswer, and a per-play counter so note
+  // itemKeys stay unique when a tune is replayed in one session.
+  const tuneInfoRef = useRef<{ id: string; level: number } | null>(null);
+  const playCountRef = useRef(0);
 
   const reducedMotion = useMemo(
     () =>
@@ -176,9 +181,19 @@ export default function RhythmStudio({ childId, nickname, onExit }: RhythmStudio
 
   const pads = useMemo(() => (tune ? padsFor(tune) : []), [tune]);
 
-  const recordJudgment = useCallback((index: number, judgment: Judgment) => {
+  const recordJudgment = useCallback((index: number, judgment: Judgment, hint?: string) => {
     judgedRef.current = { ...judgedRef.current, [index]: judgment };
     setJudged(judgedRef.current);
+    // One answered item per beat note: first judgment wins (a wrong pad in
+    // echo mode keeps the first, wrong judgment for that note).
+    const play = tuneInfoRef.current;
+    if (play) {
+      session.recordAnswer(judgment !== 'miss', {
+        level: play.level,
+        itemKey: `${play.id}-${playCountRef.current}-${index}`,
+        hint,
+      });
+    }
     const l = liveRef.current;
     const combo = judgment === 'miss' ? 0 : l.combo + 1;
     liveRef.current = {
@@ -193,7 +208,7 @@ export default function RhythmStudio({ childId, nickname, onExit }: RhythmStudio
     setPopup({ key, text: JUDGMENT_WORDS[judgment], kind: judgment });
     if (judgment === 'perfect') playSfx('correct');
     if (judgment === 'miss') playSfx('wrong');
-  }, []);
+  }, [session]);
 
   const beatTimeOf = useCallback((note: BeatNote) => startEpochRef.current + note.at, []);
 
@@ -252,7 +267,7 @@ export default function RhythmStudio({ childId, nickname, onExit }: RhythmStudio
         later(note.at, () => fireBeat(note));
         later(note.at + HIT_WINDOW_MS + 40, () => {
           if (!(note.index in judgedRef.current)) {
-            recordJudgment(note.index, 'miss');
+            recordJudgment(note.index, 'miss', 'Watch the beat line and tap!');
             setHint('Watch the beat line and tap!');
           }
         });
@@ -304,6 +319,8 @@ export default function RhythmStudio({ childId, nickname, onExit }: RhythmStudio
       clearTimers();
       const nextSeed = (Date.now() % 100000) + Math.floor(Math.random() * 1000);
       seedRef.current = nextSeed;
+      tuneInfoRef.current = { id: nextTune.id, level: nextTune.level };
+      playCountRef.current += 1;
       const nextNotes = buildBeatMap(nextTune, nextSeed);
       setTune(nextTune);
       setNotes(nextNotes);
@@ -350,8 +367,9 @@ export default function RhythmStudio({ childId, nickname, onExit }: RhythmStudio
             later(500, finishTune);
           }
         } else {
-          recordJudgment(expected.index, 'miss');
-          setHint(`Listen again, then tap the ${padsFor(tune).find((p) => padMatches(p, expected))?.label ?? 'right pad'}!`);
+          const missHint = `Listen again, then tap the ${padsFor(tune).find((p) => padMatches(p, expected))?.label ?? 'right pad'}!`;
+          recordJudgment(expected.index, 'miss', missHint);
+          setHint(missHint);
         }
         return;
       }
@@ -386,9 +404,10 @@ export default function RhythmStudio({ childId, nickname, onExit }: RhythmStudio
         }
       }
       if (nearest && nearestDelta <= HIT_WINDOW_MS) {
-        recordJudgment(nearest.index, 'miss');
         const want = pads.find((p) => padMatches(p, nearest as BeatNote));
-        setHint(`Oops! That beat wanted the ${want?.label ?? 'other pad'}.`);
+        const missHint = `Oops! That beat wanted the ${want?.label ?? 'other pad'}.`;
+        recordJudgment(nearest.index, 'miss', missHint);
+        setHint(missHint);
       }
       // Otherwise: free tap far from any beat — just the sound, no penalty.
     },
@@ -457,18 +476,18 @@ export default function RhythmStudio({ childId, nickname, onExit }: RhythmStudio
       {(phase === 'countin' || phase === 'play' || phase === 'echo-call' || phase === 'echo-response') && tune && (
         <div className="flex w-full max-w-4xl flex-col items-center">
           <div className="flex w-full flex-wrap items-center justify-between gap-2">
-            <div className="rounded-full bg-white/85 px-4 py-2 shadow-lg backdrop-blur">
+            <div className="rounded-full bg-white px-4 py-2 shadow-lg">
               <span className="text-base font-black text-kid-ink-900 md:text-lg">{tune.title}</span>
               <span className="ml-2 text-sm font-bold text-kid-ink-700">with Riff</span>
             </div>
             <div className="flex items-center gap-2">
               <div
-                className="rounded-full bg-white/85 px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg backdrop-blur md:text-lg"
+                className="rounded-full bg-white px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg md:text-lg"
                 aria-live="polite"
               >
                 Combo x{live.combo}
               </div>
-              <div className="rounded-full bg-white/85 px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg backdrop-blur md:text-lg">
+              <div className="rounded-full bg-white px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg md:text-lg">
                 {judgedCount} / {totalNotes}
               </div>
             </div>
@@ -552,7 +571,7 @@ export default function RhythmStudio({ childId, nickname, onExit }: RhythmStudio
                 <button
                   type="button"
                   onClick={replayEchoCall}
-                  className="mb-2 rounded-full bg-white/80 px-5 py-2 text-sm font-bold text-kid-ink-700 shadow backdrop-blur transition-transform active:scale-95"
+                  className="mb-2 rounded-full bg-white px-5 py-2 text-sm font-bold text-kid-ink-700 shadow transition-transform active:scale-95"
                 >
                   Hear it again
                 </button>
@@ -590,6 +609,8 @@ export default function RhythmStudio({ childId, nickname, onExit }: RhythmStudio
           </p>
         </div>
       )}
+
+      <AnswerFeedbackPanel feedback={session.feedback} />
 
       {phase === 'won' && (
         <GameWinScreen

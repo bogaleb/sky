@@ -64,7 +64,7 @@ export default function SequenceRenderer({ items, onCommit, locked }: SequenceRe
       </div>
 
       {/* Tray */}
-      <div className="flex flex-wrap items-center justify-center gap-3 rounded-kid-card border-4 border-white/60 bg-white/50 px-6 py-5 shadow-lg backdrop-blur-sm" role="group" aria-label="Tiles to order">
+      <div className="flex flex-wrap items-center justify-center gap-3 rounded-kid-card border-4 border-white/60 bg-white/85 px-6 py-5 shadow-lg" role="group" aria-label="Tiles to order">
         {remaining.map((it, i) => (
           <button
             key={it.id}

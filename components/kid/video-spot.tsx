@@ -142,7 +142,7 @@ export default function VideoSpot({
         src={srcReady ? src : undefined}
         poster={poster}
         playsInline
-        preload="metadata"
+        preload="none"
         onError={() => setFailed(true)}
         className="kid-video-spot__video"
       />

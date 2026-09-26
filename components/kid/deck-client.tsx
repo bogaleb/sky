@@ -59,7 +59,7 @@ export default function DeckClient({ child, initialSteps, sessionId, onExit }: D
   return (
     <>
       {reloading && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-kid-sky-300/60 p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-kid-sky-300/90 p-4">
           <div className="w-full max-w-md rounded-kid-card bg-white/90 px-8 py-8 shadow-2xl">
             <p className="animate-kid-bounce-soft text-center text-2xl font-black text-kid-ink-900">
               Finding new adventures…

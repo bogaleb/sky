@@ -102,6 +102,21 @@ export async function getFamilyWeeklyStars(childId: string): Promise<FamilyWeekl
   return familyWeeklyRows(supabase, parentId);
 }
 
+/**
+ * The child's own age band (set at onboarding), so the kid UI can age-gate
+ * competitive features like the Star Sprint leaderboard. Kid-safe read:
+ * scoped to the child's own row, no parent-zone PIN needed.
+ */
+export async function getChildAgeBand(childId: string): Promise<string | null> {
+  const { supabase } = await requireChild(childId);
+  const { data } = await supabase
+    .from('children')
+    .select('age_band')
+    .eq('id', childId)
+    .maybeSingle();
+  return (data?.age_band as string | null) ?? null;
+}
+
 /** Weekly totals for every child of the signed-in parent. */
 export async function getFamilyLeaderboard(): Promise<FamilyWeeklyRow[]> {
   const { supabase, userId } = await requireParent();

@@ -111,7 +111,7 @@ export default function SortRenderer({ items, groups, onCommit, locked }: SortRe
       </div>
 
       {/* Item pool */}
-      <div className="flex flex-wrap items-center justify-center gap-3 rounded-kid-card border-4 border-white/60 bg-white/50 px-6 py-4 shadow-lg backdrop-blur-sm" role="group" aria-label="Items to sort">
+      <div className="flex flex-wrap items-center justify-center gap-3 rounded-kid-card border-4 border-white/60 bg-white/85 px-6 py-4 shadow-lg" role="group" aria-label="Items to sort">
         {unassigned.map((it, i) => (
           <button
             key={it.id}

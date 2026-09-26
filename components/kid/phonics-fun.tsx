@@ -19,7 +19,7 @@ import {
 } from '@/lib/kid/adapt';
 import { pictogramFor, hasPictogram } from '@/lib/kid/words';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { useGameSession, GameWinScreen } from './game-shell';
+import { useGameSession, GameWinScreen, AnswerFeedbackPanel } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
 import { AVATARS } from '@/components/avatars';
 
@@ -212,7 +212,7 @@ export default function PhonicsFun({ childId, nickname = 'friend', onExit }: Pho
   const pickChoice = (choice: PhonicsEntry) => {
     if (!item || celebrating || roundPhase !== 'match') return;
     // Every word choice is evidence: feeds skill mastery and adaptive difficulty.
-    session.recordAnswer(choice.word === item.word, { ...skillForPhonics(item), itemKey: `${itemIndex}-${item.word}` });
+    session.recordAnswer(choice.word === item.word, { ...skillForPhonics(item), itemKey: `${itemIndex}-${item.word}`, hint: item.hint });
     // Every tap previews the word aloud so non-readers can play.
     speakAs(HOST, choice.word);
     if (choice.word === item.word) {
@@ -272,11 +272,11 @@ export default function PhonicsFun({ childId, nickname = 'friend', onExit }: Pho
       {phase === 'play' && item && (
         <div className="flex w-full max-w-3xl flex-col items-center">
           <div className="flex w-full items-center justify-between gap-2">
-            <div className="rounded-full bg-white/85 px-4 py-2 shadow-lg backdrop-blur">
+            <div className="rounded-full bg-white px-4 py-2 shadow-lg">
               <span className="text-base font-black text-kid-ink-900 md:text-lg">Phonics Fun</span>
               <span className="ml-2 text-sm font-bold text-kid-ink-700">with Luna</span>
             </div>
-            <div className="rounded-full bg-white/85 px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg backdrop-blur md:text-lg">
+            <div className="rounded-full bg-white px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg md:text-lg">
               {itemIndex + 1} / {items.length}
             </div>
           </div>
@@ -393,6 +393,8 @@ export default function PhonicsFun({ childId, nickname = 'friend', onExit }: Pho
           </div>
         </div>
       )}
+
+      <AnswerFeedbackPanel feedback={session.feedback} />
 
       {phase === 'won' && (
         <GameWinScreen

@@ -1,6 +1,4 @@
-import { describe, expect, it } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { describe, expect, it, vi, afterEach } from 'vitest';
 import {
   STAR_SPRINT_TARGET,
   challengeProgress,
@@ -9,6 +7,10 @@ import {
   tallyWeeklyEvents,
   weekKey,
 } from '../lib/kid/showdown';
+
+vi.mock('server-only', () => ({}));
+vi.mock('@/lib/parent-zone', () => ({ requireParentZone: vi.fn() }));
+vi.mock('@/lib/supabase/server', () => ({ createClient: vi.fn() }));
 
 describe('weekKey', () => {
   it('returns the Monday of the week for a Friday', () => {
@@ -131,10 +133,22 @@ describe('weekKey UTC boundaries (Wave 10 honesty fix)', () => {
     expect(weekKey(new Date('2026-09-27T22:59:59Z'))).toBe('2026-09-21');
   });
 
-  it('is implemented with UTC getters (regression guard, TZ-independent)', () => {
-    const src = readFileSync(join(__dirname, '..', 'lib', 'kid', 'showdown.ts'), 'utf8');
-    expect(src).toContain('getUTCDay');
-    expect(src).toContain('setUTCDate');
+  it('is stable across process timezones (no local-time drift)', () => {
+    // A local-time implementation would give different weeks for this instant
+    // depending on the machine timezone. UTC getters must not.
+    const instant = new Date('2026-09-27T22:59:59Z');
+    const prev = process.env.TZ;
+    const seen = new Set<string>();
+    try {
+      for (const tz of ['UTC', 'America/New_York', 'Pacific/Kiritimati', 'Australia/Sydney']) {
+        process.env.TZ = tz;
+        seen.add(weekKey(instant));
+      }
+    } finally {
+      if (prev === undefined) delete process.env.TZ;
+      else process.env.TZ = prev;
+    }
+    expect([...seen]).toEqual(['2026-09-21']);
   });
 
   it('matches the Z-suffixed filter the server action builds', () => {
@@ -198,11 +212,114 @@ describe('tallyWeeklyEvents (Wave 10 honest scoring)', () => {
     expect(starsByChild.get('a')).toBe(7);
     expect(activitiesByChild.get('a')).toBeUndefined();
   });
+});
 
-  it('server action documents the all-sources convention (no session_complete-only filter)', () => {
-    const src = readFileSync(join(__dirname, '..', 'app', 'actions', 'showdown.ts'), 'utf8');
-    expect(src).not.toContain("kind === 'session_complete'");
-    expect(src).toContain('tallyWeeklyEvents');
-    expect(src).toContain('.range('); // paginated, not .limit(4000)
+describe('getFamilyWeeklyStars (server action, Wave 10 honest scoring)', () => {
+  interface Row {
+    child_id: string;
+    event_type: string;
+    metadata: unknown;
+    skill_id: string | null;
+  }
+
+  function makeSupabase(pages: Row[][]) {
+    const rangeCalls: Array<[number, number]> = [];
+    const gteArgs: unknown[] = [];
+    let pageIdx = 0;
+    const query = () => {
+      const q: Record<string, (...a: never[]) => unknown> = {
+        select: () => q,
+        eq: () => q,
+        in: () => q,
+        gte: (_col: never, v: never) => {
+          gteArgs.push(v);
+          return q;
+        },
+        order: () => q,
+        single: () =>
+          Promise.resolve({ data: { id: 'child-1', parent_id: 'parent-1' }, error: null }),
+        range: (a: never, b: never) => {
+          rangeCalls.push([a as number, b as number]);
+          const rows = pages[pageIdx++] ?? [];
+          return Promise.resolve({ data: rows, error: null });
+        },
+        // The kids list is awaited directly (no terminal .single()).
+        then: (resolve: (v: unknown) => void) =>
+          resolve({
+            data: [{ id: 'child-1', nickname: 'Ada', avatar_id: 'curio' }],
+            error: null,
+          }),
+      };
+      return q;
+    };
+    const client = {
+      auth: { getUser: async () => ({ data: { user: { id: 'parent-1' } }, error: null }) },
+      from: () => query(),
+    };
+    return { client, rangeCalls, gteArgs };
+  }
+
+  async function loadAction(client: unknown) {
+    const { createClient } = await import('@/lib/supabase/server');
+    vi.mocked(createClient).mockResolvedValue(client as never);
+    return import('@/app/actions/showdown');
+  }
+
+  afterEach(() => {
+    vi.resetModules();
+    vi.clearAllMocks();
+  });
+
+  it('sums stars from ALL milestone sources, not just session_complete', async () => {
+    const ev = (kind: string, stars: number): Row => ({
+      child_id: 'child-1',
+      event_type: 'milestone',
+      metadata: { kind, stars },
+      skill_id: null,
+    });
+    const { client } = makeSupabase([
+      [
+        ev('session_complete', 10),
+        ev('word_builder_win', 8),
+        ev('fraction_fair_win', 6),
+        ev('quest_complete', 12),
+      ],
+    ]);
+    const { getFamilyWeeklyStars } = await loadAction(client);
+    const rows = await getFamilyWeeklyStars('child-1');
+    expect(rows).toHaveLength(1);
+    expect(rows[0].weeklyStars).toBe(36);
+    expect(rows[0].nickname).toBe('Ada');
+  });
+
+  it('paginates with .range() and counts events from every page', async () => {
+    const page1: Row[] = Array.from({ length: 1000 }, (_, i) => ({
+      child_id: 'child-1',
+      event_type: 'milestone',
+      metadata: { kind: 'session_complete', stars: 1 },
+      skill_id: null,
+    }));
+    const page2: Row[] = [
+      { child_id: 'child-1', event_type: 'milestone', metadata: { kind: 'quest_complete', stars: 5 }, skill_id: null },
+      { child_id: 'child-1', event_type: 'attempt', metadata: {}, skill_id: 'addition' },
+    ];
+    const { client, rangeCalls } = makeSupabase([page1, page2]);
+    const { getFamilyWeeklyStars } = await loadAction(client);
+    const rows = await getFamilyWeeklyStars('child-1');
+    // A full first page triggers a second fetch; a short page stops the loop.
+    expect(rangeCalls).toEqual([
+      [0, 999],
+      [1000, 1999],
+    ]);
+    expect(rows[0].weeklyStars).toBe(1005);
+    expect(rows[0].weeklyActivities).toBe(1);
+  });
+
+  it('filters events to the current UTC week with a Z-suffixed bound', async () => {
+    const { client, gteArgs } = makeSupabase([[]]);
+    const { getFamilyWeeklyStars } = await loadAction(client);
+    await getFamilyWeeklyStars('child-1');
+    expect(gteArgs).toHaveLength(1);
+    expect(gteArgs[0]).toBe(`${weekKey()}T00:00:00.000Z`);
   });
 });

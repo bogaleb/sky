@@ -12,7 +12,7 @@ import {
   type MoneyQuestion,
 } from '@/lib/kid/money';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { useGameSession, GameWinScreen } from './game-shell';
+import { useGameSession, GameWinScreen, AnswerFeedbackPanel } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
 
 export interface CoinCoveProps {
@@ -221,11 +221,11 @@ export default function CoinCove({ childId, nickname = 'friend', onExit }: CoinC
       {phase === 'play' && question && (
         <div className="flex w-full max-w-2xl flex-col items-center px-4">
           <div className="flex w-full items-center justify-between gap-2">
-            <div className="rounded-full bg-white/85 px-4 py-2 shadow-lg backdrop-blur">
+            <div className="rounded-full bg-white px-4 py-2 shadow-lg">
               <span className="text-base font-black text-kid-ink-900 md:text-lg">Coin Cove</span>
               <span className="ml-2 text-sm font-bold text-kid-ink-700">with Milo</span>
             </div>
-            <div className="rounded-full bg-white/85 px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg backdrop-blur md:text-lg">
+            <div className="rounded-full bg-white px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg md:text-lg">
               {roundIndex + 1} / {ROUNDS_PER_GAME}
             </div>
           </div>
@@ -250,7 +250,7 @@ export default function CoinCove({ childId, nickname = 'friend', onExit }: CoinC
               ))}
             </div>
             <div
-              className="rounded-full bg-white/85 px-6 py-2 text-xl font-black tabular-nums text-kid-ink-900 shadow-lg backdrop-blur md:text-2xl"
+              className="rounded-full bg-white px-6 py-2 text-xl font-black tabular-nums text-kid-ink-900 shadow-lg md:text-2xl"
               aria-live="polite"
             >
               Counted so far: {countedTotal}¢
@@ -281,6 +281,8 @@ export default function CoinCove({ childId, nickname = 'friend', onExit }: CoinC
           </div>
         </div>
       )}
+
+      <AnswerFeedbackPanel feedback={session.feedback} />
 
       {phase === 'won' && (
         <GameWinScreen

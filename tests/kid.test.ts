@@ -1,4 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+// celebration.tsx re-exports the win layer from game-shell.tsx, which pulls
+// in server actions — mock the server-only guard like game-shell.test.ts does.
+vi.mock('server-only', () => ({}));
 import { toPlannedStep, type ServerPlanItem } from '../lib/kid/types';
 import { praiseFor, encourage } from '../components/kid/celebration';
 

@@ -114,11 +114,7 @@ export default function SplashIntro({ onDone }: { onDone: () => void }) {
           {AVATAR_IDS.map((id, i) => {
             const Avatar = AVATARS[id].Component;
             return (
-              <div
-                key={id}
-                className={reduced ? '' : 'animate-kid-bob'}
-                style={{ animationDelay: reduced ? undefined : `${i * 0.22}s` }}
-              >
+              <div key={id}>
                 <Avatar className="h-16 w-16 drop-shadow-[0_10px_16px_rgba(23,50,79,0.35)] md:h-20 md:w-20" />
               </div>
             );

@@ -9,12 +9,15 @@ Outputs:
   supabase/seed_phase3.sql   - full replacement bank (run AFTER the
                                content-refresh migration deletes the old bank)
   supabase/seed_phase3.json  - manifest of the same activities
-  supabase/migrations/20260925000300_content_refresh.sql - DELETEs the old
-                               bank and inserts the new one (idempotent)
+  supabase/migrations/20260926000200_content_quality.sql - guarded UPDATEs
+                               for the content-quality conversions (rendered
+                               from this same run so payloads byte-match)
+
+NOTE: supabase/migrations/20260925000300_content_refresh.sql is frozen
+history and is deliberately NOT regenerated here.
 
 Deterministic: fixed RNG seed, reproducible output.
 """
-import datetime
 import json
 import pathlib
 import sys
@@ -26,11 +29,15 @@ from core import ACTS, AGES, validate  # noqa: E402
 
 from content import reading, writing, math, science, geography  # noqa: E402
 from content import coding, music, drawing, feelings  # noqa: E402
+import content_quality  # noqa: E402
 
 SUPABASE = HERE.parent
 OUT_SQL = SUPABASE / "seed_phase3.sql"
 OUT_JSON = SUPABASE / "seed_phase3.json"
-OUT_MIGRATION = SUPABASE / "migrations" / "20260925000300_content_refresh.sql"
+# NOTE: 20260925000300_content_refresh.sql is frozen migration history (it may
+# already be applied in production). It is deliberately NOT regenerated here.
+# Quality conversions ship as guarded UPDATEs in a new delta migration:
+OUT_QUALITY_MIGRATION = SUPABASE / "migrations" / "20260926000200_content_quality.sql"
 
 
 def sql_escape(s: str) -> str:
@@ -41,6 +48,9 @@ def main() -> None:
     for module in (reading, writing, math, science, geography,
                    coding, music, drawing, feelings):
         module.build()
+
+    # Content-quality overlay: 1-for-1 MC -> manipulative conversions.
+    content_quality.apply()
 
     errors = validate()
     if errors:
@@ -80,39 +90,10 @@ def main() -> None:
     OUT_SQL.write_text("\n".join(lines))
     print(f"wrote {OUT_SQL}")
 
-    # ---- migration: replace the old bank ----
-    today = datetime.date.today().isoformat()
-    mig = [
-        f"-- Sky Phase 3 content refresh ({today}).",
-        "-- Replaces the Phase 1/2 worksheet-style activity bank with the",
-        "-- story-driven Phase 3 bank. learning_events.activity_id is",
-        "-- ON DELETE SET NULL, so history keeps skill_id + metadata.",
-        "-- Idempotent: safe to re-run.",
-        "",
-        "BEGIN;",
-        "",
-        "-- 1. Remove the old bank.",
-        "DELETE FROM public.activities;",
-        "",
-    ]
-    for a in ACTS:
-        card = sql_escape(json.dumps(a["card"], ensure_ascii=False))
-        answer = sql_escape(json.dumps(a["answer"], ensure_ascii=False))
-        prompt = sql_escape(a["prompt_text"])
-        mig.append(
-            "INSERT INTO public.activities "
-            "(skill_id, level, kind, prompt_text, card, answer, points, "
-            "min_age_band, max_age_band)\n"
-            f"SELECT s.id, {a['level']}, '{a['kind']}', '{prompt}', "
-            f"'{card}'::jsonb, '{answer}'::jsonb, {a['points']}, "
-            f"'{a['min_age_band']}', '{a['max_age_band']}'\n"
-            f"FROM public.skills s WHERE s.code = '{a['skill']}'\n"
-            f"AND NOT EXISTS (SELECT 1 FROM public.activities x "
-            f"WHERE x.skill_id = s.id AND x.prompt_text = '{prompt}');\n"
-        )
-    mig.append("COMMIT;\n")
-    OUT_MIGRATION.write_text("\n".join(mig))
-    print(f"wrote {OUT_MIGRATION}")
+    # ---- delta migration: guarded UPDATEs for the quality conversions ----
+    # Rendered from the same run so shuffled card/answer payloads byte-match
+    # the regenerated bank above. Deterministic; safe to re-run.
+    content_quality.write_migration(OUT_QUALITY_MIGRATION)
 
     # ---- coverage report ----
     from collections import Counter

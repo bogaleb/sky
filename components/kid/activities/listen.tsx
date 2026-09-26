@@ -60,7 +60,7 @@ export default function ListenRenderer({ script, narration, onCommit, locked }: 
       <div className="relative mt-8" aria-hidden>
         <span className="absolute inset-0 animate-kid-pulse-ring rounded-full bg-kid-berry-500/60" />
         <span className="absolute inset-0 animate-kid-pulse-ring rounded-full bg-kid-berry-500/40" style={{ animationDelay: '0.5s' }} />
-        <div className="relative flex h-32 w-32 animate-kid-bob items-center justify-center rounded-full border-4 border-white/70 bg-kid-berry-500 shadow-[0_16px_36px_rgba(241,91,181,0.5)]">
+        <div className="relative flex h-32 w-32 items-center justify-center rounded-full border-4 border-white/70 bg-kid-berry-500 shadow-[0_16px_36px_rgba(241,91,181,0.5)]">
           <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="9" y="2" width="6" height="12" rx="3" fill="#fff" stroke="none" />
             <path d="M5 10a7 7 0 0 0 14 0" />

@@ -12,7 +12,7 @@ import {
   type ScienceTrial,
 } from '@/lib/kid/science';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { useGameSession, GameWinScreen } from './game-shell';
+import { useGameSession, GameWinScreen, AnswerFeedbackPanel } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
 import HostCharacter from '@/components/kid/host-character';
 
@@ -552,9 +552,7 @@ function EarthReveal({ day }: { day: boolean }) {
       <div className={`absolute inset-0 rounded-full ${day ? 'bg-kid-sky-200' : 'bg-kid-night-700'}`} style={{ transition: 'background 1s' }} />
       <div className="absolute left-4 top-1/2 -translate-y-1/2">
         {day ? (
-          <div className="animate-kid-sparkle">
-            <ScienceArt art="sun" className="h-24 w-24" />
-          </div>
+          <ScienceArt art="sun" className="h-24 w-24" />
         ) : (
           <ScienceArt art="night" className="h-20 w-20 opacity-90" />
         )}
@@ -677,7 +675,7 @@ export default function ScienceLab({ childId, nickname, onExit }: ScienceLabProp
   const handlePredict = useCallback(
     (option: ScienceOption) => {
       if (!trial || phase !== 'predict') return;
-      session.recordAnswer(option.id === trial.correctId, { itemKey: `${exp?.id}-${trial.id}` });
+      session.recordAnswer(option.id === trial.correctId, { itemKey: `${exp?.id}-${trial.id}`, workedExample: trial.resultLine });
       goReveal(option.id === trial.correctId);
     },
     [trial, phase, goReveal, exp, session]
@@ -829,13 +827,13 @@ export default function ScienceLab({ childId, nickname, onExit }: ScienceLabProp
       {phase === 'predict' && exp && trial && (
         <div className="flex w-full max-w-2xl flex-col items-center">
           <div className="flex w-full items-center justify-between gap-2">
-            <div className="rounded-full bg-white/85 px-4 py-2 shadow-lg backdrop-blur">
+            <div className="rounded-full bg-white px-4 py-2 shadow-lg">
               <span className="text-base font-black text-kid-ink-900 md:text-lg">{exp.title}</span>
             </div>
             <button
               type="button"
               onClick={() => speakAs(HOST, trial.prompt)}
-              className="rounded-full bg-white/85 px-4 py-2 text-base font-black text-kid-ink-900 shadow-lg backdrop-blur transition-transform active:scale-95"
+              className="rounded-full bg-white px-4 py-2 text-base font-black text-kid-ink-900 shadow-lg transition-transform active:scale-95"
               aria-label="Hear the question again"
             >
               <svg viewBox="0 0 24 24" className="h-6 w-6" aria-hidden>
@@ -939,6 +937,8 @@ export default function ScienceLab({ childId, nickname, onExit }: ScienceLabProp
           </div>
         </div>
       )}
+
+      <AnswerFeedbackPanel feedback={session.feedback} />
 
       {phase === 'finale' && (
         <GameWinScreen

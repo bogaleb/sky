@@ -266,6 +266,7 @@ export default function CharacterHomes({ childId, nickname = 'friend', onExit }:
           {home.clipSrc ? (
             <VideoSpot
               src={home.clipSrc}
+              poster={home.posterSrc ?? undefined}
               label={`${character.name}'s home: ${home.homeName}`}
               characterId={home.characterId}
               voiceover={home.greeting}

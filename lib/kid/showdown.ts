@@ -7,6 +7,19 @@
 
 export const STAR_SPRINT_TARGET = 30;
 
+/**
+ * The Star Sprint leaderboard is age-gated: a ranked sibling leaderboard is
+ * a social-comparison dark pattern for ages 3–5, with no developmental
+ * upside. Only the 7–8 band sees the competitive card; younger kids get a
+ * warm, non-competitive encouragement instead (see showdown-card.tsx).
+ */
+export const SHOWDOWN_AGE_BAND = '7-8';
+
+/** Whether this age band may see the competitive Star Sprint leaderboard. */
+export function canSeeShowdown(ageBand: string | null | undefined): boolean {
+  return ageBand === SHOWDOWN_AGE_BAND;
+}
+
 export interface SiblingEntry {
   id: string;
   nickname: string;

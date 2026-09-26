@@ -1,8 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getLearningDays } from '@/app/actions/calendar';
-import { dayKey, buildMonthGrid, MONTH_NAMES, WEEKDAYS } from '@/lib/kid/calendar';
+import { getLearningDays, getStreakSummary, type StreakSummary } from '@/app/actions/calendar';
+import {
+  dayKey,
+  buildMonthGrid,
+  MONTH_NAMES,
+  WEEKDAYS,
+  streakGraceDays,
+  streakMood,
+  streakCopy,
+} from '@/lib/kid/calendar';
 
 /** Small star badge for active days. Pure SVG, no emoji. */
 function LearnedStar() {
@@ -30,6 +38,7 @@ export default function StreakCalendar({ childId }: { childId: string }) {
   const weeks = buildMonthGrid(year, month);
 
   const [activeDays, setActiveDays] = useState<Set<string> | null>(null);
+  const [streak, setStreak] = useState<StreakSummary | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -40,12 +49,34 @@ export default function StreakCalendar({ childId }: { childId: string }) {
       .catch(() => {
         if (!cancelled) setActiveDays(new Set());
       });
+    void getStreakSummary(childId)
+      .then((s) => {
+        if (!cancelled) setStreak(s);
+      })
+      .catch(() => {
+        if (!cancelled) setStreak({ currentStreak: 0, lastActiveDate: null, ageBand: null });
+      });
     return () => {
       cancelled = true;
     };
   }, [childId]);
 
   const learnedCount = activeDays ? [...activeDays].filter((k) => k.startsWith(`${year}-${String(month + 1).padStart(2, '0')}`)).length : 0;
+
+  // Gentle streak line: the streak pauses ("takes a cozy nap") instead of
+  // breaking — copy is kind, emoji-free, and 18px+. last_active_date is a
+  // questDateKey (UTC), so the mood uses the matching UTC today key.
+  const streakLine = (() => {
+    if (!streak) return null;
+    if (streak.currentStreak <= 0 && !streak.lastActiveDate) {
+      return streak.ageBand === '3-4'
+        ? 'Every learning day grows your streak — hooray for today!'
+        : 'Every learning day grows your streak — start today!';
+    }
+    const utcToday = new Date().toISOString().slice(0, 10);
+    const mood = streakMood(streak.lastActiveDate, utcToday, streakGraceDays(streak.ageBand));
+    return streakCopy(mood, streak.currentStreak, streak.ageBand);
+  })();
 
   return (
     <section
@@ -62,6 +93,12 @@ export default function StreakCalendar({ childId }: { childId: string }) {
           </p>
         )}
       </div>
+
+      {streakLine && (
+        <p className="mt-2 text-lg font-extrabold text-kid-ink-900" aria-live="polite">
+          {streakLine}
+        </p>
+      )}
 
       {activeDays === null ? (
         <div className="mt-3 grid grid-cols-7 gap-1" aria-hidden="true">

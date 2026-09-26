@@ -42,3 +42,42 @@ export async function getLearningDays(childId: string, lookbackDays = 45): Promi
   }
   return [...days].sort();
 }
+
+export interface StreakSummary {
+  currentStreak: number;
+  /** last_active_date from the streaks table (questDateKey format) or null. */
+  lastActiveDate: string | null;
+  ageBand: string | null;
+}
+
+/**
+ * The child's streak row + age band, for the gentle streak line on the
+ * calendar. Read-only; scoped to the child's own row, no parent-zone PIN.
+ */
+export async function getStreakSummary(childId: string): Promise<StreakSummary> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not signed in.');
+
+  const { data: child } = await supabase
+    .from('children')
+    .select('id, age_band')
+    .eq('id', childId)
+    .eq('parent_id', user.id)
+    .single();
+  if (!child) throw new Error('Child not found.');
+
+  const { data: row } = await supabase
+    .from('streaks')
+    .select('current_streak, last_active_date')
+    .eq('child_id', childId)
+    .maybeSingle();
+
+  return {
+    currentStreak: row?.current_streak ?? 0,
+    lastActiveDate: row?.last_active_date ?? null,
+    ageBand: (child.age_band as string | null) ?? null,
+  };
+}

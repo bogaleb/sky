@@ -283,7 +283,7 @@ export function PetWidget({ child, onOpen }: { child: SessionChild; onOpen: () =
     <button
       type="button"
       onClick={onOpen}
-      className="animate-kid-pop-in flex items-center gap-3 rounded-kid-card border-4 border-white/70 bg-white/85 px-4 py-3 shadow-[0_10px_24px_rgba(23,50,79,0.2)] backdrop-blur transition-transform hover:scale-105 active:scale-95"
+      className="animate-kid-pop-in flex items-center gap-3 rounded-kid-card border-4 border-white/70 bg-white px-4 py-3 shadow-[0_10px_24px_rgba(23,50,79,0.2)] transition-transform hover:scale-105 active:scale-95"
       aria-label={pet ? `Visit ${pet.name ?? info?.displayName ?? 'pet'}` : 'Adopt a pet'}
     >
       {pet && info ? (

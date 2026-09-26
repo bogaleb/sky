@@ -221,7 +221,7 @@ export default function WelcomeQuest({ childId, nickname, onDone }: WelcomeQuest
 
       {questionIndex >= 0 && (
         <div className="flex w-full max-w-2xl flex-col items-center px-4">
-          <div className="rounded-full bg-white/85 px-5 py-2 text-base font-black text-kid-ink-900 shadow-lg backdrop-blur md:text-lg" aria-label={`Game ${questionIndex + 1} of 3`}>
+          <div className="rounded-full bg-white px-5 py-2 text-base font-black text-kid-ink-900 shadow-lg md:text-lg" aria-label={`Game ${questionIndex + 1} of 3`}>
             Game {questionIndex + 1} of 3
           </div>
 

@@ -144,7 +144,7 @@ const STARS: { x: number; y: number; r: number; d: string }[] = [
   { x: 250, y: 200, r: 1.5, d: '0.3s' },
 ];
 
-function Clouds({ count, dark = false }: { count: number; dark?: boolean }) {
+function Clouds({ count, dark = false, animated = true }: { count: number; dark?: boolean; animated?: boolean }) {
   const fill = dark ? '#3A4670' : '#ffffff';
   const spots = [
     { x: 90, y: 80, s: 1, dur: '11s', delay: '0s' },
@@ -157,7 +157,7 @@ function Clouds({ count, dark = false }: { count: number; dark?: boolean }) {
       {spots.slice(0, count).map((c, i) => (
         <g
           key={i}
-          className="animate-kid-drift"
+          className={animated ? 'animate-kid-drift' : undefined}
           style={{ animationDuration: c.dur, animationDelay: c.delay }}
           opacity={dark ? 0.8 : 0.92}
         >
@@ -190,7 +190,7 @@ function BackdropArt({ backdrop }: { backdrop: CinemaBackdrop }) {
         <circle cx="648" cy="85" r="9" fill="#EAD9A8" opacity="0.8" />
         <circle cx="672" cy="105" r="6" fill="#EAD9A8" opacity="0.8" />
         <circle cx="660" cy="80" r="4" fill="#EAD9A8" opacity="0.7" />
-        <Clouds count={2} dark />
+        <Clouds count={2} dark animated={false} />
         <path d="M0 360 Q200 320 400 355 T800 345 V450 H0 Z" fill="#232C55" />
         <path d="M0 395 Q260 365 520 395 T800 388 V450 H0 Z" fill="#1A2148" />
       </svg>
@@ -212,7 +212,7 @@ function BackdropArt({ backdrop }: { backdrop: CinemaBackdrop }) {
         <rect width="800" height="450" fill="url(#cin-osk)" />
         <circle cx="150" cy="90" r="46" fill="#FFD93C" />
         <circle cx="150" cy="90" r="62" fill="#FFD93C" opacity="0.25" />
-        <Clouds count={3} />
+        <Clouds count={3} animated={false} />
         <rect y="280" width="800" height="170" fill="url(#cin-sea)" />
         <g className="animate-kid-drift" style={{ animationDuration: '9s' }}>
           <path d="M0 292 Q50 282 100 292 T200 292 T300 292 T400 292 T500 292 T600 292 T700 292 T800 292 V310 H0 Z" fill="#ffffff" opacity="0.5" />
@@ -227,7 +227,7 @@ function BackdropArt({ backdrop }: { backdrop: CinemaBackdrop }) {
           <path d="M-4 44 L-4 10 L-28 44 Z" fill="#FF8A7A" opacity="0.95" />
         </g>
         {[120, 300, 480, 660, 220].map((x, i) => (
-          <circle key={i} cx={x} cy={380 - (i % 3) * 24} r={5 + (i % 3) * 2} fill="#BDEFFF" opacity="0.55" className="animate-kid-float" style={{ animationDelay: `${i * 0.5}s` }} />
+          <circle key={i} cx={x} cy={380 - (i % 3) * 24} r={5 + (i % 3) * 2} fill="#BDEFFF" opacity="0.55" />
         ))}
       </svg>
     );
@@ -249,7 +249,7 @@ function BackdropArt({ backdrop }: { backdrop: CinemaBackdrop }) {
         </g>
         <circle cx="650" cy="100" r="44" fill="#FFD93C" />
         <circle cx="650" cy="100" r="60" fill="#FFD93C" opacity="0.25" />
-        <Clouds count={4} />
+        <Clouds count={4} animated={false} />
         <path d="M180 200 q10 -12 20 0 q10 -12 20 0" stroke="#2B4A6F" strokeWidth="3.5" fill="none" strokeLinecap="round" />
         <path d="M250 160 q8 -10 16 0 q8 -10 16 0" stroke="#2B4A6F" strokeWidth="3" fill="none" strokeLinecap="round" />
         <path d="M0 420 Q400 400 800 420 V450 H0 Z" fill="#BDEFFF" opacity="0.6" />
@@ -491,14 +491,6 @@ export default function StoryCinema({ childId, onExit }: { childId: string; onEx
                   aria-label={`Watch ${ep.title}`}
                 >
                   <div className={`relative aspect-video w-full overflow-hidden bg-gradient-to-b ${POSTER_GRADIENTS[ep.friendId]}`}>
-                    {ep.friendId === 'hoot' &&
-                      STARS.slice(0, 8).map((s, k) => (
-                        <span
-                          key={k}
-                          className="animate-kid-sparkle absolute rounded-full bg-white"
-                          style={{ left: `${(s.x / 800) * 100}%`, top: `${(s.y / 450) * 100}%`, width: 5, height: 5, animationDelay: s.d }}
-                        />
-                      ))}
                     <div className="absolute inset-0 flex items-center justify-center">
                       <Friend className="animate-kid-float h-28 w-28 drop-shadow-[0_10px_16px_rgba(23,50,79,0.4)] transition-transform duration-300 group-hover:scale-110 md:h-32 md:w-32" />
                     </div>

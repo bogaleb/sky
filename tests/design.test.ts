@@ -1,7 +1,9 @@
+// @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { DESIGN_CONTRACT } from '../lib/kid/design';
+import { createElement } from 'react';
 
 const cssPath = join(process.cwd(), 'app', 'globals.css');
 const layoutPath = join(process.cwd(), 'app', 'layout.tsx');
@@ -101,41 +103,76 @@ describe('globals.css design system', () => {
   });
 });
 
-describe('SkyBackdrop', () => {
-  it('is a fixed pointer-transparent ambient layer with aurora, stars, clouds', () => {
-    const src = readFileSync(backdropPath, 'utf8');
-    expect(src).toContain('fixed inset-0');
-    expect(src).toContain('pointer-events-none');
-    expect(src).toContain('animate-kid-aurora');
-    expect(src).toContain('animate-kid-twinkle');
-    expect(src).toContain('animate-kid-drift');
-    expect(src).toContain('animate-kid-float-slow');
-    expect(src).toContain('export default function SkyBackdrop');
+describe('SkyBackdrop (rendered)', () => {
+  it('is a fixed pointer-transparent ambient layer with aurora, stars, clouds', async () => {
+    const SkyBackdrop = (await import('../components/kid/sky-backdrop')).default;
+    const { render } = await import('@testing-library/react');
+    const { container, unmount } = render(createElement(SkyBackdrop));
+    const root = container.firstElementChild as HTMLElement;
+    expect(root.className).toContain('fixed inset-0');
+    expect(root.className).toContain('pointer-events-none');
+    expect(root.getAttribute('aria-hidden')).toBe('true');
+    const html = container.innerHTML;
+    for (const cls of ['animate-kid-aurora', 'animate-kid-twinkle', 'animate-kid-drift', 'animate-kid-float-slow']) {
+      expect(html, cls).toContain(cls);
+    }
+    unmount();
   });
 
-  it('reuses avatar art for cameos', () => {
-    const src = readFileSync(backdropPath, 'utf8');
-    expect(src).toMatch(/from '@\/components\/avatars'/);
-    expect(src).toContain('AVATARS');
+  it('renders character cameo art', async () => {
+    const SkyBackdrop = (await import('../components/kid/sky-backdrop')).default;
+    const { render } = await import('@testing-library/react');
+    const { container, unmount } = render(createElement(SkyBackdrop));
+    // Cameos reuse the avatar SVGs.
+    expect(container.querySelectorAll('svg').length).toBeGreaterThan(0);
+    unmount();
   });
 });
 
-describe('KidShell upgrade', () => {
-  it('keeps the exact props API and renders the compact HUD', () => {
-    const src = readFileSync(shellPath, 'utf8');
-    expect(src).toContain('doneCount');
-    expect(src).toContain('totalSteps');
-    expect(src).toContain('points');
-    expect(src).toContain('onExit');
-    expect(src).toContain('hideHud');
-    expect(src).toContain('hudId');
-    expect(src).toContain('SkyBackdrop');
-    expect(src).toContain('btn-kid-coral');
-    expect(src).toContain('font-display');
-    // Compact HUD: single-row, sky-tinted, non-covering (redesigned per user feedback).
-    expect(src).toContain('data-kid-hud');
-    // Mute behavior preserved.
-    expect(src).toContain('toggleMute');
-    expect(src).toContain("aria-label={muted ? 'Turn sound on' : 'Turn sound off'}");
+describe('KidShell upgrade (rendered)', () => {
+  it('renders the compact HUD with the full props API', async () => {
+    const KidShell = (await import('../components/kid/kid-shell')).default;
+    const { render, screen } = await import('@testing-library/react');
+    const { createElement } = await import('react');
+    const { container, unmount } = render(
+      createElement(KidShell, {
+        child: { id: 'c1', nickname: 'Ada', avatarId: 'fox' },
+        doneCount: 3,
+        totalSteps: 8,
+        points: 42,
+        onExit: () => {},
+      } as never, createElement('div', null, 'game content'))
+    );
+    const html = container.innerHTML;
+    // Compact HUD marker, design-system classes, ambient backdrop.
+    expect(container.querySelector('[data-kid-hud]')).not.toBeNull();
+    expect(html).toContain('font-display');
+    expect(html).toContain('btn-kid');
+    expect(html).toContain('kid-aurora');
+    // HUD surfaces the session progress (star dots with an accessible label).
+    expect(screen.getByRole('img', { name: '3 of 8 activities done' })).toBeInTheDocument();
+    // Mute toggle preserved.
+    expect(
+      screen.getByRole('button', { name: /turn sound (on|off)/i })
+    ).toBeInTheDocument();
+    unmount();
+  });
+
+  it('hides the HUD when hideHud is set', async () => {
+    const KidShell = (await import('../components/kid/kid-shell')).default;
+    const { render } = await import('@testing-library/react');
+    const { createElement } = await import('react');
+    const { container, unmount } = render(
+      createElement(KidShell, {
+        child: { id: 'c1', nickname: 'Ada', avatarId: 'fox' },
+        doneCount: 0,
+        totalSteps: 8,
+        points: 0,
+        onExit: () => {},
+        hideHud: true,
+      } as never, createElement('div', null, 'game content'))
+    );
+    expect(container.querySelector('[data-kid-hud]')).toBeNull();
+    unmount();
   });
 });

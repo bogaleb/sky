@@ -1,8 +1,27 @@
-import { describe, expect, it } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+// @vitest-environment jsdom
+import { describe, expect, it, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { createElement } from 'react';
 import { SPLASH_KEY, markSplashSeen, shouldShowSplash } from '../lib/kid/splash';
 import { buildMonthGrid, dayKey } from '../lib/kid/calendar';
+
+vi.mock('server-only', () => ({}));
+vi.mock('@/lib/kid/audio', () => ({
+  speak: vi.fn(),
+  speakAs: vi.fn(),
+  playSfx: vi.fn(),
+  stopSpeaking: vi.fn(),
+  unlockAudio: vi.fn(),
+}));
+vi.mock('@/app/actions/calendar', () => ({
+  getLearningDays: vi.fn(async () => []),
+  getStreakSummary: vi.fn(async () => ({ current: 0, best: 0 })),
+}));
+vi.mock('@/app/actions/learning', () => ({
+  logLearningEvent: vi.fn(async () => {}),
+  recordGameAttempts: vi.fn(async () => ({ recorded: 0, leveledSkills: [] })),
+}));
+vi.mock('@/lib/kid/reward-errors', () => ({ reportRewardError: vi.fn() }));
 
 /** In-memory storage stand-in so tests never touch real sessionStorage. */
 function fakeStorage(initial: Record<string, string> = {}): Storage {
@@ -75,17 +94,33 @@ describe('calendar date math', () => {
 });
 
 describe('content hygiene', () => {
-  it('has no emoji in the polish components or lib', () => {
+  it('has no emoji in the rendered polish surfaces', async () => {
+    // The kid sees rendered components, not source files. Render the real
+    // surfaces and scan what actually reaches the DOM.
     const emoji = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}]/u;
-    for (const file of [
-      join('components', 'kid', 'splash-intro.tsx'),
-      join('components', 'kid', 'streak-calendar.tsx'),
-      join('lib', 'kid', 'splash.ts'),
-      join('lib', 'kid', 'calendar.ts'),
-      join('components', 'kid', 'sky-map.tsx'),
-    ]) {
-      const src = readFileSync(join(process.cwd(), file), 'utf8');
-      expect(src, file).not.toMatch(emoji);
-    }
+    const { default: SplashIntro } = await import('@/components/kid/splash-intro');
+    const { default: StreakCalendar } = await import('@/components/kid/streak-calendar');
+    const { default: SkyMap } = await import('@/components/kid/sky-map');
+
+    const r1 = render(createElement(SplashIntro, { onDone: () => {} }));
+    expect(r1.container.innerHTML).not.toMatch(emoji);
+    expect(screen.getByText(/Tap to begin/i)).toBeInTheDocument();
+    r1.unmount();
+
+    const r2 = render(createElement(StreakCalendar, { childId: 'c1' }));
+    await screen.findByText(/streak/i);
+    expect(r2.container.innerHTML).not.toMatch(emoji);
+    r2.unmount();
+
+    const r3 = render(
+      createElement(SkyMap, {
+        nickname: 'Ada',
+        onSelectIsland: () => {},
+        onSurprise: () => {},
+      })
+    );
+    expect(screen.getByText(/Where to, Ada\?/)).toBeInTheDocument();
+    expect(r3.container.innerHTML).not.toMatch(emoji);
+    r3.unmount();
   });
 });

@@ -123,10 +123,10 @@ export default function DressUp({ child, onExit }: { child: SessionChild; onExit
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-kid-ink-900/70 p-3 backdrop-blur-sm md:p-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-kid-ink-900/75 p-3 md:p-8">
       <div className="animate-kid-pop-in flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-kid-card border-4 border-white/70 bg-gradient-to-b from-kid-grape-400 to-kid-sky-300 shadow-2xl">
         {/* header */}
-        <div className="flex items-center justify-between gap-3 bg-white/70 px-6 py-4 backdrop-blur">
+        <div className="flex items-center justify-between gap-3 bg-white px-6 py-4">
           <div>
             <h2 className="text-2xl font-black text-kid-ink-900 md:text-3xl">Dress-Up Studio</h2>
             <p className="text-base font-bold text-kid-ink-700">

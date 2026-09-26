@@ -2,17 +2,28 @@
 
 import { isParentZoneUnlocked, lockParentZone, requireParentZone, unlockParentZone } from '@/lib/parent-zone';
 import { createClient } from '@/lib/supabase/server';
-import { buildWeeklyDigest } from '@/lib/parent/digest';
+import { buildWeeklyDigest, buildMasteryDelta } from '@/lib/parent/digest';
 import type {
   ChildDashboard,
   FocusSkill,
+  MasteryAttempt,
+  MasteryDelta,
   SkillMasteryDetail,
   SubjectMastery,
   TopSkill,
   WeeklyDigest,
 } from '@/lib/parent/digest';
 
-export type { ChildDashboard, FocusSkill, SkillMasteryDetail, SubjectMastery, TopSkill, WeeklyDigest };
+export type {
+  ChildDashboard,
+  FocusSkill,
+  MasteryAttempt,
+  MasteryDelta,
+  SkillMasteryDetail,
+  SubjectMastery,
+  TopSkill,
+  WeeklyDigest,
+};
 
 const SUBJECT_NAMES: Record<string, string> = {
   reading: 'Reading',
@@ -77,7 +88,7 @@ export async function getDashboardData(): Promise<ChildDashboard[]> {
   // Mastery rows for all children.
   const { data: masteryRows } = await supabase
     .from('skill_mastery')
-    .select('child_id, skill_id, status, current_level, attempts, correct, last_practiced_at')
+    .select('child_id, skill_id, status, current_level, attempts, correct, last_practiced_at, mastered_at')
     .in('child_id', childIds);
   const masteryByChild = new Map<
     string,
@@ -88,6 +99,7 @@ export async function getDashboardData(): Promise<ChildDashboard[]> {
       attempts: number;
       correct: number;
       last_practiced_at: string | null;
+      mastered_at: string | null;
     }>
   >();
   for (
@@ -99,6 +111,7 @@ export async function getDashboardData(): Promise<ChildDashboard[]> {
       attempts: number;
       correct: number;
       last_practiced_at: string | null;
+      mastered_at: string | null;
     }>
   ) {
     const list = masteryByChild.get(m.child_id) ?? [];
@@ -107,9 +120,11 @@ export async function getDashboardData(): Promise<ChildDashboard[]> {
   }
 
   // Learning events in the last 30 days (sessions, attempts, milestones).
+  // difficulty_level is the item/activity difficulty on each attempt — the
+  // raw material for the weekly mastery-delta estimate (no history table).
   const { data: events } = await supabase
     .from('learning_events')
-    .select('child_id, event_type, skill_id, metadata, created_at')
+    .select('child_id, event_type, skill_id, difficulty_level, metadata, created_at')
     .in('child_id', childIds)
     .gte('created_at', thirtyDaysAgo)
     .order('created_at', { ascending: false })
@@ -118,6 +133,7 @@ export async function getDashboardData(): Promise<ChildDashboard[]> {
     child_id: string;
     event_type: string;
     skill_id: string | null;
+    difficulty_level: number | null;
     metadata: Record<string, unknown>;
     created_at: string;
   }>;
@@ -180,6 +196,16 @@ export async function getDashboardData(): Promise<ChildDashboard[]> {
     // Activities answered in the last 7 days.
     const attempts7d = events7d.filter((e) => e.event_type === 'attempt' && e.skill_id);
     const activities7d = attempts7d.length;
+
+    // Per-skill attempt evidence for the weekly mastery delta: the week's
+    // opening practice difficulty estimates the level the child started at.
+    const deltaAttemptsBySkill = new Map<string, MasteryAttempt[]>();
+    for (const e of attempts7d) {
+      const sid = e.skill_id as string;
+      const list = deltaAttemptsBySkill.get(sid) ?? [];
+      list.push({ difficultyLevel: e.difficulty_level ?? null, at: e.created_at });
+      deltaAttemptsBySkill.set(sid, list);
+    }
 
     // Learning time: pair session_start with session_complete by sessionId,
     // cap each session at 90 minutes to ignore abandoned tabs.
@@ -258,6 +284,13 @@ export async function getDashboardData(): Promise<ChildDashboard[]> {
           correct: m.correct,
           accuracyPct,
           lastPracticedAt: m.last_practiced_at,
+          masteryDelta: buildMasteryDelta({
+            currentLevel: m.current_level,
+            status: m.status,
+            masteredAt: m.mastered_at,
+            weekStartIso: sevenDaysAgo,
+            attempts: deltaAttemptsBySkill.get(m.skill_id) ?? [],
+          }),
         };
       })
       .sort((a, b) => a.subjectCode.localeCompare(b.subjectCode) || a.skillName.localeCompare(b.skillName));
@@ -301,6 +334,7 @@ export async function getDashboardData(): Promise<ChildDashboard[]> {
         else if (md.kind === 'song_finished') detail = `Sang a song with Riff`;
         else if (md.kind === 'story_finished') detail = `Finished a story with Luna`;
         else if (md.kind === 'session_start') detail = `Started a learning flight`;
+        else if (md.kind === 'time_limit_reached') detail = `Reached the daily time limit — wound down for the day`;
         return { kind: md.kind ?? 'milestone', detail, at: e.created_at };
       });
 

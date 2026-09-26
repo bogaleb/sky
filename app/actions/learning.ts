@@ -229,14 +229,26 @@ export async function submitActivityAttempt(
 // skill_mastery rules as submit_attempt (see record_game_attempts in
 // 20260926000100_game_learning.sql). Items are validated here and again in
 // the database.
+//
+// The RPC returns per-skill mastery results including `leveled_up`, so this
+// action surfaces the leveled-up skill codes alongside the recorded count —
+// the game shell pays its mastery-tied star bonus from them. No schema or
+// RPC change is required.
 // ---------------------------------------------------------------------------
+
+export interface RecordGameAttemptsResult {
+  /** Attempts the server recorded. */
+  recorded: number;
+  /** Skill codes whose mastery leveled up (or reached mastered) in this batch. */
+  leveledSkills: string[];
+}
 
 export async function recordGameAttempts(
   childId: string,
   gameId: string,
   attempts: GameAttempt[],
   sessionId?: string
-): Promise<number> {
+): Promise<RecordGameAttemptsResult> {
   if (!/^[a-z0-9_-]{1,40}$/.test(gameId)) throw new Error('Invalid game.');
   const clean = attempts
     .filter((a) => a && typeof a.correct === 'boolean' && isGameSkillCode(String(a.skill)))
@@ -247,7 +259,7 @@ export async function recordGameAttempts(
       ...(Number.isFinite(a.level) ? { level: Math.min(5, Math.max(1, Math.round(a.level!))) } : {}),
       ...(Number.isFinite(a.latency_ms) ? { latency_ms: Math.max(0, Math.round(a.latency_ms!)) } : {}),
     }));
-  if (clean.length === 0) return 0;
+  if (clean.length === 0) return { recorded: 0, leveledSkills: [] };
   const { supabase, child } = await requireChild(childId);
   const { data, error } = await supabase.rpc('record_game_attempts', {
     p_child_id: child.id,
@@ -256,7 +268,14 @@ export async function recordGameAttempts(
     p_session_id: sessionId ?? null,
   });
   if (error || !data) throw new Error('Could not record game practice.');
-  return (data as { recorded?: number }).recorded ?? clean.length;
+  const res = (data ?? {}) as {
+    recorded?: number;
+    skills?: Record<string, { leveled_up?: boolean }>;
+  };
+  const leveledSkills = Object.entries(res.skills ?? {})
+    .filter(([, s]) => s?.leveled_up === true)
+    .map(([code]) => code);
+  return { recorded: res.recorded ?? clean.length, leveledSkills };
 }
 
 // ---------------------------------------------------------------------------

@@ -123,6 +123,13 @@ begin
       '00000000-0000-0000-0000-0000000000f2', '{"said_it":true}');
   end loop;
   assert (r ->> 'current_level')::int = 1 and not (r ->> 'leveled_up')::boolean, 'listen_repeat cannot level up';
+  assert (r ->> 'correct')::boolean and (r ->> 'points_earned')::int = 0, 'listen_repeat earns no points';
+  select count(*) into n from public.learning_events
+  where child_id = '00000000-0000-0000-0000-0000000000c1'
+    and activity_id = '00000000-0000-0000-0000-0000000000f2'
+    and event_type = 'attempt'
+    and (metadata ->> 'points_earned')::int = 0;
+  assert n = 12, format('expected 12 zero-point listen attempts logged, got %s', n);
   assert not exists (
     select 1 from public.skill_mastery
     where child_id = '00000000-0000-0000-0000-0000000000c1'

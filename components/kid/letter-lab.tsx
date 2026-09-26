@@ -11,7 +11,7 @@ import {
   type Pt,
 } from '@/lib/kid/writing';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { useGameSession, GameWinScreen } from './game-shell';
+import { useGameSession, GameWinScreen, AnswerFeedbackPanel } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
 import { AVATARS } from '@/components/avatars';
 
@@ -386,7 +386,7 @@ export default function LetterLab({ childId, nickname = 'friend', onExit }: Lett
       {phase === 'play' && letter && (
         <div className="flex w-full max-w-4xl flex-col items-center px-4">
           <div className="flex w-full items-center justify-between gap-2">
-            <div className="flex items-center gap-2 rounded-full bg-white/85 px-4 py-2 shadow-lg backdrop-blur">
+            <div className="flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow-lg">
               <span className="h-10 w-10"><LunaAvatar className="h-full w-full" /></span>
               <span className="text-base font-black text-kid-ink-900 md:text-lg">
                 Letter {index + 1} of {letters.length}
@@ -395,7 +395,7 @@ export default function LetterLab({ childId, nickname = 'friend', onExit }: Lett
             <button
               type="button"
               onClick={() => speakAs(HOST, `${ph.name}! ${ph.sound}, like ${ph.word}.`)}
-              className="flex items-center gap-2 rounded-full bg-white/85 px-4 py-2 text-base font-black text-kid-ink-900 shadow-lg backdrop-blur transition-transform active:scale-95"
+              className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-base font-black text-kid-ink-900 shadow-lg transition-transform active:scale-95"
               aria-label={`Hear the letter ${letter}`}
             >
               <SpeakerIcon className="h-8 w-8" />
@@ -505,6 +505,8 @@ export default function LetterLab({ childId, nickname = 'friend', onExit }: Lett
           </div>
         </div>
       )}
+
+      <AnswerFeedbackPanel feedback={session.feedback} />
 
       {phase === 'won' && (
         <GameWinScreen

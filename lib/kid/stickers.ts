@@ -92,6 +92,10 @@ export const STICKERS: Sticker[] = [
   { id: 'sentence-scribe', name: 'Sentence Scribe', description: 'Built super sentences in Sentence Studio!', characterId: 'luna', colors: ['#9B7EDE', '#FFD93D'] },
   { id: 'measure-master', name: 'Measure Master', description: 'Measured everything in Measure Meadow!', characterId: 'milo', colors: ['#5BC8E8', '#7ED6A5'] },
   { id: 'opposites-ace', name: 'Opposites Ace', description: 'Mastered opposites in the Attic!', characterId: 'luna', colors: ['#6C4FD8', '#FF7BAC'] },
+  // Mastery tiers — mirror the mastery trophies (awarded with them)
+  { id: 'skill-sprout', name: 'Skill Sprout', description: 'Reached level 2 in a skill — growing strong!', characterId: 'nova', colors: ['#7ED6A5', '#FFD93C'] },
+  { id: 'bloom-bright', name: 'Bloom Bright', description: 'Reached level 3 in a skill — blooming bright!', characterId: 'bea', colors: ['#FF7BAC', '#FFD93C'] },
+  { id: 'sky-master', name: 'Sky Master', description: 'Reached the top level in a skill!', characterId: 'curio', colors: ['#5BC8E8', '#FFD93C'] },
 ];
 
 export function getSticker(id: string): Sticker | undefined {

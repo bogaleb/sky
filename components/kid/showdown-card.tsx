@@ -2,10 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { AVATARS } from '@/components/avatars';
-import { getFamilyWeeklyStars, type FamilyWeeklyRow } from '@/app/actions/showdown';
+import { getFamilyWeeklyStars, getChildAgeBand, type FamilyWeeklyRow } from '@/app/actions/showdown';
 import { useGameSession } from './game-shell';
 import {
   STAR_SPRINT_TARGET,
+  canSeeShowdown,
   challengeProgress,
   siblingRankings,
   showdownStatus,
@@ -20,12 +21,16 @@ function SiblingAvatar({ avatarId, className }: { avatarId: string; className?: 
 }
 
 /**
- * Map widget for the weekly Star Sprint. Shown only when the child has at
- * least one sibling to race against; silent (renders nothing) otherwise, on
+ * Map widget for the weekly Star Sprint. The competitive leaderboard is
+ * age-gated to the 7–8 band (see canSeeShowdown in lib/kid/showdown): a
+ * ranked sibling list is a social-comparison dark pattern for younger kids.
+ * For younger bands with siblings, a warm non-competitive encouragement
+ * card renders instead. Silent (renders nothing) with no siblings, on
  * error, or before data loads.
  */
 export default function ShowdownCard({ childId }: { childId: string }) {
   const [rows, setRows] = useState<FamilyWeeklyRow[] | null>(null);
+  const [ageBand, setAgeBand] = useState<string | null | undefined>(undefined);
   const celebratedRef = useRef(false);
 
   useEffect(() => {
@@ -37,6 +42,13 @@ export default function ShowdownCard({ childId }: { childId: string }) {
       })
       .catch(() => {
         if (!cancelled) setRows([]);
+      });
+    void getChildAgeBand(childId)
+      .then((band) => {
+        if (!cancelled) setAgeBand(band);
+      })
+      .catch(() => {
+        if (!cancelled) setAgeBand(null);
       });
     return () => {
       cancelled = true;
@@ -53,6 +65,8 @@ export default function ShowdownCard({ childId }: { childId: string }) {
   });
   useEffect(() => {
     if (!rows || celebratedRef.current) return;
+    // The Star Sprint race (and its win celebration) is 7–8 only.
+    if (!canSeeShowdown(ageBand)) return;
     const me = rows.find((r) => r.childId === childId);
     const siblings = rows.filter((r) => r.childId !== childId);
     if (!me || siblings.length === 0) return;
@@ -72,9 +86,26 @@ export default function ShowdownCard({ childId }: { childId: string }) {
         /* ignore */
       }
     })();
-  }, [rows, childId, session]);
+  }, [rows, ageBand, childId, session]);
 
-  if (!rows || rows.length < 2) return null;
+  if (!rows || ageBand === undefined || rows.length < 2) return null;
+
+  // Younger bands: no ranked leaderboard — a warm, non-competitive
+  // encouragement instead. No emoji; labels at 18px+.
+  if (!canSeeShowdown(ageBand)) {
+    return (
+      <div
+        className="w-full max-w-md rounded-kid-card bg-white/90 px-4 py-3 shadow-lg"
+        aria-label="Your own star journey"
+      >
+        <p className="text-lg font-black text-kid-ink-900">Your own star journey</p>
+        <p className="mt-1 text-lg font-bold text-kid-ink-700">
+          No races here — every star you earn makes you a little stronger.
+          Keep up the wonderful learning!
+        </p>
+      </div>
+    );
+  }
 
   const me = rows.find((r) => r.childId === childId);
   if (!me) return null;

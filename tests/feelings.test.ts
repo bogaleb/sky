@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
   EMOTIONS,
   MOUTHS,
@@ -8,8 +8,19 @@ import {
   pickSession,
   ROUNDS_PER_GAME,
 } from '../lib/kid/feelings';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+
+vi.mock('server-only', () => ({}));
+vi.mock('@/app/actions/rewards', () => ({
+  awardStars: vi.fn(),
+  awardStickers: vi.fn(),
+}));
+vi.mock('@/app/actions/trail', () => ({ bumpQuestProgress: vi.fn() }));
+vi.mock('@/app/actions/trophies', () => ({ checkTrophies: vi.fn() }));
+vi.mock('@/app/actions/learning', () => ({
+  logLearningEvent: vi.fn(),
+  recordGameAttempts: vi.fn(async () => ({ recorded: 0, leveledSkills: [] })),
+}));
+vi.mock('@/lib/kid/reward-errors', () => ({ reportRewardError: vi.fn() }));
 
 const EMOJI_RE = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}]/u;
 
@@ -101,13 +112,40 @@ describe('pickSession', () => {
 });
 
 describe('content hygiene', () => {
-  it('has no emoji in the lib source', () => {
-    const src = readFileSync(join(__dirname, '..', 'lib', 'kid', 'feelings.ts'), 'utf8');
-    expect(EMOJI_RE.test(src)).toBe(false);
+  it('has no emoji in any user-facing string the lib exports', async () => {
+    // Walks every string reachable from the module's exports — emotion names,
+    // kid definitions, scenarios, comfort tips — the exact copy the theater
+    // speaks and shows. Stronger than scanning the source text: it covers
+    // only strings that can actually reach the kid.
+    const lib = await import('../lib/kid/feelings');
+    const strings: string[] = [];
+    const seen = new Set<unknown>();
+    const walk = (v: unknown) => {
+      if (typeof v === 'string') {
+        strings.push(v);
+        return;
+      }
+      if (v === null || typeof v !== 'object' || seen.has(v)) return;
+      seen.add(v);
+      for (const value of Object.values(v)) walk(value);
+    };
+    walk(lib);
+    expect(strings.length).toBeGreaterThan(20);
+    for (const s of strings) {
+      expect(EMOJI_RE.test(s), `emoji in: ${s.slice(0, 60)}`).toBe(false);
+    }
   });
 
-  it('has no emoji in the component source', () => {
-    const src = readFileSync(join(__dirname, '..', 'components', 'kid', 'feelings-theater.tsx'), 'utf8');
-    expect(EMOJI_RE.test(src)).toBe(false);
+  it('renders the theater intro with no emoji in the markup', async () => {
+    const { default: FeelingsTheater } = await import(
+      '@/components/kid/feelings-theater'
+    );
+    const { renderToString } = await import('react-dom/server');
+    const { createElement } = await import('react');
+    const html = renderToString(
+      createElement(FeelingsTheater, { childId: 'c1', nickname: 'Ada', onExit: () => {} })
+    );
+    expect(html).toContain('Feelings Theater');
+    expect(EMOJI_RE.test(html)).toBe(false);
   });
 });

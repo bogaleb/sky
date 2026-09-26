@@ -86,12 +86,15 @@ export default function DailyGift({
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-base font-black text-kid-ink-900 md:text-lg">
-          A gift from Curio!
+          A little hello from Curio!
         </p>
         <div className="mt-1 flex items-center gap-2">
           <CritterArt id={animal.id} className="h-10 w-10 shrink-0" />
           <p className="truncate text-sm font-bold text-kid-ink-700">{animal.fact}</p>
         </div>
+        <p className="mt-1 text-sm font-bold text-kid-ink-600">
+          Just a small thank-you for stopping by — come back anytime.
+        </p>
       </div>
       <button
         type="button"

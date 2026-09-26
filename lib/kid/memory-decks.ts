@@ -14,6 +14,8 @@
  *   - 'dots:N' -> N counting dots (for the number deck)
  */
 
+import type { GameSkillCode } from './game-skills';
+
 export interface MemoryPair {
   a: string;
   b: string;
@@ -177,4 +179,34 @@ export const MEMORY_DECKS: MemoryDeck[] = [
 
 export function getDeck(id: string): MemoryDeck | undefined {
   return MEMORY_DECKS.find((d) => d.id === id);
+}
+
+/**
+ * Skill code each deck reports practice against. Memory Cove is a
+ * flip-and-match game, so every deck teaches its subject through matching —
+ * this names the subject, and components/kid/memory-cove.tsx passes it per
+ * move via recordAnswer's skill override.
+ */
+export function skillForDeck(deckId: string): GameSkillCode {
+  switch (deckId) {
+    case 'letters':
+      return 'alphabet';
+    case 'numbers':
+    case 'number-words':
+      return 'count';
+    case 'shapes':
+      return 'shapes_patterns';
+    case 'sight-words':
+      return 'sight_words';
+    case 'rhymes':
+      return 'rhyming';
+    case 'animal-homes':
+      return 'animals_habitats';
+    case 'colors':
+    case 'opposites':
+    default:
+      // Colors and opposites are word-meaning work with no dedicated skill
+      // code; vocabulary is the closest fit (matches opposites-attic).
+      return 'vocabulary';
+  }
 }

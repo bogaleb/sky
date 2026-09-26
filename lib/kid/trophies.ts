@@ -70,6 +70,12 @@ export const TROPHIES: Trophy[] = [
   { id: 'activities-100', name: 'Century Star', description: 'Finished 100 activities!', category: 'learner', starBonus: 30, art: 'crown' },
   { id: 'perfect-first', name: 'Perfect Flight', description: 'Got every answer right in one session!', category: 'learner', starBonus: 15, art: 'star' },
   { id: 'perfect-trio', name: 'Triple Perfect', description: 'Three perfect sessions! Amazing!', category: 'learner', starBonus: 30, art: 'crown' },
+  // Learner — mastery tiers (driven by the Wave-11 skill_mastery engine;
+  // evaluated on every trophy check in app/actions/trophies.ts)
+  { id: 'mastery-2', name: 'Skill Sprout', description: 'Reached level 2 in a skill — look at you grow!', category: 'learner', starBonus: 15, art: 'star' },
+  { id: 'mastery-3', name: 'Mastery Bloom', description: 'Reached level 3 in a skill — your learning is blooming!', category: 'learner', starBonus: 25, art: 'gem' },
+  { id: 'mastery-trio', name: 'Triple Grower', description: 'Reached level 3 in three different skills!', category: 'learner', starBonus: 30, art: 'cup' },
+  { id: 'mastery-5', name: 'Sky Master', description: 'Reached the very top level in a skill!', category: 'learner', starBonus: 50, art: 'crown' },
   // Collector — stars and treasures
   { id: 'stars-100', name: 'Star Collector', description: 'Earned 100 stars in total!', category: 'collector', starBonus: 15, art: 'gem' },
   { id: 'stars-500', name: 'Shooting Star', description: 'Earned 500 stars in total!', category: 'collector', starBonus: 25, art: 'gem' },
@@ -86,6 +92,48 @@ export const TROPHIES: Trophy[] = [
 
 export function getTrophy(id: string): Trophy | undefined {
   return TROPHIES.find((t) => t.id === id);
+}
+
+/**
+ * Mastery-tier awards. `levels` are the child's per-skill current_level
+ * values from skill_mastery. Pure — the server action applies the grants
+ * idempotently.
+ */
+
+/** Mastery level that counts as real, durable learning. */
+export const MASTERY_LEVEL_REAL = 3;
+/** Top mastery level in the engine. */
+export const MASTERY_LEVEL_TOP = 5;
+
+/** Trophy ids unlocked by the child's per-skill mastery levels. */
+export function masteryTrophyIdsForLevels(levels: number[]): string[] {
+  const clean = levels.filter((l) => Number.isFinite(l));
+  const max = clean.length > 0 ? Math.max(...clean) : 0;
+  const ids: string[] = [];
+  if (max >= 2) ids.push('mastery-2');
+  if (max >= MASTERY_LEVEL_REAL) ids.push('mastery-3');
+  if (clean.filter((l) => l >= MASTERY_LEVEL_REAL).length >= 3) ids.push('mastery-trio');
+  if (max >= MASTERY_LEVEL_TOP) ids.push('mastery-5');
+  return ids;
+}
+
+/** Sticker ids mirroring the mastery trophies (same unlock moments). */
+export function masteryStickerIdsForLevels(levels: number[]): string[] {
+  const clean = levels.filter((l) => Number.isFinite(l));
+  const max = clean.length > 0 ? Math.max(...clean) : 0;
+  const ids: string[] = [];
+  if (max >= 2) ids.push('skill-sprout');
+  if (max >= MASTERY_LEVEL_REAL) ids.push('bloom-bright');
+  if (max >= MASTERY_LEVEL_TOP) ids.push('sky-master');
+  return ids;
+}
+
+/**
+ * Real mastery in at least one skill — the gate for the flashiest crowns
+ * ('stars-1000', 'perfect-trio'), so grind alone can't earn them.
+ */
+export function hasRealMastery(levels: number[]): boolean {
+  return levels.some((l) => l >= MASTERY_LEVEL_REAL);
 }
 
 /** Events that can earn trophies, fired from gameplay touchpoints. */

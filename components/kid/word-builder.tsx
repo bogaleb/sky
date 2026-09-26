@@ -18,7 +18,7 @@ import {
   type DifficultyLevel,
 } from '@/lib/kid/adapt';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { useGameSession, GameWinScreen } from './game-shell';
+import { useGameSession, GameWinScreen, AnswerFeedbackPanel } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
 import { AVATARS } from '@/components/avatars';
 
@@ -153,7 +153,7 @@ export default function WordBuilder({ childId, nickname = 'friend', onExit }: Wo
       setTiles((t) => t.filter((x) => x.id !== tile.id));
       if (nextBuilt.length === word.word.length) {
         // One answer per word (not per tile): correct only if spelled cleanly.
-        session.recordAnswer(wordMistakes.current === 0, { level: buildWordsLevel(word) });
+        session.recordAnswer(wordMistakes.current === 0, { level: buildWordsLevel(word), hint: word.hint });
         setCelebrating(true);
         playSfx('fanfare');
         const spelledOut = `${word.word.split('').join('. ')}. ${word.word}!`;
@@ -209,7 +209,7 @@ export default function WordBuilder({ childId, nickname = 'friend', onExit }: Wo
       {phase === 'play' && word && Picture && (
         <div className="flex w-full max-w-2xl flex-col items-center px-4">
           <div className="flex w-full items-center justify-between gap-2">
-            <div className="rounded-full bg-white/85 px-4 py-2 shadow-lg backdrop-blur">
+            <div className="rounded-full bg-white px-4 py-2 shadow-lg">
               <span className="text-base font-black text-kid-ink-900 md:text-lg">
                 Word {wordIndex + 1} of {WORDS_PER_GAME}
               </span>
@@ -217,7 +217,7 @@ export default function WordBuilder({ childId, nickname = 'friend', onExit }: Wo
                 Level {word.level}
               </span>
             </div>
-            <div className="rounded-full bg-white/85 px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg backdrop-blur md:text-lg">
+            <div className="rounded-full bg-white px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg md:text-lg">
               Tries: {mistakes}
             </div>
           </div>
@@ -289,6 +289,8 @@ export default function WordBuilder({ childId, nickname = 'friend', onExit }: Wo
           )}
         </div>
       )}
+
+      <AnswerFeedbackPanel feedback={session.feedback} />
 
       {phase === 'won' && (
         <GameWinScreen

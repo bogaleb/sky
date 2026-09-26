@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { pickSession, ROUNDS_PER_GAME, type RhymeRound } from '@/lib/kid/rhymes';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { useGameSession, GameWinScreen } from './game-shell';
+import { useGameSession, GameWinScreen, AnswerFeedbackPanel } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
 import { AVATARS } from '@/components/avatars';
 
@@ -169,11 +169,11 @@ export default function RhymeTime({ childId, nickname = 'friend', onExit }: Rhym
       {phase === 'play' && round && (
         <div className="flex w-full max-w-2xl flex-col items-center">
           <div className="flex w-full items-center justify-between gap-2">
-            <div className="rounded-full bg-white/85 px-4 py-2 shadow-lg backdrop-blur">
+            <div className="rounded-full bg-white px-4 py-2 shadow-lg">
               <span className="text-base font-black text-kid-ink-900 md:text-lg">Rhyme Time</span>
               <span className="ml-2 text-sm font-bold text-kid-ink-700">with Luna</span>
             </div>
-            <div className="rounded-full bg-white/85 px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg backdrop-blur md:text-lg">
+            <div className="rounded-full bg-white px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg md:text-lg">
               {roundIndex + 1} / {rounds.length}
             </div>
           </div>
@@ -219,6 +219,8 @@ export default function RhymeTime({ childId, nickname = 'friend', onExit }: Rhym
           </div>
         </div>
       )}
+
+      <AnswerFeedbackPanel feedback={session.feedback} />
 
       {phase === 'won' && (
         <GameWinScreen

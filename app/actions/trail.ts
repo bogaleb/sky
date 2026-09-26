@@ -6,6 +6,7 @@ import { getTrailStop, TRAIL_LENGTH, questNumber, chapterName } from '@/lib/kid/
 import { dailyQuests, getQuestDef, questDateKey, type QuestDef } from '@/lib/kid/quests';
 import { checkTrophies } from '@/app/actions/trophies';
 import { awardStickers } from '@/app/actions/rewards';
+import { nextStreak, streakGraceDays, type StreakTickStatus } from '@/lib/kid/calendar';
 import type { Trophy, TrophyEvent } from '@/lib/kid/trophies';
 
 /** Daily quest ids that mark a first-time game experience for trophies. */
@@ -152,37 +153,51 @@ export async function bumpQuestProgress(
 
 // ---------------------------------------------------------------------------
 // Daily activity: streak maintenance. Called when a session completes.
+// Forgiving by design: a missed day pauses the streak instead of resetting
+// it to 1 (see nextStreak in lib/kid/calendar) — gentlest for the 3–4 band.
 // ---------------------------------------------------------------------------
 
-export async function recordDailyActivity(childId: string): Promise<{ streak: number; isNewDay: boolean; newTrophies: Trophy[] }> {
+export async function recordDailyActivity(childId: string): Promise<{
+  streak: number;
+  isNewDay: boolean;
+  newTrophies: Trophy[];
+  streakStatus: StreakTickStatus;
+}> {
   const supabase = await requireChild(childId);
   const today = questDateKey();
-  const yesterday = questDateKey(new Date(Date.now() - 24 * 60 * 60 * 1000));
 
-  const { data: row } = await supabase
-    .from('streaks')
-    .select('current_streak, longest_streak, last_active_date')
-    .eq('child_id', childId)
-    .maybeSingle();
+  const [{ data: row }, { data: childRow }] = await Promise.all([
+    supabase
+      .from('streaks')
+      .select('current_streak, longest_streak, last_active_date')
+      .eq('child_id', childId)
+      .maybeSingle(),
+    supabase.from('children').select('age_band').eq('id', childId).maybeSingle(),
+  ]);
 
-  if (row?.last_active_date === today) {
-    return { streak: row.current_streak, isNewDay: false, newTrophies: [] };
+  const tick = nextStreak(
+    row?.current_streak ?? 0,
+    row?.longest_streak ?? 0,
+    row?.last_active_date ?? null,
+    today,
+    streakGraceDays((childRow?.age_band as string | null) ?? null),
+  );
+
+  if (tick.status === 'already') {
+    return { streak: tick.current, isNewDay: false, newTrophies: [], streakStatus: tick.status };
   }
-  const continued = row?.last_active_date === yesterday;
-  const current = continued ? (row?.current_streak ?? 0) + 1 : 1;
-  const longest = Math.max(row?.longest_streak ?? 0, current);
 
   await supabase.from('streaks').upsert(
-    { child_id: childId, current_streak: current, longest_streak: longest, last_active_date: today },
+    { child_id: childId, current_streak: tick.current, longest_streak: tick.longest, last_active_date: today },
     { onConflict: 'child_id' }
   );
   const newTrophies = await checkTrophies(childId, 'streak_day').catch(() => [] as Trophy[]);
   // Streak stickers are idempotent — safe to attempt on every new day.
   const streakStickers = ['comeback-kid'];
-  if (current === 3) streakStickers.push('streak-3');
-  if (current === 7) streakStickers.push('streak-7');
+  if (tick.current === 3) streakStickers.push('streak-3');
+  if (tick.current === 7) streakStickers.push('streak-7');
   void awardStickers(childId, streakStickers).catch(() => {});
-  return { streak: current, isNewDay: true, newTrophies };
+  return { streak: tick.current, isNewDay: true, newTrophies, streakStatus: tick.status };
 }
 
 // ---------------------------------------------------------------------------

@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
 import {
   MIXES,
   mixesForLevel,
@@ -109,8 +108,17 @@ describe('generateQuestion', () => {
     }
   });
 
-  it('colors have no emoji anywhere in the source', () => {
-    const src = readFileSync(new URL('../lib/kid/colors.ts', import.meta.url), 'utf8');
-    expect(src).not.toMatch(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}]/u);
+  it('user-facing color names are emoji-free', () => {
+    // The lab speaks color names aloud and shows them on big buttons, so the
+    // hygiene invariant belongs on the data the kid actually sees/hears.
+    const names = Object.values(COLOR_DEFS).map((d) => d.name);
+    expect(names.length).toBeGreaterThan(0);
+    for (const name of names) {
+      expect(name).not.toMatch(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}]/u);
+    }
+    // Mix endpoints resolve to named colors too.
+    for (const m of MIXES) {
+      expect(COLOR_DEFS[m.result].name).not.toMatch(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}]/u);
+    }
   });
 });

@@ -1,10 +1,10 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
-import { TROPHIES, getTrophy, type Trophy, type TrophyEvent } from '@/lib/kid/trophies';
+import { TROPHIES, getTrophy, masteryTrophyIdsForLevels, masteryStickerIdsForLevels, hasRealMastery, type Trophy, type TrophyEvent } from '@/lib/kid/trophies';
 import { TRAIL_LENGTH } from '@/lib/kid/trail';
 import { questDateKey } from '@/lib/kid/quests';
-import { awardStars } from './rewards';
+import { awardStars, awardStickers } from './rewards';
 
 async function requireChild(childId: string) {
   const supabase = await createClient();
@@ -110,6 +110,29 @@ export async function checkTrophies(
     }
   };
 
+  // Mastery-tier awards: evaluated on every trophy check so any practice
+  // path (adaptive sessions, park games, trail) can unlock them. One indexed
+  // read on skill_mastery; grants and sticker awards are idempotent.
+  const { data: masteryRows } = await supabase
+    .from('skill_mastery')
+    .select('current_level')
+    .eq('child_id', childId);
+  const masteryLevels = (masteryRows ?? []).map(
+    (r) => (r as { current_level: number }).current_level ?? 0,
+  );
+  for (const trophyId of masteryTrophyIdsForLevels(masteryLevels)) {
+    await grant(trophyId);
+  }
+  const masteryStickers = masteryStickerIdsForLevels(masteryLevels);
+  if (masteryStickers.length > 0) {
+    await awardStickers(childId, masteryStickers).catch(() => {});
+  }
+  // The flashiest crowns need real learning, not just grind: perfection and
+  // star-hoarding alone don't unlock them until a skill reaches level 3.
+  // Deferred, never denied — they'll grant on a later check once mastery
+  // catches up.
+  const realMastery = hasRealMastery(masteryLevels);
+
   switch (event) {
     case 'activity_complete': {
       const n = await exactCount(supabase, 'learning_events', {
@@ -139,7 +162,9 @@ export async function checkTrophies(
           .contains('metadata', { kind: 'perfect_session' });
         const n = count ?? 0;
         if (n >= 1) await grant('perfect-first');
-        if (n >= 3) await grant('perfect-trio');
+        // Triple Perfect is a flashy crown: perfection alone isn't enough —
+        // it needs real mastery (level 3+) in at least one skill.
+        if (n >= 3 && realMastery) await grant('perfect-trio');
       }
       const { data: bal } = await supabase
         .from('star_balances')
@@ -149,7 +174,9 @@ export async function checkTrophies(
       const lifetime = bal?.lifetime_earned ?? 0;
       if (lifetime >= 100) await grant('stars-100');
       if (lifetime >= 500) await grant('stars-500');
-      if (lifetime >= 1000) await grant('stars-1000');
+      // Superstar is a flashy crown: star-hoarding alone isn't enough — it
+      // needs real mastery (level 3+) in at least one skill.
+      if (lifetime >= 1000 && realMastery) await grant('stars-1000');
       break;
     }
     case 'streak_day': {

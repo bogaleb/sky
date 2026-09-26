@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   ACCESSORIES,
   DEFAULT_AVATAR,
@@ -16,6 +16,18 @@ import {
   type AvatarDesign,
   type StorageLike,
 } from '../lib/kid/avatar-studio';
+
+vi.mock('server-only', () => ({}));
+vi.mock('@/app/actions/rewards', () => ({
+  awardStars: vi.fn(async () => 0),
+  awardStickers: vi.fn(async () => {}),
+}));
+vi.mock('@/app/actions/trophies', () => ({ checkTrophies: vi.fn(async () => {}) }));
+vi.mock('@/app/actions/learning', () => ({
+  logLearningEvent: vi.fn(async () => {}),
+  recordGameAttempts: vi.fn(async () => ({ recorded: 0, leveledSkills: [] })),
+}));
+vi.mock('@/lib/kid/reward-errors', () => ({ reportRewardError: vi.fn() }));
 
 function fakeStore(): StorageLike & { data: Record<string, string> } {
   const data: Record<string, string> = {};
@@ -145,14 +157,37 @@ describe('CustomAvatar rendering', () => {
 });
 
 describe('content hygiene', () => {
-  it('has no emoji in option labels', async () => {
-    const fs = await import('node:fs');
-    const src = [
-      fs.readFileSync('lib/kid/avatar-studio.ts', 'utf8'),
-      fs.readFileSync('components/kid/avatar-studio.tsx', 'utf8'),
-      fs.readFileSync('components/avatars-custom.tsx', 'utf8'),
-    ].join('\n');
-    // eslint-disable-next-line no-control-regex
-    expect(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}]/u.test(src)).toBe(false);
+  it('has no emoji in the option ids or the rendered studio', async () => {
+    // Option ids become aria-labels ("Skin tone X", "Eye style") — check the
+    // data…
+    const ids = [
+      ...SKIN_TONES,
+      ...EYE_STYLES,
+      ...MOUTH_STYLES,
+      ...HAIR_STYLES,
+      ...HAIR_COLORS.map(String),
+      ...ACCESSORIES,
+    ];
+    const emoji = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}]/u;
+    for (const id of ids) {
+      expect(emoji.test(String(id)), `emoji in: ${id}`).toBe(false);
+    }
+    // …and check what the kid actually sees: the rendered studio markup.
+    const { renderToStaticMarkup } = await import('react-dom/server');
+    const React = await import('react');
+    const { default: AvatarStudio } = await import(
+      '@/components/kid/avatar-studio'
+    );
+    const html = renderToStaticMarkup(
+      React.createElement(AvatarStudio, {
+        childId: 'c1',
+        onExit: () => {},
+      })
+    );
+    expect(html).toContain('Avatar Studio');
+    for (const tab of ['Skin', 'Eyes', 'Mouth', 'Hair', 'Extras']) {
+      expect(html).toContain(tab);
+    }
+    expect(emoji.test(html)).toBe(false);
   });
 });

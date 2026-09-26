@@ -22,6 +22,102 @@ export interface SkillMasteryDetail {
   /** Accuracy 0-100, or null when there are no recorded attempts. */
   accuracyPct: number | null;
   lastPracticedAt: string | null;
+  /**
+   * Weekly growth for this skill, or null when there was no mastery
+   * movement this week. Derived from the last-7-days attempt stream in
+   * learning_events (see estimateWeekStartLevel) — no history table exists.
+   */
+  masteryDelta: MasteryDelta | null;
+}
+
+/**
+ * Per-skill weekly growth. `toLevel` is exact (skill_mastery.current_level);
+ * `fromLevel` is estimated from the difficulty of the child's opening
+ * practice this week (learning_events attempt rows carry item difficulty,
+ * not mastery level, and level-ups are never logged). `reachedMastery` is
+ * exact (skill_mastery.mastered_at).
+ */
+export interface MasteryDelta {
+  /** Estimated level at the start of the week; null when it can't be estimated. */
+  fromLevel: number | null;
+  /** Current level 1-5 (exact). */
+  toLevel: number;
+  /** True when the skill hit 'mastered' this week (exact). */
+  reachedMastery: boolean;
+}
+
+/** One attempt's evidence, as read from learning_events. */
+export interface MasteryAttempt {
+  /** Item difficulty 1-5, or null when the event didn't record one. */
+  difficultyLevel: number | null;
+  /** ISO timestamp of the attempt. */
+  at: string;
+}
+
+/**
+ * Estimate the child's level at the start of the week: the difficulty of
+ * their earliest attempt on/after the week boundary. Rationale: a level-up
+ * L→L+1 requires 8+ correct answers at item difficulty ≥ L with ≥80%
+ * accuracy, so the child must actually play at that difficulty for the level
+ * to move — the week's opening practice difficulty closely tracks the
+ * starting level. Using the earliest *in-window* attempt (rather than the
+ * latest pre-window one) avoids crediting stale growth: if the level-up
+ * happened last week, this week's opening difficulty already reflects the
+ * new level. Limitation: review items served below mastery at the week's
+ * opening can overstate the gap.
+ */
+export function estimateWeekStartLevel(
+  attempts: MasteryAttempt[],
+  weekStartIso: string,
+): number | null {
+  let earliest: MasteryAttempt | null = null;
+  for (const a of attempts) {
+    if (a.at < weekStartIso) continue;
+    if (a.difficultyLevel == null) continue;
+    if (earliest === null || a.at < earliest.at) earliest = a;
+  }
+  return earliest?.difficultyLevel ?? null;
+}
+
+/**
+ * Decide whether a skill shows weekly growth. Returns null (show nothing)
+ * when the skill wasn't practiced this week, when the estimated start level
+ * isn't below the current level, or when a mastered skill's mastery predates
+ * the week (a mastered level can't move — any gap would be stale review play).
+ */
+export function buildMasteryDelta(opts: {
+  currentLevel: number;
+  status: string;
+  masteredAt: string | null;
+  weekStartIso: string;
+  attempts: MasteryAttempt[];
+}): MasteryDelta | null {
+  const { currentLevel, status, masteredAt, weekStartIso, attempts } = opts;
+  const practicedThisWeek = attempts.some((a) => a.at >= weekStartIso);
+  if (!practicedThisWeek) return null;
+  const fromLevel = estimateWeekStartLevel(attempts, weekStartIso);
+  if (status === 'mastered') {
+    const reachedMastery = masteredAt != null && masteredAt >= weekStartIso;
+    return reachedMastery
+      ? { fromLevel, toLevel: currentLevel, reachedMastery: true }
+      : null;
+  }
+  if (fromLevel == null || fromLevel >= currentLevel) return null;
+  return { fromLevel, toLevel: currentLevel, reachedMastery: false };
+}
+
+/** Parent-facing sentence for a skill's weekly growth. */
+export function describeMasteryDelta(d: MasteryDelta): string {
+  if (d.reachedMastery) return 'reached mastery this week';
+  if (d.fromLevel == null) return `reached level ${d.toLevel} this week`;
+  return `grew from level ${d.fromLevel} → ${d.toLevel} this week`;
+}
+
+/** Compact form for the weekly digest bullet. */
+export function masteryDeltaShort(d: MasteryDelta): string {
+  if (d.reachedMastery) return 'reached mastery';
+  if (d.fromLevel == null) return `reached level ${d.toLevel}`;
+  return `level ${d.fromLevel} → ${d.toLevel}`;
 }
 
 /** One of the child's most-practiced skills in the last 7 days. */
@@ -124,6 +220,16 @@ export function buildWeeklyDigest(dash: ChildDashboard, weekStart: string): Week
       .map((s) => `${s.skillName} (${s.attempts} ${s.attempts === 1 ? 'try' : 'tries'})`)
       .join(', ');
     bullets.push(`Most practiced this week: ${top}.`);
+  }
+
+  const growth = dash.skillMastery.flatMap((s) =>
+    s.masteryDelta ? [{ name: s.skillName, delta: s.masteryDelta }] : [],
+  );
+  if (growth.length > 0) {
+    const shown = growth.slice(0, 3);
+    const parts = shown.map((g) => `${g.name} (${masteryDeltaShort(g.delta)})`).join('; ');
+    const more = growth.length > shown.length ? `, and ${growth.length - shown.length} more` : '';
+    bullets.push(`Level-ups this week: ${parts}${more}.`);
   }
 
   const activeSubjects = dash.subjects

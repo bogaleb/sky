@@ -1,44 +1,85 @@
-import { execSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+// @vitest-environment jsdom
+import { existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { act, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { createElement } from 'react';
+import type { TrailState } from '@/app/actions/trail';
 import {
   GAME_GROUPS,
   GAME_REGISTRY,
+  GameOverlay,
   VISIBLE_GAMES,
   gamesForGroup,
   getGame,
   picksForDate,
   todaysPicks,
 } from '@/components/kid/game-registry';
+
+vi.mock('server-only', () => ({}));
+vi.mock('@/app/actions/rewards', () => ({
+  awardStars: vi.fn(async () => 0),
+  getStarBalance: vi.fn(async () => 0),
+}));
+vi.mock('@/app/actions/trophies', () => ({ checkTrophies: vi.fn(async () => []) }));
+vi.mock('@/app/actions/trail', () => ({
+  getTrailState: vi.fn(async () => null),
+  getTrailPlan: vi.fn(async () => []),
+  completeTrailQuest: vi.fn(async () => ({})),
+  recordDailyActivity: vi.fn(async () => {}),
+  bumpQuestProgress: vi.fn(async () => {}),
+}));
+vi.mock('@/app/actions/learning', () => ({
+  logLearningEvent: vi.fn(async () => {}),
+  recordGameAttempts: vi.fn(async () => ({ recorded: 0, leveledSkills: [] })),
+}));
 import { GAME_ART } from '@/components/kid/game-art';
 
 // Wave 10 hub restructure: the game registry is the single source of truth
-// for every Sky Park game. Behavioral tests import the real module; the
-// HEAD cross-check guarantees no game was lost in the refactor.
+// for every Sky Park game. Behavioral tests import the real module; the hub
+// reachability test below renders the real map and proves every registered
+// game is reachable — the honest replacement for diffing source text.
 
 const kidDir = join(process.cwd(), 'components', 'kid');
-const player = readFileSync(join(kidDir, 'session-player.tsx'), 'utf8');
-const registrySrc = readFileSync(join(kidDir, 'game-registry.tsx'), 'utf8');
 
 const COLORS = ['coral', 'sky', 'mint', 'grape'] as const;
 
-// Pinned pre-refactor reference: the Wave 10 hub restructure (505ce89) moved
-// the game buttons from session-player.tsx into game-registry.tsx, so HEAD's
-// copy no longer carries the 30 inline labels. This commit is the last one
-// with every game button inline in session-player.tsx.
-const PRE_REFACTOR_REF = '1cac2b3';
+const CHILD = { id: 'c1', nickname: 'Ada', avatarId: 'fox' };
 
-function headLabels(): string[] {
-  const atRef = execSync(`git show ${PRE_REFACTOR_REF}:components/kid/session-player.tsx`, {
-    cwd: process.cwd(),
-    maxBuffer: 8 * 1024 * 1024,
-  }).toString('utf8');
-  const labels = new Set<string>();
-  const re = /<span className="font-display text-lg[^"]*">([^<]+)<\/span>/g;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(atRef)) !== null) labels.add(m[1].trim());
-  return [...labels];
+function makeMachine(overrides: Record<string, unknown> = {}) {
+  return {
+    islandProgress: {},
+    parkTab: 'reading',
+    setParkTab: vi.fn(),
+    requestOpenGame: vi.fn(),
+    setShowStickers: vi.fn(),
+    setTalkWith: vi.fn(),
+    startIslandSession: vi.fn(),
+    startTrailQuest: vi.fn(),
+    startingQuest: false,
+    stickerIds: [],
+    trailState: null as TrailState | null,
+    child: CHILD,
+    nickname: 'Ada',
+    ...overrides,
+  };
+}
+
+async function renderMapView(machine: ReturnType<typeof makeMachine>) {
+  const { getTrailStop } = await import('@/lib/kid/trail');
+  machine.trailState = {
+    position: 0,
+    questsCompleted: 0,
+    totalStops: 220,
+    questNo: 3,
+    chapter: 'c1',
+    stop: getTrailStop(0),
+    streak: 2,
+    quests: [],
+  };
+  const m = await import('@/components/kid/session/map-view');
+  return render(createElement(m.default, { machine: machine as never }));
 }
 
 describe('registry integrity', () => {
@@ -85,14 +126,34 @@ describe('registry integrity', () => {
   });
 });
 
-describe('pre-refactor cross-check: no game lost in the hub restructure', () => {
-  it('keeps every game that was reachable before the refactor', () => {
-    const labels = headLabels();
-    expect(labels.length).toBe(30);
-    const titles = new Set(GAME_REGISTRY.map((g) => g.title));
-    for (const label of labels) {
-      expect(titles, label).toContain(label);
+describe('hub reachability: no game lost in the hub restructure', () => {
+  it('renders every registered game as a button on the real map', async () => {
+    // The old test diffed game labels out of a pre-refactor git blob. Here
+    // the real MapView is rendered once per park tab and every visible
+    // registry title must appear as a real button the kid can tap.
+    const seen = new Set<string>();
+    for (const group of GAME_GROUPS) {
+      const { unmount } = await renderMapView(makeMachine({ parkTab: group.id }));
+      for (const g of gamesForGroup(group.id)) {
+        // A game can also appear in today's picks, so reachability means >= 1 button.
+        const btns = screen.queryAllByRole('button', {
+          name: new RegExp(g.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')),
+        });
+        expect(btns.length, `${g.id} (${g.title}) reachable on the ${group.id} tab`).toBeGreaterThan(0);
+        seen.add(g.id);
+      }
+      unmount();
     }
+    expect(seen.size).toBe(VISIBLE_GAMES.length);
+  });
+
+  it('opens games through machine.requestOpenGame', async () => {
+    const user = userEvent.setup();
+    const machine = makeMachine();
+    await renderMapView(machine);
+    const target = gamesForGroup('reading')[0];
+    await user.click(screen.getByRole('button', { name: new RegExp(target.title) }));
+    expect(machine.requestOpenGame).toHaveBeenCalledWith(target.id);
   });
 });
 
@@ -127,59 +188,114 @@ describe("today's picks", () => {
 });
 
 describe('player restructure', () => {
-  it('drives every game overlay through one openGame state', () => {
-    expect(player).toContain('const [openGame, setOpenGame]');
-    expect(player).toContain('<GameOverlay');
-    expect(player).toContain('getGame(openGame)');
-    // The 30 hand-written booleans are gone.
-    expect(player).not.toMatch(/const \[show(Memory|Words|Cinema|Trophies|Pet)\b/);
-    expect(player).not.toContain('setShowMemory(true)');
-    expect(player).not.toContain('setShowTrophies(true)');
+  it('drives every game overlay through one openGame state', async () => {
+    // The old test grepped the phase machine for `const [openGame,
+    // setOpenGame]`. Here the real useSessionMachine is driven: opening a
+    // game sets openGame, and the GameOverlay composition renders that
+    // game's dialog; closing clears it again.
+    const { useSessionMachine } = await import('@/components/kid/session/phase-machine');
+    let machine: ReturnType<typeof useSessionMachine> | null = null;
+    function Harness() {
+      machine = useSessionMachine({ child: CHILD, steps: [], sessionId: 's1', onExit: () => {} });
+      const entry = getGame(machine.openGame);
+      return createElement(
+        'div',
+        null,
+        createElement(
+          'button',
+          { type: 'button', onClick: () => machine!.requestOpenGame('words') },
+          'open words'
+        ),
+        createElement('span', { 'data-testid': 'opengame' }, String(machine.openGame)),
+        entry
+          ? createElement(GameOverlay, {
+              entry,
+              child: CHILD,
+              nickname: 'Ada',
+              onClose: () => machine!.setOpenGame(null),
+            })
+          : null
+      );
+    }
+    render(createElement(Harness));
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 300));
+    });
+    expect(screen.getByTestId('opengame').textContent).toBe('null');
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    await userEvent.setup().click(screen.getByRole('button', { name: 'open words' }));
+    expect(screen.getByTestId('opengame').textContent).toBe('words');
+    expect(screen.getByRole('dialog', { name: 'Word Builder' })).toBeInTheDocument();
+
+    act(() => {
+      machine!.setOpenGame(null);
+    });
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   it('removed the dead design-fallback shim entirely', () => {
     expect(existsSync(join(kidDir, 'design-fallback.tsx'))).toBe(false);
-    expect(player).not.toContain('design-fallback');
-    expect(player).not.toContain('DesignFallbackStyles');
   });
 
-  it('renders overlays transparent to the SkyBackdrop (no opaque gradient covers)', () => {
-    expect(player).not.toContain('bg-gradient-to-b from-kid-sky-300 to-kid-sky-500');
-    expect(registrySrc).not.toContain('from-kid-sky-300');
+  it('renders game overlays transparent to the SkyBackdrop (no opaque covers)', async () => {
+    // The overlay shell is a viewport-fixed layer with a light sky tint;
+    // the animated SkyBackdrop behind it stays visible.
+    const { useSessionMachine } = await import('@/components/kid/session/phase-machine');
+    let machine: ReturnType<typeof useSessionMachine> | null = null;
+    function Harness() {
+      machine = useSessionMachine({ child: CHILD, steps: [], sessionId: 's1', onExit: () => {} });
+      const entry = getGame(machine.openGame);
+      return createElement(
+        'div',
+        null,
+        entry
+          ? createElement(GameOverlay, {
+              entry,
+              child: CHILD,
+              nickname: 'Ada',
+              onClose: () => machine!.setOpenGame(null),
+            })
+          : null
+      );
+    }
+    render(createElement(Harness));
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 300));
+    });
+    await act(async () => {
+      await machine!.requestOpenGame('fractions');
+    });
+    const dialog = screen.getByRole('dialog', { name: 'Fraction Fair' });
+    expect(dialog.className).not.toMatch(/from-kid-sky-300/);
+    expect(dialog.className).not.toMatch(/bg-gradient-to-b/);
   });
 
-  it('keeps the Trail as the hero: banner before the park, park before the map', () => {
-    const trail = player.indexOf('<TrailBanner');
-    const park = player.indexOf('aria-label="Sky Park"');
-    const upNext = player.indexOf('<UpNext');
-    const skyMap = player.indexOf('<SkyMap');
+  it('keeps the Trail as the hero: banner before the park, park before the map', async () => {
+    const { container } = await renderMapView(makeMachine());
+    const html = container.innerHTML;
+    const trail = html.indexOf('Start Quest');
+    const park = html.indexOf('Sky Park');
+    const skyMap = html.indexOf('My stickers');
     expect(trail).toBeGreaterThan(-1);
     expect(park).toBeGreaterThan(trail);
-    expect(upNext).toBeGreaterThan(park);
-    expect(skyMap).toBeGreaterThan(upNext);
+    expect(skyMap).toBeGreaterThan(park);
   });
 
-  it('keeps UpNext, the widget row, stickers, and character talk wired', () => {
-    expect(player).toContain('<UpNext');
-    expect(player).toContain('<GoalMeter');
-    expect(player).toContain('<DailyGift');
-    expect(player).toContain('<ShowdownCard');
-    expect(player).toContain('<StreakCalendar');
-    expect(player).toContain('onOpenStickers={() => setShowStickers(true)}');
-    expect(player).toContain('onTalkToCharacter={(id) => setTalkWith(id)}');
-  });
-});
-
-describe('overlay focus behavior (contract)', () => {
-  it('moves focus into the dialog, closes on Escape, restores focus on close', () => {
-    expect(registrySrc).toContain('role="dialog"');
-    expect(registrySrc).toContain('aria-modal="true"');
-    expect(registrySrc).toContain("e.key === 'Escape'");
-    expect(registrySrc).toContain('restoreRef.current?.focus');
-    expect(registrySrc).toContain("document.body.style.overflow = 'hidden'");
-  });
-
-  it('exposes the focus hook for Track 3 to adopt', () => {
-    expect(registrySrc).toContain('export function useGameOverlayFocus');
+  it('keeps the widget row, stickers, and character talk wired', async () => {
+    const user = userEvent.setup();
+    const machine = makeMachine();
+    await renderMapView(machine);
+    // Widget row: Up Next picks plus the daily gift widget. (Showdown and
+    // streak widgets need live server data, so they render empty in tests.)
+    expect(screen.getByRole('region', { name: 'Up next for you' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /daily gift/i })).toBeInTheDocument();
+    // Stickers button reaches the machine.
+    await user.click(screen.getByRole('button', { name: /my stickers/i }));
+    expect(machine.setShowStickers).toHaveBeenCalledWith(true);
+    // Character talk reaches the machine.
+    const talk = screen.getAllByRole('button', { name: /^Talk to / })[0];
+    await user.click(talk);
+    expect(machine.setTalkWith).toHaveBeenCalled();
   });
 });

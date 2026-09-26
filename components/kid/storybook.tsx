@@ -746,7 +746,7 @@ export default function Storybook({
         type="button"
         onClick={handleClose}
         aria-label="Close book"
-        className="absolute right-4 top-4 z-10 rounded-full bg-white/20 p-3 text-white backdrop-blur transition-all hover:scale-110 hover:bg-white/30 active:scale-95"
+        className="absolute right-4 top-4 z-10 rounded-full bg-white/30 p-3 text-white transition-all hover:scale-110 hover:bg-white/30 active:scale-95"
       >
         <CloseIcon />
       </button>
@@ -771,7 +771,7 @@ export default function Storybook({
           <SceneArt scene={sceneFor(story.id, pageIndex)} label={page.caption} />
           <p
             aria-hidden="true"
-            className="absolute bottom-3 left-3 max-w-[80%] rounded-full bg-kid-ink-900/55 px-4 py-1.5 text-sm font-bold text-white backdrop-blur-sm"
+            className="absolute bottom-3 left-3 max-w-[80%] rounded-full bg-kid-ink-900/70 px-4 py-1.5 text-sm font-bold text-white"
           >
             {page.caption}
           </p>

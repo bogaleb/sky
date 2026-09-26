@@ -1,1 +1,49 @@
-{"dependencies":{"@supabase/ssr":"^0.12.7","@supabase/supabase-js":"^2.116.0","next":"16.3.4","react":"19.2.6","react-dom":"19.2.6","server-only":"^0.0.1","zod":"^3.25.76"},"description":"Sky — a complete kids' learning app (ages 3–8). Phase 1: database, auth, parent sign-up → child profiles.","devDependencies":{"@playwright/test":"1.63.0","@tailwindcss/postcss":"4.2.1","@types/node":"22.19.19","@types/react":"19.2.14","@types/react-dom":"19.2.3","eslint":"9.39.4","eslint-config-next":"16.3.4","tailwindcss":"4.2.1","typescript":"5.9.3","vitest":"^3.2.4"},"engines":{"node":">=22.13.0"},"name":"sky","packageManager":"pnpm@10.34.5","pnpm":{"onlyBuiltDependencies":[]},"private":true,"scripts":{"build":"next build","db:types":"echo 'Run after supabase link: supabase gen types typescript --linked > lib/supabase/database.types.ts'","dev":"next dev --port 3000","lint":"eslint . --ignore-pattern .next --ignore-pattern node_modules","start":"next start --port 3000","test":"vitest run","typecheck":"tsc --noEmit","test:e2e":"playwright test","db:verify":"node scripts/verify-db.mjs"},"version":"0.1.0"}
+{
+  "dependencies": {
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.116.0",
+    "next": "16.3.4",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "server-only": "^0.0.1",
+    "zod": "^3.25.76"
+  },
+  "description": "Sky — a complete kids' learning app (ages 3–8). Phase 1: database, auth, parent sign-up → child profiles.",
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@tailwindcss/postcss": "4.2.1",
+    "@types/node": "22.19.19",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "eslint": "9.39.4",
+    "eslint-config-next": "16.3.4",
+    "tailwindcss": "4.2.1",
+    "typescript": "5.9.3",
+    "vitest": "^3.2.4",
+    "jsdom": "^30.1.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@testing-library/jest-dom": "^7.0.1"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "name": "sky",
+  "packageManager": "pnpm@10.34.5",
+  "pnpm": {
+    "onlyBuiltDependencies": []
+  },
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "db:types": "echo 'Run after supabase link: supabase gen types typescript --linked > lib/supabase/database.types.ts'",
+    "dev": "next dev --port 3000",
+    "lint": "eslint . --ignore-pattern .next --ignore-pattern node_modules",
+    "start": "next start --port 3000",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "test:e2e": "playwright test",
+    "db:verify": "node scripts/verify-db.mjs"
+  },
+  "version": "0.1.0"
+}

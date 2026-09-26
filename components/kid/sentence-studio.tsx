@@ -9,7 +9,7 @@ import {
   type WordTile,
 } from '@/lib/kid/sentences';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { useGameSession, GameWinScreen } from './game-shell';
+import { useGameSession, GameWinScreen, AnswerFeedbackPanel } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
 import { AVATARS } from '@/components/avatars';
 
@@ -194,7 +194,7 @@ export default function SentenceStudio({ childId, nickname = 'friend', onExit }:
       {phase === 'play' && round && (
         <div className="flex w-full max-w-3xl flex-col items-center px-4">
           <div className="flex w-full items-center justify-between gap-2">
-            <div className="rounded-full bg-white/85 px-4 py-2 shadow-lg backdrop-blur">
+            <div className="rounded-full bg-white px-4 py-2 shadow-lg">
               <span className="text-base font-black text-kid-ink-900 md:text-lg">
                 Sentence {roundIndex + 1} of {ROUNDS_PER_GAME}
               </span>
@@ -202,7 +202,7 @@ export default function SentenceStudio({ childId, nickname = 'friend', onExit }:
                 Level {round.level}
               </span>
             </div>
-            <div className="rounded-full bg-white/85 px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg backdrop-blur md:text-lg">
+            <div className="rounded-full bg-white px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg md:text-lg">
               Tries: {mistakes}
             </div>
           </div>
@@ -286,6 +286,8 @@ export default function SentenceStudio({ childId, nickname = 'friend', onExit }:
           )}
         </div>
       )}
+
+      <AnswerFeedbackPanel feedback={session.feedback} />
 
       {phase === 'won' && (
         <GameWinScreen

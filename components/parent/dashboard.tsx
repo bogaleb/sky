@@ -10,10 +10,12 @@ import {
   type ChildDashboard,
   type WeeklyDigest,
 } from '@/app/actions/dashboard';
+import { describeMasteryDelta } from '@/lib/parent/digest';
 import { AVATARS } from '@/components/avatars';
 import PinGate from './pin-gate';
 import SkyBackdrop from '@/components/kid/sky-backdrop';
 import WeeklyGoals from './weekly-goals';
+import TimeLimitSetting from './time-limit-setting';
 import Certificate from './certificate';
 import FamilyLeaderboard from './family-leaderboard';
 import ReportCard from './report-card';
@@ -110,6 +112,11 @@ function SkillRow({ skill }: { skill: ChildDashboard['skillMastery'][number] }) 
           Lv {skill.currentLevel}/5
         </span>
       </div>
+      {skill.masteryDelta && (
+        <p className="mt-1 text-sm font-bold text-parent-leaf-600">
+          {describeMasteryDelta(skill.masteryDelta)}
+        </p>
+      )}
     </div>
   );
 }
@@ -209,6 +216,11 @@ function ChildReport({ child }: { child: ChildDashboard }) {
             <p className="text-parent-ink-600">Writing this week&rsquo;s summary…</p>
           )}
         </div>
+      </div>
+
+      {/* Daily time limit */}
+      <div className="mt-6">
+        <TimeLimitSetting childId={child.id} nickname={child.nickname} />
       </div>
 
       {/* Weekly goals + celebrate */}

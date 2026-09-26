@@ -8,7 +8,7 @@ import { OUTFIT_ART_IDS } from '../lib/kid/outfit-art';
 
 describe('sticker book', () => {
   it('has 42 collectible stickers', () => {
-    expect(STICKERS.length).toBe(66);
+    expect(STICKERS.length).toBe(69);
   });
 
   it('every sticker resolves and has a character, name, and colors', () => {

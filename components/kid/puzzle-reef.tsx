@@ -12,7 +12,7 @@ import {
   type PuzzleSlot,
 } from '@/lib/kid/puzzles';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { useGameSession, GameWinScreen } from './game-shell';
+import { useGameSession, GameWinScreen, AnswerFeedbackPanel } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
 
 export interface PuzzleReefProps {
@@ -115,6 +115,8 @@ export default function PuzzleReef({ childId, nickname = 'friend', onExit }: Puz
     gameKey: 'puzzle_game',
     stickerId: 'puzzle-pro',
     milestone: 'puzzle_reef_session',
+    // Geometric piece placement: shape recognition + spatial reasoning.
+    learning: { gameId: 'puzzle-reef', skill: 'shapes_patterns' },
   });
   const starBalance = gameSession.starBalance ?? 0;
   const starsRef = useRef(0);
@@ -231,6 +233,12 @@ export default function PuzzleReef({ childId, nickname = 'friend', onExit }: Puz
         }
         return;
       }
+      // One answered item per slot attempt: first tap on a slot is the
+      // judgment, so retries after a wrong piece do not inflate the record.
+      gameSession.recordAnswer(selectedId === slotPieceId, {
+        level: puzzle.difficulty,
+        itemKey: `${puzzle.id}-${slotPieceId}`,
+      });
       if (selectedId === slotPieceId) {
         const grown = [...placedIds, slotPieceId];
         setPlacedIds(grown);
@@ -250,7 +258,7 @@ export default function PuzzleReef({ childId, nickname = 'friend', onExit }: Puz
         playSfx('wrong');
       }
     },
-    [phase, placedIds, selectedId, hintSpoken, puzzle, mistakes, completePuzzle, later]
+    [phase, placedIds, selectedId, hintSpoken, puzzle, mistakes, completePuzzle, later, gameSession]
   );
 
   const hostName = puzzle.hostCharacter.charAt(0).toUpperCase() + puzzle.hostCharacter.slice(1);
@@ -323,17 +331,17 @@ export default function PuzzleReef({ childId, nickname = 'friend', onExit }: Puz
       {phase === 'play' && (
         <div className="flex w-full max-w-4xl flex-col items-center">
           <div className="flex w-full flex-wrap items-center justify-between gap-2">
-            <div className="rounded-full bg-white/85 px-4 py-2 shadow-lg backdrop-blur">
+            <div className="rounded-full bg-white px-4 py-2 shadow-lg">
               <span className="text-base font-black text-kid-ink-900 md:text-lg">{puzzle.title}</span>
               <span className="ml-2 text-sm font-bold text-kid-ink-700">with {hostName}</span>
             </div>
             <div className="flex items-center gap-2">
               {session.length > 1 && (
-                <div className="rounded-full bg-white/85 px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg backdrop-blur md:text-lg">
+                <div className="rounded-full bg-white px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg md:text-lg">
                   Puzzle {sessionIndex + 1} / {session.length}
                 </div>
               )}
-              <div className="rounded-full bg-white/85 px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg backdrop-blur md:text-lg">
+              <div className="rounded-full bg-white px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg md:text-lg">
                 {placedIds.length} / {puzzle.pieces.length}
               </div>
             </div>
@@ -424,12 +432,14 @@ export default function PuzzleReef({ childId, nickname = 'friend', onExit }: Puz
               stopSpeaking();
               setPhase('pick');
             }}
-            className="mt-4 rounded-full bg-white/70 px-5 py-2 text-sm font-bold text-kid-ink-700 shadow backdrop-blur transition-transform active:scale-95"
+            className="mt-4 rounded-full bg-white px-5 py-2 text-sm font-bold text-kid-ink-700 shadow transition-transform active:scale-95"
           >
             Choose another puzzle
           </button>
         </div>
       )}
+
+      <AnswerFeedbackPanel feedback={gameSession.feedback} />
 
       {phase === 'sessionDone' && (
         <GameWinScreen

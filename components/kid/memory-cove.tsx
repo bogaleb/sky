@@ -1,10 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { MEMORY_DECKS, getDeck, type MemoryDeck, type MemoryPair } from '@/lib/kid/memory-decks';
+import { MEMORY_DECKS, getDeck, skillForDeck, type MemoryDeck, type MemoryPair } from '@/lib/kid/memory-decks';
 import type { SessionChild } from '@/lib/kid/types';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { useGameSession, GameWinScreen } from './game-shell';
+import { useGameSession, GameWinScreen, AnswerFeedbackPanel } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
 
 export interface MemoryCoveProps {
@@ -169,9 +169,14 @@ export default function MemoryCove({ child, onExit }: MemoryCoveProps) {
     gameKey: 'memory_game',
     stickerId: 'memory-master',
     milestone: 'memory_cove_win',
+    // Default skill; every move overrides with skillForDeck(deck.id).
+    learning: { gameId: 'memory-cove', skill: 'vocabulary' },
   });
   const starBalance = session.starBalance ?? 0;
   const timers = useRef<number[]>([]);
+  // Monotonic move counter so every judged move gets a unique itemKey, even
+  // across replays (first judgment per move is what counts).
+  const moveSeqRef = useRef(0);
 
   const later = useCallback((ms: number, fn: () => void) => {
     const id = window.setTimeout(() => {
@@ -237,7 +242,14 @@ export default function MemoryCove({ child, onExit }: MemoryCoveProps) {
         const [x, y] = next;
         const a = cards[x];
         const b = cards[y];
-        if (a.pairIndex === b.pairIndex) {
+        const isMatch = a.pairIndex === b.pairIndex;
+        // One answered item per move: first flip-pair is the judgment.
+        moveSeqRef.current += 1;
+        session.recordAnswer(isMatch, {
+          skill: skillForDeck(deck.id),
+          itemKey: `${deck.id}-${moveSeqRef.current}`,
+        });
+        if (isMatch) {
           later(MATCH_PAUSE_MS, () => {
             const grown = new Set(matched).add(a.pairIndex);
             setMatched(grown);
@@ -258,7 +270,7 @@ export default function MemoryCove({ child, onExit }: MemoryCoveProps) {
         }
       }
     },
-    [lock, phase, cards, flipped, matched, moves, deck, later, handleWin]
+    [lock, phase, cards, flipped, matched, moves, deck, later, handleWin, session]
   );
 
   const replay = useCallback(() => {
@@ -308,15 +320,15 @@ export default function MemoryCove({ child, onExit }: MemoryCoveProps) {
       {phase === 'play' && (
         <div className="flex w-full max-w-2xl flex-col items-center">
           <div className="flex w-full items-center justify-between gap-2">
-            <div className="rounded-full bg-white/85 px-4 py-2 shadow-lg backdrop-blur">
+            <div className="rounded-full bg-white px-4 py-2 shadow-lg">
               <span className="text-base font-black text-kid-ink-900 md:text-lg">{deck.title}</span>
               <span className="ml-2 text-sm font-bold text-kid-ink-700">with {hostName}</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="rounded-full bg-white/85 px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg backdrop-blur md:text-lg">
+              <div className="rounded-full bg-white px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg md:text-lg">
                 Moves: {moves}
               </div>
-              <div className="rounded-full bg-white/85 px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg backdrop-blur md:text-lg">
+              <div className="rounded-full bg-white px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg md:text-lg">
                 {matched.size} / {deck.pairs.length}
               </div>
             </div>
@@ -378,12 +390,14 @@ export default function MemoryCove({ child, onExit }: MemoryCoveProps) {
           <button
             type="button"
             onClick={() => setPhase('pick')}
-            className="mt-4 rounded-full bg-white/70 px-5 py-2 text-sm font-bold text-kid-ink-700 shadow backdrop-blur transition-transform active:scale-95"
+            className="mt-4 rounded-full bg-white px-5 py-2 text-sm font-bold text-kid-ink-700 shadow transition-transform active:scale-95"
           >
             Switch deck
           </button>
         </div>
       )}
+
+      <AnswerFeedbackPanel feedback={session.feedback} />
 
       {phase === 'won' && (
         <GameWinScreen

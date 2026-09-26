@@ -48,7 +48,7 @@ export default function CountRenderer({ objects, onCommit, locked, }: CountRende
   return (
     <div className="flex w-full max-w-4xl flex-col items-center">
       {/* Pond */}
-      <div className="relative h-72 w-full overflow-hidden rounded-kid-card border-4 border-white/60 bg-kid-sky-400/30 shadow-inner backdrop-blur-sm md:h-80">
+      <div className="relative h-72 w-full overflow-hidden rounded-kid-card border-4 border-white/60 bg-kid-sky-400/60 shadow-inner md:h-80">
         {spots.map((s, i) => {
           const isTapped = tapped.includes(s.id);
           const num = tapped.indexOf(s.id) + 1;

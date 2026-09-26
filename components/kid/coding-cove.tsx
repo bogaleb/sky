@@ -12,7 +12,7 @@ import {
   type RunStep,
 } from '@/lib/kid/coding';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { useGameSession, GameWinScreen } from './game-shell';
+import { useGameSession, GameWinScreen, AnswerFeedbackPanel } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
 
 export interface CodingCoveProps {
@@ -322,7 +322,7 @@ export default function CodingCove({ childId, nickname, onExit }: CodingCoveProp
     later(result.path.length * STEP_MS + 200, () => {
       setRunning(false);
       // The first run of each maze is the evidence: did the plan work?
-      levelSession.recordAnswer(result.outcome === 'goal', { itemKey: `level-${level}` });
+      levelSession.recordAnswer(result.outcome === 'goal', { itemKey: `level-${level}`, hint: level.hint });
       if (result.outcome === 'goal') {
         void handleLevelWin(level, queue.length);
       } else if (result.outcome === 'crash') {
@@ -412,12 +412,12 @@ export default function CodingCove({ childId, nickname, onExit }: CodingCoveProp
                 playSfx('whoosh');
                 setPhase('map');
               }}
-              className="rounded-full bg-white/85 px-5 py-2 text-base font-black text-kid-ink-900 shadow-lg backdrop-blur transition-transform active:scale-95"
+              className="rounded-full bg-white px-5 py-2 text-base font-black text-kid-ink-900 shadow-lg transition-transform active:scale-95"
               aria-label="Back to level map"
             >
               ← Levels
             </button>
-            <div className="rounded-full bg-white/85 px-4 py-2 text-base font-black text-kid-ink-900 shadow-lg backdrop-blur md:text-lg">
+            <div className="rounded-full bg-white px-4 py-2 text-base font-black text-kid-ink-900 shadow-lg md:text-lg">
               Level {level.level}
               <button
                 type="button"
@@ -549,6 +549,8 @@ export default function CodingCove({ childId, nickname, onExit }: CodingCoveProp
           )}
         </div>
       )}
+
+      <AnswerFeedbackPanel feedback={levelSession.feedback} />
 
       {phase === 'complete' && (
         <GameWinScreen

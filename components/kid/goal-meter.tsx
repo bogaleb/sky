@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { getGoalProgress, type GoalProgress } from '@/app/actions/goals';
+import ProgressRail from './progress-rail';
 
 /** Star jar that fills toward the weekly goal. Original SVG art, no emoji. */
 function JarArt({ fill }: { fill: number }) {
@@ -43,7 +44,8 @@ function JarArt({ fill }: { fill: number }) {
 }
 
 /**
- * Small map widget showing the weekly goal as a star jar filling up.
+ * Small map widget showing the weekly parent-set goal as a star jar
+ * filling up. Renders through the shared ProgressRail primitive.
  * Silent on error or when no goal data is available.
  */
 export default function GoalMeter({ childId }: { childId: string }) {
@@ -70,7 +72,7 @@ export default function GoalMeter({ childId }: { childId: string }) {
 
   return (
     <div
-      className="flex items-center gap-3 rounded-kid-card bg-white/90 px-4 py-3 shadow-lg"
+      className="rounded-kid-card bg-white/90 px-4 py-3 shadow-lg"
       aria-live="polite"
       aria-label={
         remaining === 0
@@ -78,19 +80,24 @@ export default function GoalMeter({ childId }: { childId: string }) {
           : `${remaining} more ${remaining === 1 ? 'activity' : 'activities'} to fill the star jar.`
       }
     >
-      <JarArt fill={fill} />
-      <div>
-        <p className="text-base font-black text-kid-ink-900 md:text-lg">Weekly star jar</p>
-        <p className="text-sm font-bold text-kid-ink-700">
-          {remaining === 0 ? (
-            <>Goal complete! The jar is full!</>
-          ) : (
-            <>
-              {remaining} more to fill the jar! ({progress.completed}/{progress.target})
-            </>
-          )}
-        </p>
-      </div>
+      <ProgressRail
+        label="Weekly star jar"
+        items={[
+          {
+            id: 'weekly-goal',
+            label: 'Weekly star jar',
+            progress: fill,
+            meta: `${progress.completed}/${progress.target}`,
+            detail:
+              remaining === 0
+                ? 'Goal complete! The jar is full!'
+                : `${remaining} more to fill the jar!`,
+            complete: remaining === 0,
+            art: <JarArt fill={fill} />,
+            barClassName: 'bg-kid-sun-400',
+          },
+        ]}
+      />
     </div>
   );
 }

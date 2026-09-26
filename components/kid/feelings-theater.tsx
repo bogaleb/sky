@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { pickSession, ROUNDS_PER_GAME, type FaceParams, type FeelingRound } from '@/lib/kid/feelings';
 import { speakAs, playSfx, stopSpeaking } from '@/lib/kid/audio';
-import { useGameSession, GameWinScreen } from './game-shell';
+import { useGameSession, GameWinScreen, AnswerFeedbackPanel } from './game-shell';
 import KidShell from '@/components/kid/kid-shell';
 
 export interface FeelingsTheaterProps {
@@ -296,11 +296,11 @@ export default function FeelingsTheater({ childId, nickname = 'friend', onExit }
       {phase === 'play' && round && (
         <div className="flex w-full max-w-2xl flex-col items-center">
           <div className="flex w-full items-center justify-between gap-2">
-            <div className="rounded-full bg-white/85 px-4 py-2 shadow-lg backdrop-blur">
+            <div className="rounded-full bg-white px-4 py-2 shadow-lg">
               <span className="text-base font-black text-kid-ink-900 md:text-lg">Feelings Theater</span>
               <span className="ml-2 text-sm font-bold text-kid-ink-700">with Tuno</span>
             </div>
-            <div className="rounded-full bg-white/85 px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg backdrop-blur md:text-lg">
+            <div className="rounded-full bg-white px-4 py-2 text-base font-black tabular-nums text-kid-ink-900 shadow-lg md:text-lg">
               {roundIndex + 1} / {ROUNDS_PER_GAME}
             </div>
           </div>
@@ -328,7 +328,7 @@ export default function FeelingsTheater({ childId, nickname = 'friend', onExit }
           <button
             type="button"
             onClick={hearPrompt}
-            className="mt-3 rounded-full bg-white/70 px-5 py-2 text-sm font-bold text-kid-ink-700 shadow backdrop-blur transition-transform active:scale-95"
+            className="mt-3 rounded-full bg-white px-5 py-2 text-sm font-bold text-kid-ink-700 shadow transition-transform active:scale-95"
             aria-label="Hear the question read aloud"
           >
             Hear it
@@ -362,6 +362,8 @@ export default function FeelingsTheater({ childId, nickname = 'friend', onExit }
       )}
 
       {phase === 'breathe' && <BreathingBreak onDone={resumeAfterBreathe} nickname={nickname} />}
+
+      <AnswerFeedbackPanel feedback={session.feedback} />
 
       {phase === 'won' && (
         <GameWinScreen

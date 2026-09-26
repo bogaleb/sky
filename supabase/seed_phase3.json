@@ -139,39 +139,6 @@
  {
   "skill": "alphabet",
   "level": 2,
-  "kind": "multiple_choice",
-  "prompt_text": "Pip was shelving books: A, B... then a gust took the next one! Which letter goes after B?",
-  "card": {
-   "options": [
-    {
-     "id": "o3",
-     "label": "E"
-    },
-    {
-     "id": "o1",
-     "label": "D"
-    },
-    {
-     "id": "o0",
-     "label": "C"
-    },
-    {
-     "id": "o2",
-     "label": "A"
-    }
-   ],
-   "narration": "Pip was shelving books: A, B... then a gust took the next one! Which letter goes after B?"
-  },
-  "answer": {
-   "choice": "o0"
-  },
-  "points": 15,
-  "min_age_band": "3-4",
-  "max_age_band": "5-6"
- },
- {
-  "skill": "alphabet",
-  "level": 2,
   "kind": "tap_target",
   "prompt_text": "The Tumble Wind blew a book right off the shelf! Find the star-book with the letter S, hiding among the clouds.",
   "card": {
@@ -1312,39 +1279,6 @@
  {
   "skill": "blending",
   "level": 2,
-  "kind": "multiple_choice",
-  "prompt_text": "Pip sounded out 'mmm-aaa-puh'. Which word did he read?",
-  "card": {
-   "options": [
-    {
-     "id": "o1",
-     "label": "mop"
-    },
-    {
-     "id": "o0",
-     "label": "map"
-    },
-    {
-     "id": "o2",
-     "label": "cap"
-    },
-    {
-     "id": "o3",
-     "label": "nap"
-    }
-   ],
-   "narration": "Pip sounded out 'mmm-aaa-puh'. Which word did he read?"
-  },
-  "answer": {
-   "choice": "o0"
-  },
-  "points": 15,
-  "min_age_band": "3-4",
-  "max_age_band": "7-8"
- },
- {
-  "skill": "blending",
-  "level": 2,
   "kind": "tap_target",
   "prompt_text": "Luna stretched a word: 'hhh-aaa-tuh'. Tap the picture she named.",
   "card": {
@@ -1441,39 +1375,6 @@
   },
   "points": 15,
   "min_age_band": "3-4",
-  "max_age_band": "7-8"
- },
- {
-  "skill": "blending",
-  "level": 3,
-  "kind": "multiple_choice",
-  "prompt_text": "Hoot is stuck on a bedtime word: 'sss-uuu-nnn'. Help him. Which word?",
-  "card": {
-   "options": [
-    {
-     "id": "o2",
-     "label": "bun"
-    },
-    {
-     "id": "o1",
-     "label": "fun"
-    },
-    {
-     "id": "o0",
-     "label": "sun"
-    },
-    {
-     "id": "o3",
-     "label": "run"
-    }
-   ],
-   "narration": "Hoot is stuck on a bedtime word: 'sss-uuu-nnn'. Help him. Which word?"
-  },
-  "answer": {
-   "choice": "o0"
-  },
-  "points": 15,
-  "min_age_band": "5-6",
   "max_age_band": "7-8"
  },
  {
@@ -1695,39 +1596,6 @@
     "s1",
     "s2"
    ]
-  },
-  "points": 25,
-  "min_age_band": "7-8",
-  "max_age_band": "7-8"
- },
- {
-  "skill": "blending",
-  "level": 5,
-  "kind": "multiple_choice",
-  "prompt_text": "Hoot found three flying words. Which one has the MOST parts?",
-  "card": {
-   "options": [
-    {
-     "id": "o2",
-     "label": "wing"
-    },
-    {
-     "id": "o1",
-     "label": "pilot"
-    },
-    {
-     "id": "o3",
-     "label": "cloud"
-    },
-    {
-     "id": "o0",
-     "label": "helicopter"
-    }
-   ],
-   "narration": "Hoot found three flying words. Which one has the MOST parts?"
-  },
-  "answer": {
-   "choice": "o0"
   },
   "points": 25,
   "min_age_band": "7-8",
@@ -3725,39 +3593,6 @@
  {
   "skill": "trace_letters",
   "level": 2,
-  "kind": "multiple_choice",
-  "prompt_text": "Pip's cheese sign says CHE_SE now — the sprites ate a letter! Which letter is missing?",
-  "card": {
-   "options": [
-    {
-     "id": "o1",
-     "label": "A"
-    },
-    {
-     "id": "o3",
-     "label": "O"
-    },
-    {
-     "id": "o0",
-     "label": "E"
-    },
-    {
-     "id": "o2",
-     "label": "I"
-    }
-   ],
-   "narration": "The sign says C H blank S E. Which letter is missing: E, A, I, or O?"
-  },
-  "answer": {
-   "choice": "o0"
-  },
-  "points": 15,
-  "min_age_band": "3-4",
-  "max_age_band": "5-6"
- },
- {
-  "skill": "trace_letters",
-  "level": 2,
   "kind": "sequence",
   "prompt_text": "Quill's letter flags got all tangled! Put the letters in ABC order to fix them!",
   "card": {
@@ -3815,39 +3650,6 @@
   },
   "answer": {
    "min_coverage": 0.6
-  },
-  "points": 15,
-  "min_age_band": "3-4",
-  "max_age_band": "5-6"
- },
- {
-  "skill": "trace_letters",
-  "level": 3,
-  "kind": "multiple_choice",
-  "prompt_text": "The sprites mixed up the letters on Pip's note! Which one is the letter b?",
-  "card": {
-   "options": [
-    {
-     "id": "o3",
-     "label": "q"
-    },
-    {
-     "id": "o1",
-     "label": "d"
-    },
-    {
-     "id": "o2",
-     "label": "p"
-    },
-    {
-     "id": "o0",
-     "label": "b"
-    }
-   ],
-   "narration": "Four letters on the note: d, b, p, and q. Which one is the letter b?"
-  },
-  "answer": {
-   "choice": "o0"
   },
   "points": 15,
   "min_age_band": "3-4",
@@ -4167,39 +3969,6 @@
  {
   "skill": "build_words",
   "level": 1,
-  "kind": "multiple_choice",
-  "prompt_text": "Pip's cheese sign says CHE_SE — a sprite took a bite! Which letter is missing?",
-  "card": {
-   "options": [
-    {
-     "id": "o1",
-     "label": "A"
-    },
-    {
-     "id": "o3",
-     "label": "O"
-    },
-    {
-     "id": "o2",
-     "label": "I"
-    },
-    {
-     "id": "o0",
-     "label": "E"
-    }
-   ],
-   "narration": "The sign says C H blank S E. Which letter is missing: E, A, I, or O?"
-  },
-  "answer": {
-   "choice": "o0"
-  },
-  "points": 10,
-  "min_age_band": "3-4",
-  "max_age_band": "7-8"
- },
- {
-  "skill": "build_words",
-  "level": 1,
   "kind": "tap_target",
   "prompt_text": "Quill is writing the word MAP but dropped a letter! Tap the letter that finishes M_P.",
   "card": {
@@ -4446,39 +4215,6 @@
     "s3",
     "s4"
    ]
-  },
-  "points": 15,
-  "min_age_band": "5-6",
-  "max_age_band": "7-8"
- },
- {
-  "skill": "build_words",
-  "level": 3,
-  "kind": "multiple_choice",
-  "prompt_text": "Pip's new sign says THU_B — a sprite is sitting on a letter! Which letter is missing?",
-  "card": {
-   "options": [
-    {
-     "id": "o0",
-     "label": "M"
-    },
-    {
-     "id": "o1",
-     "label": "N"
-    },
-    {
-     "id": "o2",
-     "label": "B"
-    },
-    {
-     "id": "o3",
-     "label": "P"
-    }
-   ],
-   "narration": "The sign says T H U blank. Which letter is missing: M, N, B, or P?"
-  },
-  "answer": {
-   "choice": "o0"
   },
   "points": 15,
   "min_age_band": "5-6",
@@ -5427,39 +5163,6 @@
  {
   "skill": "count",
   "level": 1,
-  "kind": "multiple_choice",
-  "prompt_text": "Sprocket dropped his gears — plip, plop! Milo sees 2 gears, then 1 more rolls out. How many gears?",
-  "card": {
-   "options": [
-    {
-     "id": "o1",
-     "label": "2"
-    },
-    {
-     "id": "o3",
-     "label": "1"
-    },
-    {
-     "id": "o0",
-     "label": "3"
-    },
-    {
-     "id": "o2",
-     "label": "4"
-    }
-   ],
-   "narration": "Sprocket dropped his gears — plip, plop! Milo sees 2 gears, then 1 more rolls out. How many gears?"
-  },
-  "answer": {
-   "choice": "o0"
-  },
-  "points": 10,
-  "min_age_band": "3-4",
-  "max_age_band": "5-6"
- },
- {
-  "skill": "count",
-  "level": 1,
   "kind": "tap_target",
   "prompt_text": "Tap the number on Milo's machine: Bolt flashed 5 times!",
   "card": {
@@ -5527,39 +5230,6 @@
  {
   "skill": "count",
   "level": 2,
-  "kind": "multiple_choice",
-  "prompt_text": "Milo's counting machine blinked 6 times, then 2 more times. What number did the machine record?",
-  "card": {
-   "options": [
-    {
-     "id": "o3",
-     "label": "6"
-    },
-    {
-     "id": "o2",
-     "label": "9"
-    },
-    {
-     "id": "o1",
-     "label": "7"
-    },
-    {
-     "id": "o0",
-     "label": "8"
-    }
-   ],
-   "narration": "Milo's counting machine blinked 6 times, then 2 more times. What number did the machine record?"
-  },
-  "answer": {
-   "choice": "o0"
-  },
-  "points": 15,
-  "min_age_band": "3-4",
-  "max_age_band": "5-6"
- },
- {
-  "skill": "count",
-  "level": 2,
   "kind": "sequence",
   "prompt_text": "Oh no — the machine printed Bolt's flashes out of order! Put them back in counting order.",
   "card": {
@@ -5612,39 +5282,6 @@
   },
   "answer": {
    "count": 12
-  },
-  "points": 15,
-  "min_age_band": "3-4",
-  "max_age_band": "5-6"
- },
- {
-  "skill": "count",
-  "level": 3,
-  "kind": "multiple_choice",
-  "prompt_text": "Sprocket packed a box of crystal bolts and forgot the total. Milo counted 14. Which number goes on the label?",
-  "card": {
-   "options": [
-    {
-     "id": "o2",
-     "label": "15"
-    },
-    {
-     "id": "o0",
-     "label": "14"
-    },
-    {
-     "id": "o1",
-     "label": "13"
-    },
-    {
-     "id": "o3",
-     "label": "41"
-    }
-   ],
-   "narration": "Sprocket packed a box of crystal bolts and forgot the total. Milo counted 14. Which number goes on the label?"
-  },
-  "answer": {
-   "choice": "o0"
   },
   "points": 15,
   "min_age_band": "3-4",
@@ -5962,39 +5599,6 @@
  {
   "skill": "cardinality",
   "level": 1,
-  "kind": "multiple_choice",
-  "prompt_text": "Sprocket dropped 4 gears into the oil pan — sploosh! How many gears are in the pan?",
-  "card": {
-   "options": [
-    {
-     "id": "o2",
-     "label": "5"
-    },
-    {
-     "id": "o1",
-     "label": "3"
-    },
-    {
-     "id": "o3",
-     "label": "2"
-    },
-    {
-     "id": "o0",
-     "label": "4"
-    }
-   ],
-   "narration": "Sprocket dropped 4 gears into the oil pan — sploosh! How many gears are in the pan?"
-  },
-  "answer": {
-   "choice": "o0"
-  },
-  "points": 10,
-  "min_age_band": "3-4",
-  "max_age_band": "5-6"
- },
- {
-  "skill": "cardinality",
-  "level": 1,
   "kind": "tap_target",
   "prompt_text": "Milo packed two baskets of star-berries. Tap the basket that holds exactly 2 berries!",
   "card": {
@@ -6051,39 +5655,6 @@
   },
   "answer": {
    "count": 8
-  },
-  "points": 15,
-  "min_age_band": "3-4",
-  "max_age_band": "5-6"
- },
- {
-  "skill": "cardinality",
-  "level": 2,
-  "kind": "multiple_choice",
-  "prompt_text": "Bolt flashed 9 times into the counting jar. Milo peeked: 8, 9, or 10? How many flashes are in the jar?",
-  "card": {
-   "options": [
-    {
-     "id": "o1",
-     "label": "8"
-    },
-    {
-     "id": "o3",
-     "label": "7"
-    },
-    {
-     "id": "o0",
-     "label": "9"
-    },
-    {
-     "id": "o2",
-     "label": "10"
-    }
-   ],
-   "narration": "Bolt flashed 9 times into the counting jar. Milo peeked: 8, 9, or 10? How many flashes are in the jar?"
-  },
-  "answer": {
-   "choice": "o0"
   },
   "points": 15,
   "min_age_band": "3-4",
@@ -6190,39 +5761,6 @@
     "s2",
     "s3"
    ]
-  },
-  "points": 15,
-  "min_age_band": "3-4",
-  "max_age_band": "5-6"
- },
- {
-  "skill": "cardinality",
-  "level": 3,
-  "kind": "multiple_choice",
-  "prompt_text": "Sprocket needs 12 bolts for his gadget. He counted 10 in the tray and 2 on the floor. How many bolts is that?",
-  "card": {
-   "options": [
-    {
-     "id": "o1",
-     "label": "11"
-    },
-    {
-     "id": "o2",
-     "label": "13"
-    },
-    {
-     "id": "o3",
-     "label": "10"
-    },
-    {
-     "id": "o0",
-     "label": "12"
-    }
-   ],
-   "narration": "Sprocket needs 12 bolts for his gadget. He counted 10 in the tray and 2 on the floor. How many bolts is that?"
-  },
-  "answer": {
-   "choice": "o0"
   },
   "points": 15,
   "min_age_band": "3-4",
@@ -9800,39 +9338,6 @@
  {
   "skill": "shapes_patterns",
   "level": 5,
-  "kind": "multiple_choice",
-  "prompt_text": "The master gate code: 5, 10, 15... You designed this bridge! What number opens the gate?",
-  "card": {
-   "options": [
-    {
-     "id": "o0",
-     "label": "20"
-    },
-    {
-     "id": "o1",
-     "label": "16"
-    },
-    {
-     "id": "o3",
-     "label": "18"
-    },
-    {
-     "id": "o2",
-     "label": "25"
-    }
-   ],
-   "narration": "The master gate code: 5, 10, 15... You designed this bridge! What number opens the gate?"
-  },
-  "answer": {
-   "choice": "o0"
-  },
-  "points": 25,
-  "min_age_band": "7-8",
-  "max_age_band": "7-8"
- },
- {
-  "skill": "shapes_patterns",
-  "level": 5,
   "kind": "sequence",
   "prompt_text": "Lay your master bridge row for the grand opening: star, star, circle, star, star, circle!",
   "card": {
@@ -10720,39 +10225,6 @@
  },
  {
   "skill": "plants",
-  "level": 1,
-  "kind": "multiple_choice",
-  "prompt_text": "Buzz buzz! Sprout is getting tall! Which part holds Sprout up straight?",
-  "card": {
-   "options": [
-    {
-     "id": "o3",
-     "label": "seeds"
-    },
-    {
-     "id": "o0",
-     "label": "stem"
-    },
-    {
-     "id": "o1",
-     "label": "roots"
-    },
-    {
-     "id": "o2",
-     "label": "leaves"
-    }
-   ],
-   "narration": "Buzz buzz! Sprout is getting tall! Which part holds Sprout up straight?"
-  },
-  "answer": {
-   "choice": "o0"
-  },
-  "points": 10,
-  "min_age_band": "3-4",
-  "max_age_band": "7-8"
- },
- {
-  "skill": "plants",
   "level": 2,
   "kind": "multiple_choice",
   "prompt_text": "Buzz buzz! Sprout looks droopy, but Bea watered it yesterday. What else might Sprout need?",
@@ -10943,39 +10415,6 @@
     }
    ],
    "narration": "Tap the roots — the parts hiding under the soil."
-  },
-  "answer": {
-   "choice": "o0"
-  },
-  "points": 15,
-  "min_age_band": "5-6",
-  "max_age_band": "7-8"
- },
- {
-  "skill": "plants",
-  "level": 3,
-  "kind": "multiple_choice",
-  "prompt_text": "Buzz buzz! Which of these could grow into a brand-new plant?",
-  "card": {
-   "options": [
-    {
-     "id": "o1",
-     "label": "a pebble"
-    },
-    {
-     "id": "o2",
-     "label": "a marble"
-    },
-    {
-     "id": "o0",
-     "label": "an apple seed"
-    },
-    {
-     "id": "o3",
-     "label": "a button"
-    }
-   ],
-   "narration": "Buzz buzz! Which of these could grow into a brand-new plant?"
   },
   "answer": {
    "choice": "o0"
@@ -11419,39 +10858,6 @@
     }
    ],
    "narration": "Buzz buzz! Why does Dewdrop love the pond so much?"
-  },
-  "answer": {
-   "choice": "o0"
-  },
-  "points": 15,
-  "min_age_band": "3-4",
-  "max_age_band": "7-8"
- },
- {
-  "skill": "animals_habitats",
-  "level": 2,
-  "kind": "multiple_choice",
-  "prompt_text": "Buzz buzz! A polar bear is visiting and feels too hot! Where does a polar bear feel at home?",
-  "card": {
-   "options": [
-    {
-     "id": "o2",
-     "label": "a warm pond"
-    },
-    {
-     "id": "o0",
-     "label": "the snowy Arctic"
-    },
-    {
-     "id": "o3",
-     "label": "the steamy rainforest"
-    },
-    {
-     "id": "o1",
-     "label": "the hot desert"
-    }
-   ],
-   "narration": "Buzz buzz! A polar bear is visiting and feels too hot! Where does a polar bear feel at home?"
   },
   "answer": {
    "choice": "o0"
@@ -12049,39 +11455,6 @@
   },
   "answer": {},
   "points": 10,
-  "min_age_band": "3-4",
-  "max_age_band": "7-8"
- },
- {
-  "skill": "weather",
-  "level": 2,
-  "kind": "multiple_choice",
-  "prompt_text": "Buzz buzz! Dewdrop's weather station shows rain clouds! What should Bea pack?",
-  "card": {
-   "options": [
-    {
-     "id": "o2",
-     "label": "a snow shovel"
-    },
-    {
-     "id": "o1",
-     "label": "sunglasses"
-    },
-    {
-     "id": "o3",
-     "label": "a sun hat"
-    },
-    {
-     "id": "o0",
-     "label": "a raincoat"
-    }
-   ],
-   "narration": "Buzz buzz! Dewdrop's weather station shows rain clouds! What should Bea pack?"
-  },
-  "answer": {
-   "choice": "o0"
-  },
-  "points": 15,
   "min_age_band": "3-4",
   "max_age_band": "7-8"
  },
@@ -13224,39 +12597,6 @@
   },
   "points": 25,
   "min_age_band": "7-8",
-  "max_age_band": "7-8"
- },
- {
-  "skill": "experiments",
-  "level": 1,
-  "kind": "multiple_choice",
-  "prompt_text": "Buzz buzz! Bea drops a wooden block and a coin into the pond! Which one floats?",
-  "card": {
-   "options": [
-    {
-     "id": "o1",
-     "label": "the coin"
-    },
-    {
-     "id": "o0",
-     "label": "the wooden block"
-    },
-    {
-     "id": "o2",
-     "label": "both float"
-    },
-    {
-     "id": "o3",
-     "label": "both sink"
-    }
-   ],
-   "narration": "Buzz buzz! Bea drops a wooden block and a coin into the pond! Which one floats?"
-  },
-  "answer": {
-   "choice": "o0"
-  },
-  "points": 10,
-  "min_age_band": "3-4",
   "max_age_band": "7-8"
  },
  {
@@ -18342,39 +17682,6 @@
   "skill": "patterns_coding",
   "level": 4,
   "kind": "multiple_choice",
-  "prompt_text": "WHIRR! The weaving has a SNAG: red, blue, red, GREEN, red, blue... Which thread broke the pattern?",
-  "card": {
-   "options": [
-    {
-     "id": "o0",
-     "label": "green"
-    },
-    {
-     "id": "o3",
-     "label": "yellow"
-    },
-    {
-     "id": "o2",
-     "label": "red"
-    },
-    {
-     "id": "o1",
-     "label": "blue"
-    }
-   ],
-   "narration": "WHIRR! The weaving has a SNAG: red, blue, red, GREEN, red, blue... Which thread broke the pattern?"
-  },
-  "answer": {
-   "choice": "o0"
-  },
-  "points": 20,
-  "min_age_band": "5-6",
-  "max_age_band": "7-8"
- },
- {
-  "skill": "patterns_coding",
-  "level": 4,
-  "kind": "multiple_choice",
   "prompt_text": "BEEP! Sprocket's singing stairs grow: small, medium... What size step comes next?",
   "card": {
    "options": [
@@ -18440,39 +17747,6 @@
   },
   "points": 20,
   "min_age_band": "5-6",
-  "max_age_band": "7-8"
- },
- {
-  "skill": "patterns_coding",
-  "level": 5,
-  "kind": "multiple_choice",
-  "prompt_text": "BEEP! Master weaver! The royal blanket grows: 2 red, 4 red, 6 red... How many red threads in the next row?",
-  "card": {
-   "options": [
-    {
-     "id": "o3",
-     "label": "10 red threads"
-    },
-    {
-     "id": "o0",
-     "label": "8 red threads"
-    },
-    {
-     "id": "o1",
-     "label": "7 red threads"
-    },
-    {
-     "id": "o2",
-     "label": "6 red threads"
-    }
-   ],
-   "narration": "BEEP! Master weaver! The royal blanket grows: 2 red, 4 red, 6 red... How many red threads in the next row?"
-  },
-  "answer": {
-   "choice": "o0"
-  },
-  "points": 25,
-  "min_age_band": "7-8",
   "max_age_band": "7-8"
  },
  {
@@ -18608,39 +17882,6 @@
   },
   "answer": {
    "count": 4
-  },
-  "points": 10,
-  "min_age_band": "5-6",
-  "max_age_band": "7-8"
- },
- {
-  "skill": "loops",
-  "level": 1,
-  "kind": "multiple_choice",
-  "prompt_text": "BEEP! Sprocket winds his toy: turn, turn, turn, turn. How many turns did the loop do?",
-  "card": {
-   "options": [
-    {
-     "id": "o2",
-     "label": "5 turns"
-    },
-    {
-     "id": "o1",
-     "label": "3 turns"
-    },
-    {
-     "id": "o3",
-     "label": "1 turn"
-    },
-    {
-     "id": "o0",
-     "label": "4 turns"
-    }
-   ],
-   "narration": "BEEP! Sprocket winds his toy: turn, turn, turn, turn. How many turns did the loop do?"
-  },
-  "answer": {
-   "choice": "o0"
   },
   "points": 10,
   "min_age_band": "5-6",
@@ -22140,39 +21381,6 @@
    "narration": "Hop to it! Riff is doing his bunny hop: hop, hop, HOP! Dance it with him!"
   },
   "answer": {},
-  "points": 10,
-  "min_age_band": "3-4",
-  "max_age_band": "5-6"
- },
- {
-  "skill": "dance",
-  "level": 1,
-  "kind": "multiple_choice",
-  "prompt_text": "Riff showed you two moves: first a twirl, then a hop. Which move came FIRST?",
-  "card": {
-   "options": [
-    {
-     "id": "o1",
-     "label": "hop"
-    },
-    {
-     "id": "o0",
-     "label": "twirl"
-    },
-    {
-     "id": "o3",
-     "label": "clap"
-    },
-    {
-     "id": "o2",
-     "label": "stomp"
-    }
-   ],
-   "narration": "Riff showed you two moves: first a twirl, then a hop. Which move came FIRST?"
-  },
-  "answer": {
-   "choice": "o0"
-  },
   "points": 10,
   "min_age_band": "3-4",
   "max_age_band": "5-6"
@@ -27343,5 +26551,788 @@
   "points": 25,
   "min_age_band": "7-8",
   "max_age_band": "7-8"
+ },
+ {
+  "skill": "alphabet",
+  "level": 2,
+  "kind": "sequence",
+  "prompt_text": "Pip was shelving books: A, B... then a gust blew two off the shelf! Put them back in ABC order.",
+  "card": {
+   "items": [
+    {
+     "id": "s1",
+     "label": "B"
+    },
+    {
+     "id": "s3",
+     "label": "D"
+    },
+    {
+     "id": "s2",
+     "label": "C"
+    },
+    {
+     "id": "s0",
+     "label": "A"
+    }
+   ],
+   "narration": "Pip was shelving books: A, B... then a gust blew two off the shelf! Put them back in ABC order."
+  },
+  "answer": {
+   "sequence": [
+    "s0",
+    "s1",
+    "s2",
+    "s3"
+   ]
+  },
+  "points": 15,
+  "min_age_band": "3-4",
+  "max_age_band": "5-6"
+ },
+ {
+  "skill": "blending",
+  "level": 2,
+  "kind": "sequence",
+  "prompt_text": "Pip sounded out 'mmm-aaa-puh' but the letters bounced away! Put them in order to build the word he read.",
+  "card": {
+   "items": [
+    {
+     "id": "s1",
+     "label": "A"
+    },
+    {
+     "id": "s2",
+     "label": "P"
+    },
+    {
+     "id": "s0",
+     "label": "M"
+    }
+   ],
+   "narration": "Pip sounded out 'mmm-aaa-puh' but the letters bounced away! Put them in order to build the word he read."
+  },
+  "answer": {
+   "sequence": [
+    "s0",
+    "s1",
+    "s2"
+   ]
+  },
+  "points": 15,
+  "min_age_band": "3-4",
+  "max_age_band": "7-8"
+ },
+ {
+  "skill": "blending",
+  "level": 3,
+  "kind": "sequence",
+  "prompt_text": "Hoot is stuck on a bedtime word: 'sss-uuu-nnn'. Line up the letters to build the word!",
+  "card": {
+   "items": [
+    {
+     "id": "s2",
+     "label": "N"
+    },
+    {
+     "id": "s0",
+     "label": "S"
+    },
+    {
+     "id": "s1",
+     "label": "U"
+    }
+   ],
+   "narration": "Hoot is stuck on a bedtime word: 'sss-uuu-nnn'. Line up the letters to build the word!"
+  },
+  "answer": {
+   "sequence": [
+    "s0",
+    "s1",
+    "s2"
+   ]
+  },
+  "points": 15,
+  "min_age_band": "5-6",
+  "max_age_band": "7-8"
+ },
+ {
+  "skill": "blending",
+  "level": 5,
+  "kind": "sort",
+  "prompt_text": "Hoot's flying words got mixed up in the wind! Sort them: words with one part, and words with more parts.",
+  "card": {
+   "items": [
+    {
+     "id": "g1i0",
+     "label": "pilot",
+     "group": "More parts"
+    },
+    {
+     "id": "g1i1",
+     "label": "helicopter",
+     "group": "More parts"
+    },
+    {
+     "id": "g0i0",
+     "label": "wing",
+     "group": "One part"
+    },
+    {
+     "id": "g0i1",
+     "label": "cloud",
+     "group": "One part"
+    }
+   ],
+   "groups": [
+    {
+     "id": "g0",
+     "label": "One part"
+    },
+    {
+     "id": "g1",
+     "label": "More parts"
+    }
+   ],
+   "narration": "Hoot's flying words got mixed up in the wind! Sort them: words with one part, and words with more parts."
+  },
+  "answer": {
+   "groups": {
+    "g0": [
+     "g0i0",
+     "g0i1"
+    ],
+    "g1": [
+     "g1i0",
+     "g1i1"
+    ]
+   }
+  },
+  "points": 25,
+  "min_age_band": "7-8",
+  "max_age_band": "7-8"
+ },
+ {
+  "skill": "trace_letters",
+  "level": 2,
+  "kind": "trace",
+  "prompt_text": "Pip's cheese sign says CHE_SE now — the sprites ate a letter! Trace the missing letter E to fix his sign.",
+  "card": {
+   "trace": "the letter E",
+   "narration": "Pip's cheese sign says CHE_SE now — the sprites ate a letter! Trace the missing letter E to fix his sign."
+  },
+  "answer": {
+   "min_coverage": 0.6
+  },
+  "points": 15,
+  "min_age_band": "3-4",
+  "max_age_band": "5-6"
+ },
+ {
+  "skill": "trace_letters",
+  "level": 3,
+  "kind": "trace",
+  "prompt_text": "The sprites mixed up the letters on Pip's note! Trace the letter b to show Pip which one is his.",
+  "card": {
+   "trace": "the letter b",
+   "narration": "The sprites mixed up the letters on Pip's note! Trace the letter b to show Pip which one is his."
+  },
+  "answer": {
+   "min_coverage": 0.6
+  },
+  "points": 15,
+  "min_age_band": "3-4",
+  "max_age_band": "5-6"
+ },
+ {
+  "skill": "build_words",
+  "level": 1,
+  "kind": "trace",
+  "prompt_text": "Pip's cheese sign says CHE_SE — a sprite took a bite! Trace the missing letter E to fix the sign.",
+  "card": {
+   "trace": "the letter E",
+   "narration": "Pip's cheese sign says CHE_SE — a sprite took a bite! Trace the missing letter E to fix the sign."
+  },
+  "answer": {
+   "min_coverage": 0.6
+  },
+  "points": 10,
+  "min_age_band": "3-4",
+  "max_age_band": "7-8"
+ },
+ {
+  "skill": "build_words",
+  "level": 3,
+  "kind": "trace",
+  "prompt_text": "Pip's new sign says THU_B — a sprite is sitting on a letter! Trace the missing letter M to finish his sign.",
+  "card": {
+   "trace": "the letter M",
+   "narration": "Pip's new sign says THU_B — a sprite is sitting on a letter! Trace the missing letter M to finish his sign."
+  },
+  "answer": {
+   "min_coverage": 0.6
+  },
+  "points": 15,
+  "min_age_band": "5-6",
+  "max_age_band": "7-8"
+ },
+ {
+  "skill": "count",
+  "level": 1,
+  "kind": "tap_count",
+  "prompt_text": "Sprocket dropped his gears — plip, plop! Tap each gear to count them all.",
+  "card": {
+   "thing": "gears",
+   "total": 3,
+   "narration": "Sprocket dropped his gears — plip, plop! Tap each gear to count them all."
+  },
+  "answer": {
+   "count": 3
+  },
+  "points": 10,
+  "min_age_band": "3-4",
+  "max_age_band": "5-6"
+ },
+ {
+  "skill": "count",
+  "level": 2,
+  "kind": "tap_count",
+  "prompt_text": "Milo's counting machine is blinking! Tap once for each blink to count them.",
+  "card": {
+   "thing": "machine blinks",
+   "total": 8,
+   "narration": "Milo's counting machine is blinking! Tap once for each blink to count them."
+  },
+  "answer": {
+   "count": 8
+  },
+  "points": 15,
+  "min_age_band": "3-4",
+  "max_age_band": "5-6"
+ },
+ {
+  "skill": "count",
+  "level": 3,
+  "kind": "tap_count",
+  "prompt_text": "Sprocket packed a box of crystal bolts. Tap each bolt to count them all!",
+  "card": {
+   "thing": "crystal bolts",
+   "total": 14,
+   "narration": "Sprocket packed a box of crystal bolts. Tap each bolt to count them all!"
+  },
+  "answer": {
+   "count": 14
+  },
+  "points": 15,
+  "min_age_band": "3-4",
+  "max_age_band": "5-6"
+ },
+ {
+  "skill": "cardinality",
+  "level": 1,
+  "kind": "tap_count",
+  "prompt_text": "Sprocket dropped 4 gears into the oil pan — sploosh! Tap each gear to count them.",
+  "card": {
+   "thing": "gears in the oil pan",
+   "total": 4,
+   "narration": "Sprocket dropped 4 gears into the oil pan — sploosh! Tap each gear to count them."
+  },
+  "answer": {
+   "count": 4
+  },
+  "points": 10,
+  "min_age_band": "3-4",
+  "max_age_band": "5-6"
+ },
+ {
+  "skill": "cardinality",
+  "level": 2,
+  "kind": "tap_count",
+  "prompt_text": "Bolt flashed into the counting jar! Tap each flash to count them all.",
+  "card": {
+   "thing": "flashes in the jar",
+   "total": 9,
+   "narration": "Bolt flashed into the counting jar! Tap each flash to count them all."
+  },
+  "answer": {
+   "count": 9
+  },
+  "points": 15,
+  "min_age_band": "3-4",
+  "max_age_band": "5-6"
+ },
+ {
+  "skill": "cardinality",
+  "level": 3,
+  "kind": "tap_count",
+  "prompt_text": "Sprocket needs 12 bolts: some in the tray, some on the floor. Tap each bolt to count them!",
+  "card": {
+   "thing": "bolts",
+   "total": 12,
+   "narration": "Sprocket needs 12 bolts: some in the tray, some on the floor. Tap each bolt to count them!"
+  },
+  "answer": {
+   "count": 12
+  },
+  "points": 15,
+  "min_age_band": "3-4",
+  "max_age_band": "5-6"
+ },
+ {
+  "skill": "shapes_patterns",
+  "level": 5,
+  "kind": "sequence",
+  "prompt_text": "The master gate code grows: 5, 10, 15... Line up the number stones in growing order to open the gate!",
+  "card": {
+   "items": [
+    {
+     "id": "s3",
+     "label": "20"
+    },
+    {
+     "id": "s1",
+     "label": "10"
+    },
+    {
+     "id": "s2",
+     "label": "15"
+    },
+    {
+     "id": "s0",
+     "label": "5"
+    }
+   ],
+   "narration": "The master gate code grows: 5, 10, 15... Line up the number stones in growing order to open the gate!"
+  },
+  "answer": {
+   "sequence": [
+    "s0",
+    "s1",
+    "s2",
+    "s3"
+   ]
+  },
+  "points": 25,
+  "min_age_band": "7-8",
+  "max_age_band": "7-8"
+ },
+ {
+  "skill": "plants",
+  "level": 1,
+  "kind": "sort",
+  "prompt_text": "Buzz buzz! Sprout's parts got all jumbled in the wind! Sort them: parts above the soil, and parts below.",
+  "card": {
+   "items": [
+    {
+     "id": "g0i0",
+     "label": "leaves",
+     "group": "Above the soil"
+    },
+    {
+     "id": "g0i2",
+     "label": "flower",
+     "group": "Above the soil"
+    },
+    {
+     "id": "g0i1",
+     "label": "stem",
+     "group": "Above the soil"
+    },
+    {
+     "id": "g1i0",
+     "label": "roots",
+     "group": "Below the soil"
+    }
+   ],
+   "groups": [
+    {
+     "id": "g0",
+     "label": "Above the soil"
+    },
+    {
+     "id": "g1",
+     "label": "Below the soil"
+    }
+   ],
+   "narration": "Buzz buzz! Sprout's parts got all jumbled in the wind! Sort them: parts above the soil, and parts below."
+  },
+  "answer": {
+   "groups": {
+    "g0": [
+     "g0i0",
+     "g0i1",
+     "g0i2"
+    ],
+    "g1": [
+     "g1i0"
+    ]
+   }
+  },
+  "points": 10,
+  "min_age_band": "3-4",
+  "max_age_band": "7-8"
+ },
+ {
+  "skill": "plants",
+  "level": 3,
+  "kind": "sort",
+  "prompt_text": "Buzz buzz! Buzzy's treasure box is a jumble! Sort what could grow into a new plant from what never could.",
+  "card": {
+   "items": [
+    {
+     "id": "g0i1",
+     "label": "a sunflower seed",
+     "group": "Could grow into a plant"
+    },
+    {
+     "id": "g1i1",
+     "label": "a marble",
+     "group": "Could never grow"
+    },
+    {
+     "id": "g0i0",
+     "label": "an apple seed",
+     "group": "Could grow into a plant"
+    },
+    {
+     "id": "g1i0",
+     "label": "a pebble",
+     "group": "Could never grow"
+    },
+    {
+     "id": "g1i2",
+     "label": "a button",
+     "group": "Could never grow"
+    }
+   ],
+   "groups": [
+    {
+     "id": "g0",
+     "label": "Could grow into a plant"
+    },
+    {
+     "id": "g1",
+     "label": "Could never grow"
+    }
+   ],
+   "narration": "Buzz buzz! Buzzy's treasure box is a jumble! Sort what could grow into a new plant from what never could."
+  },
+  "answer": {
+   "groups": {
+    "g0": [
+     "g0i0",
+     "g0i1"
+    ],
+    "g1": [
+     "g1i0",
+     "g1i1",
+     "g1i2"
+    ]
+   }
+  },
+  "points": 15,
+  "min_age_band": "5-6",
+  "max_age_band": "7-8"
+ },
+ {
+  "skill": "animals_habitats",
+  "level": 2,
+  "kind": "sort",
+  "prompt_text": "Buzz buzz! A polar bear and a penguin feel too hot! Sort the animals into chilly homes and toasty homes.",
+  "card": {
+   "items": [
+    {
+     "id": "g0i1",
+     "label": "penguin",
+     "group": "Chilly homes"
+    },
+    {
+     "id": "g0i0",
+     "label": "polar bear",
+     "group": "Chilly homes"
+    },
+    {
+     "id": "g1i0",
+     "label": "camel",
+     "group": "Toasty homes"
+    },
+    {
+     "id": "g1i1",
+     "label": "lizard",
+     "group": "Toasty homes"
+    }
+   ],
+   "groups": [
+    {
+     "id": "g0",
+     "label": "Chilly homes"
+    },
+    {
+     "id": "g1",
+     "label": "Toasty homes"
+    }
+   ],
+   "narration": "Buzz buzz! A polar bear and a penguin feel too hot! Sort the animals into chilly homes and toasty homes."
+  },
+  "answer": {
+   "groups": {
+    "g0": [
+     "g0i0",
+     "g0i1"
+    ],
+    "g1": [
+     "g1i0",
+     "g1i1"
+    ]
+   }
+  },
+  "points": 15,
+  "min_age_band": "3-4",
+  "max_age_band": "7-8"
+ },
+ {
+  "skill": "weather",
+  "level": 2,
+  "kind": "sort",
+  "prompt_text": "Buzz buzz! Rain clouds are coming! Help Bea pack: what goes in the bag for a rainy day?",
+  "card": {
+   "items": [
+    {
+     "id": "g0i1",
+     "label": "rain boots",
+     "group": "Pack for the rain"
+    },
+    {
+     "id": "g1i0",
+     "label": "sunglasses",
+     "group": "Leave at home"
+    },
+    {
+     "id": "g0i0",
+     "label": "a raincoat",
+     "group": "Pack for the rain"
+    },
+    {
+     "id": "g0i2",
+     "label": "an umbrella",
+     "group": "Pack for the rain"
+    },
+    {
+     "id": "g1i2",
+     "label": "a fan",
+     "group": "Leave at home"
+    },
+    {
+     "id": "g1i1",
+     "label": "a sun hat",
+     "group": "Leave at home"
+    }
+   ],
+   "groups": [
+    {
+     "id": "g0",
+     "label": "Pack for the rain"
+    },
+    {
+     "id": "g1",
+     "label": "Leave at home"
+    }
+   ],
+   "narration": "Buzz buzz! Rain clouds are coming! Help Bea pack: what goes in the bag for a rainy day?"
+  },
+  "answer": {
+   "groups": {
+    "g0": [
+     "g0i0",
+     "g0i1",
+     "g0i2"
+    ],
+    "g1": [
+     "g1i0",
+     "g1i1",
+     "g1i2"
+    ]
+   }
+  },
+  "points": 15,
+  "min_age_band": "3-4",
+  "max_age_band": "7-8"
+ },
+ {
+  "skill": "experiments",
+  "level": 1,
+  "kind": "sort",
+  "prompt_text": "Buzz buzz! Bea is testing her experiment corner! Sort what floats in the pond from what sinks.",
+  "card": {
+   "items": [
+    {
+     "id": "g1i0",
+     "label": "a coin",
+     "group": "Sinks"
+    },
+    {
+     "id": "g0i0",
+     "label": "a wooden block",
+     "group": "Floats"
+    },
+    {
+     "id": "g0i1",
+     "label": "a leaf",
+     "group": "Floats"
+    },
+    {
+     "id": "g1i1",
+     "label": "a rock",
+     "group": "Sinks"
+    }
+   ],
+   "groups": [
+    {
+     "id": "g0",
+     "label": "Floats"
+    },
+    {
+     "id": "g1",
+     "label": "Sinks"
+    }
+   ],
+   "narration": "Buzz buzz! Bea is testing her experiment corner! Sort what floats in the pond from what sinks."
+  },
+  "answer": {
+   "groups": {
+    "g0": [
+     "g0i0",
+     "g0i1"
+    ],
+    "g1": [
+     "g1i0",
+     "g1i1"
+    ]
+   }
+  },
+  "points": 10,
+  "min_age_band": "3-4",
+  "max_age_band": "7-8"
+ },
+ {
+  "skill": "patterns_coding",
+  "level": 4,
+  "kind": "tap_target",
+  "prompt_text": "WHIRR! The weaving has a SNAG: red, blue, red, GREEN, red, blue... Tap the thread that broke the pattern!",
+  "card": {
+   "targets": [
+    {
+     "id": "o1",
+     "label": "yellow"
+    },
+    {
+     "id": "o2",
+     "label": "red"
+    },
+    {
+     "id": "o3",
+     "label": "blue"
+    },
+    {
+     "id": "o0",
+     "label": "green"
+    }
+   ],
+   "narration": "WHIRR! The weaving has a SNAG: red, blue, red, GREEN, red, blue... Tap the thread that broke the pattern!"
+  },
+  "answer": {
+   "choice": "o0"
+  },
+  "points": 20,
+  "min_age_band": "5-6",
+  "max_age_band": "7-8"
+ },
+ {
+  "skill": "patterns_coding",
+  "level": 5,
+  "kind": "sequence",
+  "prompt_text": "BEEP! Master weaver! The royal blanket grows row by row. Lay out the rows in growing order!",
+  "card": {
+   "items": [
+    {
+     "id": "s0",
+     "label": "2 red threads"
+    },
+    {
+     "id": "s3",
+     "label": "8 red threads"
+    },
+    {
+     "id": "s1",
+     "label": "4 red threads"
+    },
+    {
+     "id": "s2",
+     "label": "6 red threads"
+    }
+   ],
+   "narration": "BEEP! Master weaver! The royal blanket grows row by row. Lay out the rows in growing order!"
+  },
+  "answer": {
+   "sequence": [
+    "s0",
+    "s1",
+    "s2",
+    "s3"
+   ]
+  },
+  "points": 25,
+  "min_age_band": "7-8",
+  "max_age_band": "7-8"
+ },
+ {
+  "skill": "loops",
+  "level": 1,
+  "kind": "tap_count",
+  "prompt_text": "BEEP! Sprocket winds his toy: turn, turn, turn, turn! Tap once for each turn to count them.",
+  "card": {
+   "thing": "turns",
+   "total": 4,
+   "narration": "BEEP! Sprocket winds his toy: turn, turn, turn, turn! Tap once for each turn to count them."
+  },
+  "answer": {
+   "count": 4
+  },
+  "points": 10,
+  "min_age_band": "5-6",
+  "max_age_band": "7-8"
+ },
+ {
+  "skill": "dance",
+  "level": 1,
+  "kind": "sequence",
+  "prompt_text": "Riff showed you his dance: first a twirl, then a hop, then a FREEZE! Line up the moves in order!",
+  "card": {
+   "items": [
+    {
+     "id": "s2",
+     "label": "FREEZE"
+    },
+    {
+     "id": "s0",
+     "label": "twirl"
+    },
+    {
+     "id": "s1",
+     "label": "hop"
+    }
+   ],
+   "narration": "Riff showed you his dance: first a twirl, then a hop, then a FREEZE! Line up the moves in order!"
+  },
+  "answer": {
+   "sequence": [
+    "s0",
+    "s1",
+    "s2"
+   ]
+  },
+  "points": 10,
+  "min_age_band": "3-4",
+  "max_age_band": "5-6"
  }
 ]

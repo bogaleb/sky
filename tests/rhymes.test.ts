@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
 import { RHYME_SETS, ROUNDS_PER_GAME, roundFromSet, pickSession } from '../lib/kid/rhymes';
 
 describe('rhyme sets', () => {
@@ -78,8 +77,19 @@ describe('pickSession', () => {
 });
 
 describe('content hygiene', () => {
-  it('rhyme source has no emoji', () => {
-    const src = readFileSync(new URL('../lib/kid/rhymes.ts', import.meta.url), 'utf8');
-    expect(src).not.toMatch(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}]/u);
+  it('rhyme content has no emoji', () => {
+    // The kid hears and reads these words — the invariant belongs on the
+    // data, not the source text.
+    const words = RHYME_SETS.flatMap((s) => [
+      s.family,
+      s.prompt,
+      ...s.rhymes,
+      ...s.nonRhymes,
+    ]);
+    expect(words.length).toBeGreaterThan(100);
+    const emoji = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}]/u;
+    for (const w of words) {
+      expect(emoji.test(w), `emoji in: ${w}`).toBe(false);
+    }
   });
 });

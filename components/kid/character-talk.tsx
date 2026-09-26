@@ -58,7 +58,7 @@ export default function CharacterTalk({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-kid-ink-900/60 p-4 backdrop-blur-sm sm:p-6"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-kid-ink-900/70 p-4 sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-label={`Talk with ${character.name}`}

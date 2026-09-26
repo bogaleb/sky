@@ -1,6 +1,8 @@
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+// @vitest-environment jsdom
+import { describe, expect, it, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { createElement } from 'react';
 import {
   OPPOSITE_PAIRS,
   AMBIGUOUS_PARTNERS,
@@ -14,6 +16,29 @@ import {
   generateMatchRound,
   pickSession,
 } from '@/lib/kid/opposites';
+
+vi.mock('server-only', () => ({}));
+vi.mock('@/lib/kid/audio', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/kid/audio')>();
+  return {
+    ...actual,
+    speak: vi.fn(),
+    speakAs: vi.fn(),
+    playSfx: vi.fn(),
+    stopSpeaking: vi.fn(),
+    unlockAudio: vi.fn(),
+  };
+});
+vi.mock('@/app/actions/rewards', () => ({
+  awardStars: vi.fn(async () => 0),
+  awardStickers: vi.fn(async () => {}),
+}));
+vi.mock('@/app/actions/trophies', () => ({ checkTrophies: vi.fn(async () => {}) }));
+vi.mock('@/app/actions/learning', () => ({
+  logLearningEvent: vi.fn(async () => {}),
+  recordGameAttempts: vi.fn(async () => ({ recorded: 0, leveledSkills: [] })),
+}));
+vi.mock('@/lib/kid/reward-errors', () => ({ reportRewardError: vi.fn() }));
 
 const EMOJI = /[🌀-🫿☀-➿⬀-⯿️]/u;
 
@@ -166,23 +191,59 @@ describe('pickSession', () => {
   });
 });
 
-describe('opposites-attic component', () => {
-  const src = readFileSync(join(process.cwd(), 'components', 'kid', 'opposites-attic.tsx'), 'utf8');
 
-  it('is emoji-free and wires the Wave 9 reward hooks', () => {
-    expect(EMOJI.test(src)).toBe(false);
-    expect(src).toContain("'opposites_game'");
-    expect(src).toContain("'opposites-ace'");
-    expect(src).toContain('opposites_done');
-    expect(src).toContain('opposites_attic_win');
-    expect(src).toContain('speakAs');
-    expect(src).toContain('aria-label');
+describe('opposites-attic component', () => {
+  it('wires the Wave 9 reward hooks through the game session config', async () => {
+    // The old test grepped the source for these identifiers. The real
+    // invariant is what useGameSession receives, so capture the config.
+    const captured: Record<string, unknown>[] = [];
+    vi.resetModules();
+    vi.doMock('@/components/kid/game-shell', async (orig) => {
+      const mod = await (orig as () => Promise<object>)();
+      const React = await import('react');
+      return {
+        ...(mod as object),
+        useGameSession: (cfg: Record<string, unknown>) => {
+          captured.push(cfg);
+          return { status: 'playing', complete: async () => 0, starBalance: 0 };
+        },
+        GameWinScreen: (props: object) =>
+          React.createElement('div', { 'data-win-screen': true }),
+        AnswerFeedbackPanel: () => null,
+      };
+    });
+    const { default: OppositesAttic } = await import(
+      '@/components/kid/opposites-attic'
+    );
+    render(
+      createElement(OppositesAttic, { childId: 'c1', nickname: 'Ada', onExit: () => {} })
+    );
+    expect(captured).toHaveLength(1);
+    expect(captured[0]).toMatchObject({
+      gameKey: 'opposites_game',
+      stickerId: 'opposites-ace',
+      trophyEvent: 'opposites_done',
+      milestone: 'opposites_attic_win',
+    });
+    expect(captured[0]).toHaveProperty(['learning', 'gameId'], 'opposites-attic');
+    vi.doUnmock('@/components/kid/game-shell');
   });
 
-  it('renders the attic scene and match interaction', () => {
-    expect(src).toContain('AtticScene');
-    expect(src).toContain('round window');
-    expect(src).toContain('What is the opposite of');
-    expect(src).toContain('Tap two cards that are opposites');
+  it('renders the attic scene emoji-free with Luna hosting', async () => {
+    const user = userEvent.setup();
+    vi.resetModules();
+    const { default: OppositesAttic } = await import(
+      '@/components/kid/opposites-attic'
+    );
+    const { container } = render(
+      createElement(OppositesAttic, { childId: 'c1', nickname: 'Ada', onExit: () => {} })
+    );
+    expect(screen.getByText('Opposites Attic')).toBeInTheDocument();
+    // Start the game: the round prompt is visible to the kid.
+    await user.click(screen.getByRole('button', { name: 'Start Opposites Attic' }));
+    expect(
+      screen.getByText(/What is the opposite of|Tap two cards that are opposites/)
+    ).toBeInTheDocument();
+    expect(container.innerHTML).not.toMatch(EMOJI);
   });
 });
